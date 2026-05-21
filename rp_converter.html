@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>로그 변환기</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root {
+    --bg: #ece8df;
+    --panel: #ffffff;
+    --border: #d8d3c8;
+    --border-strong: #c4bdaf;
+    --text: #2a2724;
+    --text-soft: #6e6960;
+    --text-faint: #9a9489;
+    --hover: #f4f1ea;
+  }
+  body.dark {
+    --bg: #1c1a17;
+    --panel: #25221e;
+    --border: #383430;
+    --border-strong: #4d4842;
+    --text: #e8e3d8;
+    --text-soft: #a09a8d;
+    --text-faint: #6b665d;
+    --hover: #2c2925;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 28px 20px;
+    line-height: 1.6;
+    transition: background 0.25s, color 0.25s;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+
+  header.top {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+  }
+  h1 { font-size: 22px; font-weight: 700; margin: 0; letter-spacing: -0.4px; }
+  .desc { color: var(--text-soft); font-size: 13px; margin: 2px 0 0; }
+
+  .top-actions { display: flex; gap: 8px; align-items: center; }
+  .save-status {
+    font-size: 11px; color: var(--text-faint); display: flex; align-items: center; gap: 6px;
+    font-weight: 500;
+  }
+  .save-status::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%; background: #8ab574;
+  }
+  .mode-toggle {
+    background: transparent; border: 1px solid var(--border-strong); color: var(--text-soft);
+    padding: 7px 14px; border-radius: 999px; cursor: pointer;
+    font-size: 12px; font-weight: 500; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .mode-toggle:hover { background: var(--hover); color: var(--text); }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .panel + .panel { margin-top: 14px; }
+  .panel h2 {
+    font-size: 11.5px; font-weight: 700;
+    margin: 0 0 14px; color: var(--text-faint);
+    letter-spacing: 1.5px; text-transform: uppercase;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 600px) { .meta-grid { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 11px; color: var(--text-faint); font-weight: 600; letter-spacing: 0.3px; }
+  .field input[type="text"], .field input[type="date"], select {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13.5px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: inherit;
+    transition: border-color 0.15s;
+  }
+  .field input:focus, select:focus { outline: none; border-color: var(--text-soft); }
+
+  .color-field { display: flex; align-items: center; gap: 8px; }
+  .color-field input[type="color"] {
+    width: 38px; height: 38px; border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; padding: 2px; background: var(--bg);
+    flex-shrink: 0;
+  }
+  .color-field .color-label { font-size: 12px; color: var(--text-soft); font-weight: 500; }
+
+  .char-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .char-row input[type="text"] {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13.5px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: inherit;
+  }
+  .char-row .name-input { flex: 1; min-width: 0; }
+  .char-row .tag-input { width: 56px; text-align: center; }
+  .char-row input[type="color"] {
+    width: 38px; height: 38px; border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; padding: 2px; background: var(--bg);
+    flex-shrink: 0;
+  }
+  .char-row .role-label {
+    font-size: 11px; color: var(--text-faint); font-weight: 600;
+    width: 76px; flex-shrink: 0; letter-spacing: 0.2px;
+  }
+  .char-row .remove-btn {
+    width: 30px; height: 30px; flex-shrink: 0;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--text-faint);
+    cursor: pointer; font-size: 16px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .char-row .remove-btn:hover { border-color: #d4a8a8; color: #b85a5a; }
+
+  .add-char-btn {
+    margin-top: 4px; padding: 8px 14px;
+    border: 1px dashed var(--border-strong); border-radius: 8px;
+    background: transparent; color: var(--text-soft);
+    cursor: pointer; font-size: 12.5px; font-weight: 500;
+    font-family: inherit; width: 100%;
+    transition: all 0.15s;
+  }
+  .add-char-btn:hover { background: var(--hover); color: var(--text); border-color: var(--text-soft); }
+
+  textarea {
+    width: 100%;
+    min-height: 460px;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.75;
+    resize: vertical;
+    transition: border-color 0.15s;
+  }
+  textarea:focus { outline: none; border-color: var(--text-soft); }
+
+  .buttons { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  button.act {
+    padding: 10px 18px;
+    border: 1px solid var(--text);
+    border-radius: 999px;
+    background: var(--text);
+    color: var(--panel);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  button.act:hover { opacity: 0.85; }
+  button.act.secondary {
+    background: transparent; color: var(--text-soft); border-color: var(--border-strong);
+  }
+  button.act.secondary:hover { background: var(--hover); color: var(--text); }
+  button.act.danger {
+    background: transparent; color: #b85a5a; border-color: #d4a8a8;
+  }
+  button.act.danger:hover { background: #fbeded; }
+  body.dark button.act.danger:hover { background: #3a2828; }
+
+  .preview-area {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow-y: auto;
+    max-height: 780px;
+    min-height: 460px;
+  }
+  .preview {
+    padding: 24px 16px;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--panel);
+    padding: 11px 20px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+
+  details { margin-top: 12px; font-size: 12px; color: var(--text-soft); }
+  details summary {
+    cursor: pointer; padding: 6px 0; font-weight: 600;
+    color: var(--text-soft); user-select: none;
+  }
+  details summary:hover { color: var(--text); }
+  details pre {
+    background: var(--bg); padding: 12px 14px; border-radius: 8px;
+    font-size: 12px; overflow-x: auto;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    line-height: 1.7; color: var(--text-soft);
+    white-space: pre-wrap;
+    border: 1px solid var(--border);
+  }
+
+  .options-row {
+    display: flex; gap: 14px; flex-wrap: wrap; margin-top: 12px;
+    padding: 12px 14px; background: var(--bg); border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .options-row label {
+    font-size: 12.5px; color: var(--text-soft); display: flex; align-items: center; gap: 6px;
+    cursor: pointer; font-weight: 500;
+  }
+  .options-row input[type="checkbox"] { accent-color: var(--text); }
+
+  .stat-bar {
+    margin-top: 10px; padding: 8px 14px;
+    background: var(--bg); border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 11.5px; color: var(--text-faint);
+    display: flex; gap: 18px; flex-wrap: wrap;
+    font-weight: 500;
+  }
+  .stat-bar strong { color: var(--text); font-weight: 700; }
+
+  .preset-row {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);
+  }
+  .preset-row .label {
+    font-size: 11px; color: var(--text-faint); margin-right: 4px;
+    align-self: center; font-weight: 600;
+  }
+  .preset-btn {
+    padding: 5px 11px; border-radius: 999px; cursor: pointer;
+    font-size: 11.5px; border: 1px solid var(--border);
+    background: var(--panel); color: var(--text-soft);
+    font-family: inherit; font-weight: 500;
+    transition: all 0.15s;
+  }
+  .preset-btn:hover { border-color: var(--text-soft); color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>로그 변환기</h1>
+      <p class="desc">롤플레잉 로그를 단정하게 정돈해 백업하세요.</p>
+    </div>
+    <div class="top-actions">
+      <span class="save-status" id="saveStatus">자동 저장됨</span>
+      <button class="mode-toggle" onclick="toggleDark()" id="darkBtn">다크 모드</button>
+    </div>
+  </header>
+
+  <!-- 디자인 -->
+  <div class="panel">
+    <h2>디자인</h2>
+    <div class="meta-grid">
+      <div class="field">
+        <label>본문 글꼴</label>
+        <select id="fontBody">
+          <option value="'Pretendard Variable', Pretendard, system-ui, sans-serif">Pretendard (모던 산세리프)</option>
+          <option value="'Noto Serif KR', serif">Noto Serif KR (세리프)</option>
+          <option value="'Nanum Myeongjo', serif">나눔 명조 (감성 세리프)</option>
+          <option value="'Gowun Batang', serif">고운 바탕 (부드러운 세리프)</option>
+          <option value="'Gowun Dodum', sans-serif">고운 돋움 (부드러운 산세리프)</option>
+          <option value="'IBM Plex Sans KR', sans-serif">IBM Plex Sans (깔끔한 산세리프)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>글자 크기</label>
+        <select id="fontSize">
+          <option value="13.5">작게 (13.5px)</option>
+          <option value="14.5" selected>보통 (14.5px)</option>
+          <option value="15.5">크게 (15.5px)</option>
+          <option value="17">아주 크게 (17px)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="meta-grid" style="margin-top: 12px;">
+      <div class="field">
+        <label>페이지 배경 색</label>
+        <div class="color-field">
+          <input type="color" id="colorPage" value="#fdfcf8">
+          <span class="color-label" id="colorPageLabel">#fdfcf8</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>나레이션 글자 색</label>
+        <div class="color-field">
+          <input type="color" id="colorNarration" value="#6e6960">
+          <span class="color-label" id="colorNarrationLabel">#6e6960</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="options-row" style="margin-top: 14px;">
+      <label><input type="checkbox" id="optShowName" checked> 화자 이름 표시</label>
+      <label><input type="checkbox" id="optShowBar" checked> 좌측 컬러바 표시</label>
+      <label><input type="checkbox" id="optNovelMode"> 소설식 (대사에 따옴표 자동 추가)</label>
+    </div>
+  </div>
+
+  <!-- 메타 -->
+  <div class="panel">
+    <h2>장면 정보</h2>
+    <div class="meta-grid">
+      <div class="field">
+        <label>제목</label>
+        <input type="text" id="logTitle" placeholder="예: 발코니의 밤 (선택)">
+      </div>
+      <div class="field">
+        <label>부제 / 챕터</label>
+        <input type="text" id="logChapter" placeholder="예: Chapter I (선택)">
+      </div>
+      <div class="field">
+        <label>날짜</label>
+        <input type="text" id="logDate" placeholder="비워두면 표시 안 함">
+      </div>
+      <div class="field">
+        <label>장소</label>
+        <input type="text" id="logPlace" placeholder="선택">
+      </div>
+    </div>
+  </div>
+
+  <!-- 캐릭터 -->
+  <div class="panel">
+    <h2>캐릭터</h2>
+    <div id="charList">
+      <!-- 동적 생성 -->
+    </div>
+    <button class="add-char-btn" onclick="addCharacter()">+ 화자 추가</button>
+
+    <div class="char-row" style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border);">
+      <span class="role-label">나레이션</span>
+      <input type="text" class="name-input" value="이름 없이 표시됨" disabled style="opacity:0.4;">
+      <input type="text" class="tag-input" id="tagN" value="N">
+    </div>
+
+    <div class="preset-row">
+      <span class="label">색상 프리셋:</span>
+      <button class="preset-btn" onclick="applyPreset('cool')">차분</button>
+      <button class="preset-btn" onclick="applyPreset('contrast')">대비</button>
+      <button class="preset-btn" onclick="applyPreset('mono')">모노</button>
+      <button class="preset-btn" onclick="applyPreset('warm')">가을</button>
+      <button class="preset-btn" onclick="applyPreset('plum')">플럼·세이지</button>
+      <button class="preset-btn" onclick="applyPreset('vivid')">선명</button>
+    </div>
+
+    <div class="options-row">
+      <label><input type="checkbox" id="optMergeSpeaker" checked> 같은 화자 연속 발화 시 이름 생략</label>
+      <label><input type="checkbox" id="optAutoRender" checked> 자동 변환</label>
+      <label><input type="checkbox" id="optAutoSave" checked> 자동 저장</label>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top: 14px;">
+    <!-- 입력 -->
+    <div class="panel">
+      <h2>원본 로그</h2>
+      <textarea id="input" placeholder="A: 대사&#10;*행동 지문*&#10;다음 대사&#10;&#10;B: 대사&#10;&#10;N: 나레이션 문장&#10;&#10;--- (작은 구분선)&#10;*** (큰 구분선)"></textarea>
+      <div class="buttons">
+        <button class="act" onclick="convert()">변환</button>
+        <button class="act secondary" onclick="clearAll()">비우기</button>
+        <button class="act danger" onclick="resetAll()">전체 초기화</button>
+      </div>
+      <div class="stat-bar">
+        <span>단어 <strong id="statWords">0</strong></span>
+        <span>줄 <strong id="statLines">0</strong></span>
+        <span>발화 <strong id="statBlocks">0</strong></span>
+      </div>
+      <details>
+        <summary>입력 규칙</summary>
+        <pre>· 발화 블록은 [태그]: 로 시작 (A:, B:, N: 등)
+  → 같은 태그면 자동으로 한 발화로 묶임
+  → 발화 안의 빈 줄/엔터는 무시되고 이어집니다
+
+· *별표 사이*는 행동 지문 (이탤릭, 색 분리)
+
+· N: 으로 시작하면 나레이션 (이름 없이)
+
+· // 만 있는 줄 → 한 칸 띄움 (단락 분리)
+
+· 장면 구분선:
+  --- → 작은 구분선
+  *** → 큰 구분선</pre>
+      </details>
+    </div>
+
+    <!-- 미리보기 -->
+    <div class="panel">
+      <h2>미리보기</h2>
+      <div class="preview-area">
+        <div id="preview" class="preview"></div>
+      </div>
+      <div class="buttons">
+        <button class="act" onclick="copyHTML()">HTML 복사</button>
+        <button class="act secondary" onclick="copyRendered()">서식 복사</button>
+        <button class="act secondary" onclick="saveImage()">이미지 저장</button>
+        <button class="act secondary" onclick="downloadHTML()">HTML 다운로드</button>
+      </div>
+      <details>
+        <summary>티스토리 백업 방법</summary>
+        <pre>1. [HTML 복사] 클릭
+2. 티스토리 글쓰기 → 우측 상단 모드를 'HTML'로 전환
+3. 붙여넣기 → 다시 '기본/마크다운' 모드로
+※ 스타일이 인라인이라 어떤 스킨과도 잘 어울립니다
+※ [이미지 저장]은 미리보기를 PNG로 내려받습니다</pre>
+      </details>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const STORAGE_KEY = 'rp_log_v7';
+
+// 화자 색상 팔레트 (추가 시 순환)
+const PALETTE = ['#6b5b8c', '#8c5b5b', '#5b7a8c', '#7a8c5b', '#8c7a5b', '#8c5b7a', '#5b8c6b', '#5b5b8c'];
+
+const PRESETS = {
+  cool:     ['#6b5b8c', '#8c5b5b', '#5b7a8c', '#7a8c5b'],
+  contrast: ['#2d4a7a', '#8c2d2d', '#2d7a4a', '#7a5a2d'],
+  mono:     ['#3a3a3a', '#888888', '#5a5a5a', '#aaaaaa'],
+  warm:     ['#9a6b3a', '#5a7a3a', '#9a3a3a', '#7a5a2a'],
+  plum:     ['#6b4a7a', '#4a7a6b', '#7a4a5a', '#5a6b4a'],
+  vivid:    ['#4a5fc0', '#c04a5f', '#4ac08f', '#c08f4a'],
+};
+
+// 동적 화자 상태: [{id, name, tag, color}]
+let characters = [];
+let charCounter = 0;
+
+function defaultTagForIndex(i) {
+  return String.fromCharCode(65 + i); // A, B, C...
+}
+
+function addCharacter(preset) {
+  const idx = characters.length;
+  const id = 'char_' + (charCounter++);
+  const c = preset || {
+    name: defaultTagForIndex(idx),
+    tag: defaultTagForIndex(idx),
+    color: PALETTE[idx % PALETTE.length]
+  };
+  characters.push({ id, ...c });
+  renderCharList();
+  scheduleRender();
+}
+
+function removeCharacter(id) {
+  if (characters.length <= 1) { showToast('최소 한 명은 필요해요'); return; }
+  characters = characters.filter(c => c.id !== id);
+  renderCharList();
+  scheduleRender();
+}
+
+function renderCharList() {
+  const list = document.getElementById('charList');
+  list.innerHTML = '';
+  characters.forEach((c, i) => {
+    const row = document.createElement('div');
+    row.className = 'char-row';
+    row.innerHTML = `
+      <span class="role-label">화자 ${i + 1}</span>
+      <input type="text" class="name-input" value="${escapeAttr(c.name)}" placeholder="이름" data-id="${c.id}" data-field="name">
+      <input type="text" class="tag-input" value="${escapeAttr(c.tag)}" data-id="${c.id}" data-field="tag">
+      <input type="color" value="${c.color}" data-id="${c.id}" data-field="color">
+      <button class="remove-btn" title="삭제" data-remove="${c.id}">×</button>
+    `;
+    list.appendChild(row);
+  });
+
+  // 이벤트 바인딩
+  list.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const id = e.target.dataset.id;
+      const field = e.target.dataset.field;
+      const ch = characters.find(c => c.id === id);
+      if (ch) { ch[field] = e.target.value; scheduleRender(); }
+    });
+  });
+  list.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', e => removeCharacter(e.target.dataset.remove));
+  });
+}
+
+function escapeAttr(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+function applyPreset(name) {
+  const colors = PRESETS[name]; if (!colors) return;
+  characters.forEach((c, i) => { c.color = colors[i % colors.length]; });
+  renderCharList();
+  scheduleRender();
+}
+
+function getConfig() {
+  const charMap = {};
+  characters.forEach(c => {
+    const tag = (c.tag || '').toUpperCase();
+    if (tag) charMap[tag] = { kind: 'speaker', data: { name: c.name || tag, tag, color: c.color } };
+  });
+  const nTag = (tagN.value || 'N').toUpperCase();
+  charMap[nTag] = { kind: 'narration' };
+
+  return {
+    charMap,
+    nTag,
+    opts: {
+      mergeSpeaker: optMergeSpeaker.checked,
+      showName: optShowName.checked,
+      showBar: optShowBar.checked,
+      novelMode: optNovelMode.checked
+    },
+    meta: {
+      title: logTitle.value.trim(),
+      chapter: logChapter.value.trim(),
+      date: logDate.value.trim(),
+      place: logPlace.value.trim()
+    },
+    font: fontBody.value,
+    fontSize: parseFloat(fontSize.value),
+    pageColor: colorPage.value,
+    narrationColor: colorNarration.value
+  };
+}
+
+function escapeHTML(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function processInline(text, actionCol) {
+  const safe = escapeHTML(text);
+  return safe.replace(
+    /\*([^*]+)\*/g,
+    `<em style="color:${actionCol};font-style:italic;font-weight:400;">$1</em>`
+  );
+}
+
+function isFullActionLine(line) {
+  const t = line.trim();
+  return /^\*[^*]+\*$/.test(t);
+}
+
+function hexToRgba(hex, a) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function buildParagraphs(lines) {
+  const paragraphs = [];
+  let cur = null;
+  function flush() { if (cur && cur.text.trim()) paragraphs.push(cur); cur = null; }
+  for (let raw of lines) {
+    const trimmed = raw.trim();
+    if (trimmed === '') continue;
+    if (trimmed === '//') { flush(); continue; }
+    if (isFullActionLine(trimmed)) {
+      flush();
+      paragraphs.push({ type: 'action', text: trimmed.replace(/^\*|\*$/g, '') });
+      continue;
+    }
+    if (!cur || cur.type !== 'speech') {
+      flush(); cur = { type: 'speech', text: trimmed };
+    } else { cur.text += ' ' + trimmed; }
+  }
+  flush();
+  return paragraphs;
+}
+
+function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
+  const paras = buildParagraphs(lines);
+  if (!paras.length) return '';
+
+  const actionColMuted = '#9a9489';
+
+  const body = paras.map(p => {
+    if (p.type === 'action') {
+      return `<div style="margin:10px 0;color:${actionColMuted};font-style:italic;font-size:${cfg.fontSize - 0.5}px;line-height:1.9;">${escapeHTML(p.text)}</div>`;
+    }
+    let dialogue = p.text;
+    if (cfg.opts.novelMode) {
+      dialogue = '\u201C' + dialogue + '\u201D';
+    }
+    return `<div style="margin:10px 0;line-height:1.95;color:#2a2724;">${processInline(dialogue, actionColMuted)}</div>`;
+  }).join('');
+
+  const showBar = cfg.opts.showBar;
+  const showName = cfg.opts.showName && showHeader;
+
+  let outerStyle = `margin:0 0 22px;font-family:${cfg.font};font-size:${cfg.fontSize}px;`;
+  if (showBar) {
+    outerStyle += `padding:2px 0 4px 18px;border-left:1.5px solid ${hexToRgba(speaker.color, 0.4)};`;
+  } else {
+    outerStyle += `padding:2px 0 4px 0;`;
+  }
+
+  let html = `<div style="${outerStyle}">`;
+  if (showName) {
+    html += `
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+  <span style="width:7px;height:7px;border-radius:50%;background:${speaker.color};display:inline-block;flex-shrink:0;"></span>
+  <span style="font-size:12px;font-weight:700;color:${speaker.color};letter-spacing:0.4px;">${escapeHTML(speaker.name)}</span>
+  <span style="flex:1;height:1px;background:linear-gradient(to right, ${hexToRgba(speaker.color, 0.25)}, transparent);"></span>
+</div>`;
+  }
+  html += body + `</div>`;
+  return html;
+}
+
+// 나레이션: 가로 폭을 대사/행동과 동일하게 (margin 좌우 0), 색은 사용자 지정
+function renderNarration(lines, cfg) {
+  const paras = buildParagraphs(lines);
+  if (!paras.length) return '';
+
+  const nColor = cfg.narrationColor;
+  const inner = paras.map(p => {
+    const text = p.type === 'action' ? escapeHTML(p.text) : processInline(p.text, nColor);
+    return `<div style="margin:10px 0;color:${nColor};font-style:italic;font-size:${cfg.fontSize - 0.5}px;line-height:1.95;">${text}</div>`;
+  }).join('');
+
+  // 컬러바를 쓰는 발화와 좌측 정렬을 맞추기 위해, 컬러바 옵션이 켜져 있으면 동일한 좌측 패딩을 줌
+  const leftPad = cfg.opts.showBar ? 'padding-left:18px;' : '';
+  return `<div style="margin:18px 0;${leftPad}font-family:${cfg.font};">${inner}</div>`;
+}
+
+function renderSeparator(big) {
+  if (big) {
+    // *** : 줄만 (interval 텍스트 제거)
+    return `<div style="margin:34px 0;height:1px;background:#c4bdaf;"></div>`;
+  }
+  // --- : 작은 점 구분
+  return `<div style="margin:24px 0;text-align:center;color:#c4bdaf;font-size:10px;letter-spacing:10px;">⋅ ⋅ ⋅</div>`;
+}
+
+function renderHeader(meta) {
+  const hasAny = meta.title || meta.chapter || meta.date || meta.place;
+  if (!hasAny) return '';
+  let html = `<div style="text-align:center;margin:0 0 36px;padding:0 0 24px;border-bottom:1px solid #d8d3c8;">`;
+  if (meta.chapter) {
+    html += `<div style="font-size:11px;letter-spacing:4px;color:#9a9489;text-transform:uppercase;margin-bottom:10px;font-weight:700;">${escapeHTML(meta.chapter)}</div>`;
+  }
+  if (meta.title) {
+    html += `<div style="font-size:22px;font-weight:700;color:#2a2724;margin-bottom:10px;letter-spacing:-0.4px;">${escapeHTML(meta.title)}</div>`;
+  }
+  if (meta.date || meta.place) {
+    html += `<div style="color:#7a756e;font-size:12.5px;font-style:italic;">`;
+    if (meta.date) html += escapeHTML(meta.date);
+    if (meta.date && meta.place) html += ` &middot; `;
+    if (meta.place) html += escapeHTML(meta.place);
+    html += `</div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function updateStats(raw, blockCount) {
+  const text = raw.replace(/\*[^*]*\*/g, '').replace(/^[A-Za-z가-힣]+:/gm, '');
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const lines = raw.split('\n').filter(l => l.trim()).length;
+  statWords.textContent = words;
+  statLines.textContent = lines;
+  statBlocks.textContent = blockCount;
+}
+
+// 미리보기용 HTML (배경색 포함)
+function buildOutputHTML(cfg, forExport) {
+  const tagMap = cfg.charMap;
+  const raw = document.getElementById('input').value;
+  const lines = raw.split('\n');
+
+  const tokens = [];
+  let currentBlock = null;
+  function flushBlock() {
+    if (currentBlock && currentBlock.lines.length) {
+      tokens.push({ type: 'block', tag: currentBlock.tag, lines: currentBlock.lines });
+    }
+    currentBlock = null;
+  }
+
+  for (let line of lines) {
+    const t = line.trim();
+    if (/^\*{3,}$/.test(t)) { flushBlock(); tokens.push({ type: 'sep_big' }); continue; }
+    if (/^-{3,}$/.test(t)) { flushBlock(); tokens.push({ type: 'sep_small' }); continue; }
+
+    const m = t.match(/^([A-Za-z0-9가-힣]+)\s*[:：]\s*(.*)$/);
+    if (m && tagMap[m[1].toUpperCase()]) {
+      const tag = m[1].toUpperCase();
+      const rest = m[2];
+      if (currentBlock && currentBlock.tag === tag) {
+        if (rest) currentBlock.lines.push(rest);
+      } else {
+        flushBlock();
+        currentBlock = { tag: tag, lines: rest ? [rest] : [] };
+      }
+      continue;
+    }
+    if (currentBlock) currentBlock.lines.push(line);
+    else currentBlock = { tag: cfg.nTag, lines: [line] };
+  }
+  flushBlock();
+
+  let inner = renderHeader(cfg.meta);
+
+  let lastSpeakerTag = null;
+  let blockCount = 0;
+
+  tokens.forEach(tok => {
+    if (tok.type === 'sep_big') { inner += renderSeparator(true); lastSpeakerTag = null; return; }
+    if (tok.type === 'sep_small') { inner += renderSeparator(false); lastSpeakerTag = null; return; }
+    const entry = tagMap[tok.tag];
+    if (!entry) return;
+    if (entry.kind === 'narration') {
+      inner += renderNarration(tok.lines, cfg);
+      lastSpeakerTag = null;
+      blockCount++;
+    } else {
+      const sp = entry.data;
+      const showHeader = !(cfg.opts.mergeSpeaker && lastSpeakerTag === tok.tag);
+      inner += renderSpeakerBlock(sp, tok.lines, showHeader, cfg);
+      lastSpeakerTag = tok.tag;
+      blockCount++;
+    }
+  });
+
+  const html = `<div style="max-width:680px;margin:0 auto;padding:40px 28px 44px;background:${cfg.pageColor};color:#2a2724;font-family:${cfg.font};line-height:1.75;border-radius:12px;">${inner}</div>`;
+  return { html, blockCount, raw };
+}
+
+function convert() {
+  const cfg = getConfig();
+  const { html, blockCount, raw } = buildOutputHTML(cfg, false);
+  document.getElementById('preview').innerHTML = html;
+  updateStats(raw, blockCount);
+  saveState();
+}
+
+function clearAll() {
+  if (!confirm('입력 내용을 모두 지울까요?')) return;
+  document.getElementById('input').value = '';
+  document.getElementById('preview').innerHTML = '';
+  updateStats('', 0);
+  saveState();
+}
+
+function resetAll() {
+  if (!confirm('모든 설정과 입력을 초기화할까요?')) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
+  location.reload();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+async function copyHTML() {
+  const html = document.getElementById('preview').innerHTML;
+  if (!html.trim()) { showToast('먼저 변환해주세요'); return; }
+  try {
+    await navigator.clipboard.writeText(html);
+    showToast('HTML이 복사되었습니다');
+  } catch(e) {
+    const ta = document.createElement('textarea');
+    ta.value = html; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('HTML이 복사되었습니다');
+  }
+}
+
+async function copyRendered() {
+  const el = document.getElementById('preview');
+  if (!el.innerHTML.trim()) { showToast('먼저 변환해주세요'); return; }
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const sel = window.getSelection();
+  sel.removeAllRanges(); sel.addRange(range);
+  try { document.execCommand('copy'); showToast('서식이 복사되었습니다'); }
+  catch(e) { showToast('실패 — HTML 복사를 사용하세요'); }
+  sel.removeAllRanges();
+}
+
+// 이미지 저장 (PNG)
+async function saveImage() {
+  const target = document.getElementById('preview').firstElementChild;
+  if (!target) { showToast('먼저 변환해주세요'); return; }
+  if (typeof html2canvas === 'undefined') { showToast('이미지 라이브러리 로딩 중...'); return; }
+
+  showToast('이미지를 만드는 중...');
+  try {
+    const cfg = getConfig();
+    const canvas = await html2canvas(target, {
+      backgroundColor: cfg.pageColor,
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+    const link = document.createElement('a');
+    const fname = (cfg.meta.title || 'log').replace(/[^\w가-힣\-]/g,'_');
+    link.download = fname + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('이미지가 저장되었습니다');
+  } catch(e) {
+    console.error(e);
+    showToast('이미지 저장 실패');
+  }
+}
+
+function downloadHTML() {
+  const cfg = getConfig();
+  const inner = document.getElementById('preview').innerHTML;
+  if (!inner.trim()) { showToast('먼저 변환해주세요'); return; }
+  const fontLink = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">`;
+  const full = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>${escapeHTML(cfg.meta.title || '로그')}</title>${fontLink}<style>body{margin:0;padding:30px 12px;background:${cfg.pageColor};}</style></head><body>${inner}</body></html>`;
+  const blob = new Blob([full], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (cfg.meta.title || 'log').replace(/[^\w가-힣\-]/g,'_') + '.html';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('HTML 다운로드 시작');
+}
+
+function toggleDark() {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  document.getElementById('darkBtn').textContent = isDark ? '라이트 모드' : '다크 모드';
+  try { localStorage.setItem('rp_dark', isDark ? '1' : '0'); } catch(e){}
+}
+
+function saveState() {
+  if (!optAutoSave.checked) return;
+  try {
+    const state = {
+      input: document.getElementById('input').value,
+      meta: { title: logTitle.value, chapter: logChapter.value, date: logDate.value, place: logPlace.value },
+      characters: characters.map(c => ({ name: c.name, tag: c.tag, color: c.color })),
+      tagN: tagN.value,
+      opts: {
+        mergeSpeaker: optMergeSpeaker.checked, autoRender: optAutoRender.checked,
+        showName: optShowName.checked, showBar: optShowBar.checked, novelMode: optNovelMode.checked
+      },
+      design: {
+        font: fontBody.value, fontSize: fontSize.value,
+        pageColor: colorPage.value, narrationColor: colorNarration.value
+      }
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    flashSaveStatus();
+  } catch(e){}
+}
+
+function loadState() {
+  let loaded = false;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      loaded = true;
+      if (s.input !== undefined) document.getElementById('input').value = s.input;
+      if (s.meta) {
+        if (s.meta.title !== undefined) logTitle.value = s.meta.title;
+        if (s.meta.chapter !== undefined) logChapter.value = s.meta.chapter;
+        if (s.meta.date !== undefined) logDate.value = s.meta.date;
+        if (s.meta.place !== undefined) logPlace.value = s.meta.place;
+      }
+      if (Array.isArray(s.characters) && s.characters.length) {
+        characters = s.characters.map(c => ({ id: 'char_' + (charCounter++), name: c.name, tag: c.tag, color: c.color }));
+      }
+      if (s.tagN) tagN.value = s.tagN;
+      if (s.opts) {
+        if (s.opts.mergeSpeaker !== undefined) optMergeSpeaker.checked = s.opts.mergeSpeaker;
+        if (s.opts.autoRender !== undefined) optAutoRender.checked = s.opts.autoRender;
+        if (s.opts.showName !== undefined) optShowName.checked = s.opts.showName;
+        if (s.opts.showBar !== undefined) optShowBar.checked = s.opts.showBar;
+        if (s.opts.novelMode !== undefined) optNovelMode.checked = s.opts.novelMode;
+      }
+      if (s.design) {
+        if (s.design.font) fontBody.value = s.design.font;
+        if (s.design.fontSize) fontSize.value = s.design.fontSize;
+        if (s.design.pageColor) colorPage.value = s.design.pageColor;
+        if (s.design.narrationColor) colorNarration.value = s.design.narrationColor;
+      }
+    }
+  } catch(e){}
+
+  // 저장된 화자가 없으면 기본 A, B 두 명
+  if (!characters.length) {
+    characters = [
+      { id: 'char_' + (charCounter++), name: 'A', tag: 'A', color: PALETTE[0] },
+      { id: 'char_' + (charCounter++), name: 'B', tag: 'B', color: PALETTE[1] },
+    ];
+  }
+}
+
+let saveStatusTimer = null;
+function flashSaveStatus() {
+  const el = document.getElementById('saveStatus');
+  el.textContent = '저장됨 ✓'; el.style.opacity = '1';
+  clearTimeout(saveStatusTimer);
+  saveStatusTimer = setTimeout(() => { el.style.opacity = '0.7'; el.textContent = '자동 저장됨'; }, 1200);
+}
+
+// 색상 라벨 업데이트
+function updateColorLabels() {
+  colorPageLabel.textContent = colorPage.value;
+  colorNarrationLabel.textContent = colorNarration.value;
+}
+
+try {
+  if (localStorage.getItem('rp_dark') === '1') {
+    document.body.classList.add('dark');
+    document.getElementById('darkBtn').textContent = '라이트 모드';
+  }
+} catch(e){}
+
+loadState();
+renderCharList();
+updateColorLabels();
+
+let renderTimer = null;
+function scheduleRender() {
+  updateColorLabels();
+  if (!optAutoRender.checked) { saveState(); return; }
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(convert, 220);
+}
+
+document.getElementById('input').addEventListener('input', scheduleRender);
+['tagN','fontBody','fontSize','colorPage','colorNarration',
+ 'logTitle','logChapter','logDate','logPlace',
+ 'optMergeSpeaker','optShowName','optShowBar','optNovelMode'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', scheduleRender);
+  el.addEventListener('change', scheduleRender);
+});
+
+optAutoSave.addEventListener('change', () => {
+  if (!optAutoSave.checked) { try { localStorage.removeItem(STORAGE_KEY); } catch(e){} }
+  else saveState();
+});
+optAutoRender.addEventListener('change', saveState);
+
+convert();
+</script>
+</body>
+</html>
