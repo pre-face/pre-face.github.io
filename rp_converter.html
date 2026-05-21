@@ -331,7 +331,7 @@
     </div>
   </div>
 
-  <!-- 메타 -->
+    <!-- 메타 -->
   <div class="panel">
     <h2>장면 정보</h2>
     <div class="meta-grid">
@@ -843,12 +843,22 @@ async function saveImage() {
       useCORS: true,
       logging: false
     });
-    const link = document.createElement('a');
     const fname = (cfg.meta.title || 'log').replace(/[^\w가-힣\-]/g,'_');
-    link.download = fname + '.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-    showToast('이미지가 저장되었습니다');
+
+    // Blob으로 변환해 다운로드 (연속 저장 안정적)
+    canvas.toBlob(function(blob) {
+      if (!blob) { showToast('이미지 저장 실패'); return; }
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fname + '.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      // 약간의 지연 후 URL 해제 (다운로드가 시작될 시간 확보)
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast('이미지가 저장되었습니다');
+    }, 'image/png');
   } catch(e) {
     console.error(e);
     showToast('이미지 저장 실패');
