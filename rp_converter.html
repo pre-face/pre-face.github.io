@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>로그 변환기</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
@@ -266,6 +267,101 @@
     transition: all 0.15s;
   }
   .preset-btn:hover { border-color: var(--text-soft); color: var(--text); }
+
+  /* ===== 내보내기 버튼 그룹 ===== */
+  .export-actions { margin-top: 14px; }
+  .primary-export {
+    width: 100%;
+    padding: 13px 18px;
+    border: 1px solid var(--text);
+    border-radius: 10px;
+    background: var(--text);
+    color: var(--panel);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    letter-spacing: 0.2px;
+    transition: all 0.15s;
+  }
+  .primary-export:hover { opacity: 0.88; }
+  .sub-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .sub-actions .sub {
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    padding: 10px 8px;
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    background: var(--panel);
+    color: var(--text-soft);
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .sub-actions .sub:hover { background: var(--hover); color: var(--text); border-color: var(--text-soft); }
+  .sub-actions .sub .ico { font-size: 13px; opacity: 0.7; }
+
+  /* ===== 모바일 대응 ===== */
+  @media (max-width: 600px) {
+    body { padding: 14px 10px; }
+    h1 { font-size: 19px; }
+    .desc { font-size: 12px; }
+
+    header.top { margin-bottom: 16px; }
+
+    .panel { padding: 15px; border-radius: 12px; }
+    .panel + .panel { margin-top: 10px; }
+    .grid { gap: 10px; }
+
+    /* 입력창·미리보기 높이를 모바일에 맞게 줄임 */
+    textarea { height: 300px; font-size: 16px; padding: 13px 14px; }
+    .preview-area { height: 360px; }
+    .preview { padding: 16px 12px; }
+
+    /* 버튼을 더 크고 누르기 쉽게, 가로로 꽉 차게 */
+    .buttons { gap: 6px; }
+    button.act {
+      flex: 1 1 auto;
+      min-width: calc(50% - 4px);
+      padding: 12px 10px;
+      font-size: 13.5px;
+      text-align: center;
+    }
+
+    /* 내보내기 버튼: 모바일에서 글자 약간 줄이고 아이콘 숨김 */
+    .sub-actions .sub { font-size: 12px; padding: 11px 6px; gap: 3px; }
+    .sub-actions .sub .ico { display: none; }
+    .primary-export { padding: 14px 18px; }
+
+    /* 캐릭터 행: 좁으면 자연스럽게 줄바꿈 */
+    .char-row { flex-wrap: wrap; gap: 6px; }
+    .char-row .role-label { width: 100%; margin-bottom: 2px; }
+    .char-row .name-input { flex: 1 1 120px; font-size: 16px; }
+    .char-row .tag-input { font-size: 16px; }
+
+    /* 메타·디자인 입력칸 글자 크게 (모바일 자동 확대 방지) */
+    .field input[type="text"], .field input[type="date"], select {
+      font-size: 16px; padding: 11px 12px;
+    }
+
+    .stat-bar { gap: 12px; padding: 8px 12px; }
+    .options-row { gap: 10px 14px; }
+    .color-field input[type="color"] { width: 44px; height: 44px; }
+    .add-char-btn { padding: 11px 14px; font-size: 13.5px; }
+    .mode-toggle { padding: 8px 14px; }
+  }
+
+  /* 아주 좁은 화면 (작은 폰) */
+  @media (max-width: 380px) {
+    button.act { min-width: 100%; }
+  }
 </style>
 </head>
 <body>
@@ -328,10 +424,11 @@
       <label><input type="checkbox" id="optShowName" checked> 화자 이름 표시</label>
       <label><input type="checkbox" id="optShowBar" checked> 좌측 컬러바 표시</label>
       <label><input type="checkbox" id="optNovelMode"> 소설식 (대사에 따옴표 자동 추가)</label>
+      <label><input type="checkbox" id="optParenAction"> (괄호)도 행동 지문으로 인식</label>
     </div>
   </div>
 
-    <!-- 메타 -->
+  <!-- 메타 -->
   <div class="panel">
     <h2>장면 정보</h2>
     <div class="meta-grid">
@@ -407,6 +504,7 @@
   → 발화 안의 빈 줄/엔터는 무시되고 이어집니다
 
 · *별표 사이*는 행동 지문 (이탤릭, 색 분리)
+  (괄호)도 행동 지문으로 쓰려면 디자인 옵션에서 켜기
 
 · N: 으로 시작하면 나레이션 (이름 없이)
 
@@ -424,19 +522,26 @@
       <div class="preview-area">
         <div id="preview" class="preview"></div>
       </div>
-      <div class="buttons">
-        <button class="act" onclick="copyHTML()">HTML 복사</button>
-        <button class="act secondary" onclick="copyRendered()">서식 복사</button>
-        <button class="act secondary" onclick="saveImage()">이미지 저장</button>
-        <button class="act secondary" onclick="downloadHTML()">HTML 다운로드</button>
+      <div class="export-actions">
+        <button class="act primary-export" onclick="copyHTML()">HTML 복사</button>
+        <div class="sub-actions">
+          <button class="act sub" onclick="copyImage()">
+            <span class="ico">⧉</span> 이미지 복사
+          </button>
+          <button class="act sub" onclick="saveImage()">
+            <span class="ico">↓</span> 이미지 저장
+          </button>
+          <button class="act sub" onclick="downloadHTML()">
+            <span class="ico">⌹</span> HTML 파일
+          </button>
+        </div>
       </div>
       <details>
-        <summary>티스토리 백업 방법</summary>
+                <summary>티스토리 백업 방법</summary>
         <pre>1. [HTML 복사] 클릭
 2. 티스토리 글쓰기 → 우측 상단 모드를 'HTML'로 전환
 3. 붙여넣기 → 발행
 ※ [이미지 저장]은 미리보기를 PNG로 내려받습니다</pre>
-      </details>
     </div>
   </div>
 </div>
@@ -543,7 +648,8 @@ function getConfig() {
       mergeSpeaker: optMergeSpeaker.checked,
       showName: optShowName.checked,
       showBar: optShowBar.checked,
-      novelMode: optNovelMode.checked
+      novelMode: optNovelMode.checked,
+      parenAction: optParenAction.checked
     },
     meta: {
       title: logTitle.value.trim(),
@@ -562,17 +668,37 @@ function escapeHTML(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function processInline(text, actionCol) {
-  const safe = escapeHTML(text);
-  return safe.replace(
+function processInline(text, actionCol, parenAction) {
+  let safe = escapeHTML(text);
+  // *별표* 행동 지문
+  safe = safe.replace(
     /\*([^*]+)\*/g,
     `<em style="color:${actionCol};font-style:italic;font-weight:400;">$1</em>`
   );
+  // (괄호) 행동 지문 — 옵션이 켜진 경우에만
+  if (parenAction) {
+    safe = safe.replace(
+      /\(([^()]+)\)/g,
+      `<em style="color:${actionCol};font-style:italic;font-weight:400;">($1)</em>`
+    );
+  }
+  return safe;
 }
 
-function isFullActionLine(line) {
+// 한 줄 전체가 행동 지문인지 (별표 또는 괄호로 감싸짐)
+function isFullActionLine(line, parenAction) {
   const t = line.trim();
-  return /^\*[^*]+\*$/.test(t);
+  if (/^\*[^*]+\*$/.test(t)) return true;
+  if (parenAction && /^\([^()]+\)$/.test(t)) return true;
+  return false;
+}
+
+// 한 줄 전체 행동 지문에서 감싼 기호 제거
+function stripActionWrapper(t) {
+  t = t.trim();
+  if (/^\*.+\*$/.test(t)) return t.replace(/^\*|\*$/g, '');
+  if (/^\(.+\)$/.test(t)) return t.replace(/^\(|\)$/g, '');
+  return t;
 }
 
 function hexToRgba(hex, a) {
@@ -582,7 +708,7 @@ function hexToRgba(hex, a) {
   return `rgba(${r},${g},${b},${a})`;
 }
 
-function buildParagraphs(lines) {
+function buildParagraphs(lines, parenAction) {
   const paragraphs = [];
   let cur = null;
   function flush() { if (cur && cur.text.trim()) paragraphs.push(cur); cur = null; }
@@ -590,9 +716,9 @@ function buildParagraphs(lines) {
     const trimmed = raw.trim();
     if (trimmed === '') continue;
     if (trimmed === '//') { flush(); continue; }
-    if (isFullActionLine(trimmed)) {
+    if (isFullActionLine(trimmed, parenAction)) {
       flush();
-      paragraphs.push({ type: 'action', text: trimmed.replace(/^\*|\*$/g, '') });
+      paragraphs.push({ type: 'action', text: stripActionWrapper(trimmed) });
       continue;
     }
     if (!cur || cur.type !== 'speech') {
@@ -604,7 +730,8 @@ function buildParagraphs(lines) {
 }
 
 function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
-  const paras = buildParagraphs(lines);
+  const parenAction = cfg.opts.parenAction;
+  const paras = buildParagraphs(lines, parenAction);
   if (!paras.length) return '';
 
   const actionColMuted = '#9a9489';
@@ -617,7 +744,7 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
     if (cfg.opts.novelMode) {
       dialogue = '\u201C' + dialogue + '\u201D';
     }
-    return `<div style="margin:10px 0;line-height:1.95;color:#2a2724;">${processInline(dialogue, actionColMuted)}</div>`;
+    return `<div style="margin:10px 0;line-height:1.95;color:#2a2724;">${processInline(dialogue, actionColMuted, parenAction)}</div>`;
   }).join('');
 
   const showBar = cfg.opts.showBar;
@@ -645,12 +772,13 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
 
 // 나레이션: 가로 폭을 대사/행동과 동일하게 (margin 좌우 0), 색은 사용자 지정
 function renderNarration(lines, cfg) {
-  const paras = buildParagraphs(lines);
+  const parenAction = cfg.opts.parenAction;
+  const paras = buildParagraphs(lines, parenAction);
   if (!paras.length) return '';
 
   const nColor = cfg.narrationColor;
   const inner = paras.map(p => {
-    const text = p.type === 'action' ? escapeHTML(p.text) : processInline(p.text, nColor);
+    const text = p.type === 'action' ? escapeHTML(p.text) : processInline(p.text, nColor, parenAction);
     return `<div style="margin:10px 0;color:${nColor};font-style:italic;font-size:${cfg.fontSize - 0.5}px;line-height:1.95;">${text}</div>`;
   }).join('');
 
@@ -865,6 +993,44 @@ async function saveImage() {
   }
 }
 
+// 이미지를 클립보드에 복사
+async function copyImage() {
+  if (!hasContent()) { showToast('먼저 로그를 입력해주세요'); return; }
+  const target = document.getElementById('preview').firstElementChild;
+  if (!target) { showToast('먼저 로그를 입력해주세요'); return; }
+  if (typeof html2canvas === 'undefined') { showToast('이미지 라이브러리 로딩 중...'); return; }
+  if (!navigator.clipboard || !window.ClipboardItem) {
+    showToast('이 브라우저는 이미지 복사를 지원하지 않아요');
+    return;
+  }
+
+  showToast('이미지를 만드는 중...');
+  try {
+    const cfg = getConfig();
+    const canvas = await html2canvas(target, {
+      backgroundColor: cfg.pageColor,
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+    canvas.toBlob(async function(blob) {
+      if (!blob) { showToast('이미지 복사 실패'); return; }
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob })
+        ]);
+        showToast('이미지가 클립보드에 복사되었습니다');
+      } catch(err) {
+        console.error(err);
+        showToast('이미지 복사 실패 — 저장을 이용해주세요');
+      }
+    }, 'image/png');
+  } catch(e) {
+    console.error(e);
+    showToast('이미지 복사 실패');
+  }
+}
+
 function downloadHTML() {
   if (!hasContent()) { showToast('먼저 로그를 입력해주세요'); return; }
   const cfg = getConfig();
@@ -898,7 +1064,8 @@ function saveState() {
       tagN: tagN.value,
       opts: {
         mergeSpeaker: optMergeSpeaker.checked, autoRender: optAutoRender.checked,
-        showName: optShowName.checked, showBar: optShowBar.checked, novelMode: optNovelMode.checked
+        showName: optShowName.checked, showBar: optShowBar.checked, novelMode: optNovelMode.checked,
+        parenAction: optParenAction.checked
       },
       design: {
         font: fontBody.value, fontSize: fontSize.value,
@@ -934,6 +1101,7 @@ function loadState() {
         if (s.opts.showName !== undefined) optShowName.checked = s.opts.showName;
         if (s.opts.showBar !== undefined) optShowBar.checked = s.opts.showBar;
         if (s.opts.novelMode !== undefined) optNovelMode.checked = s.opts.novelMode;
+        if (s.opts.parenAction !== undefined) optParenAction.checked = s.opts.parenAction;
       }
       if (s.design) {
         if (s.design.font) fontBody.value = s.design.font;
@@ -989,7 +1157,7 @@ function scheduleRender() {
 document.getElementById('input').addEventListener('input', scheduleRender);
 ['tagN','fontBody','fontSize','colorPage','colorNarration',
  'logTitle','logChapter','logDate','logPlace',
- 'optMergeSpeaker','optShowName','optShowBar','optNovelMode'].forEach(id => {
+ 'optMergeSpeaker','optShowName','optShowBar','optNovelMode','optParenAction'].forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener('input', scheduleRender);
   el.addEventListener('change', scheduleRender);
