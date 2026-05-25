@@ -105,6 +105,28 @@
   }
   .color-field .color-label { font-size: 12px; color: var(--text-soft); font-weight: 500; }
 
+  /* 색상 4칸 한 줄 배치 */
+  .color-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  }
+  .color-cell {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 12px 8px;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: var(--bg);
+  }
+  .color-cell label {
+    font-size: 11.5px; color: var(--text-soft); font-weight: 600; letter-spacing: 0.2px;
+  }
+  .color-cell input[type="color"] {
+    width: 100%; height: 38px; border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; padding: 2px; background: var(--panel);
+  }
+  .color-cell .color-label {
+    font-size: 10.5px; color: var(--text-faint); font-weight: 500;
+    font-family: ui-monospace, monospace;
+  }
+
   .char-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
   .char-row input[type="text"] {
     padding: 9px 12px;
@@ -231,7 +253,7 @@
   }
 
   .options-row {
-    display: flex; gap: 14px; flex-wrap: wrap; margin-top: 12px;
+    display: flex; gap: 14px; flex-wrap: wrap; margin-top: 12px; align-items: center;
     padding: 12px 14px; background: var(--bg); border-radius: 8px;
     border: 1px solid var(--border);
   }
@@ -240,16 +262,6 @@
     cursor: pointer; font-weight: 500;
   }
   .options-row input[type="checkbox"] { accent-color: var(--text); }
-
-  .stat-bar {
-    margin-top: 10px; padding: 8px 14px;
-    background: var(--bg); border-radius: 8px;
-    border: 1px solid var(--border);
-    font-size: 11.5px; color: var(--text-faint);
-    display: flex; gap: 18px; flex-wrap: wrap;
-    font-weight: 500;
-  }
-  .stat-bar strong { color: var(--text); font-weight: 700; }
 
   .preset-row {
     display: flex; gap: 6px; flex-wrap: wrap;
@@ -267,6 +279,46 @@
     transition: all 0.15s;
   }
   .preset-btn:hover { border-color: var(--text-soft); color: var(--text); }
+
+  /* 옵션 그룹 라벨/구분선 */
+  .opt-group-label {
+    font-size: 10.5px; font-weight: 700; color: var(--text-faint);
+    letter-spacing: 1px; text-transform: uppercase;
+    align-self: center; margin-right: 2px;
+  }
+  .opt-divider {
+    width: 1px; height: 18px; background: var(--border);
+    margin: 0 4px;
+  }
+
+  /* 고급 설정 접기 */
+  .adv-settings { margin-top: 10px; }
+  .adv-settings > summary {
+    font-size: 12px; color: var(--text-faint); font-weight: 600;
+    cursor: pointer; padding: 4px 0; user-select: none;
+    list-style: none;
+  }
+  .adv-settings > summary::before { content: '▸ '; }
+  .adv-settings[open] > summary::before { content: '▾ '; }
+  .adv-settings > summary:hover { color: var(--text-soft); }
+
+  /* 화자 빠른 입력 칩 */
+  .quick-insert {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;
+  }
+  .quick-insert .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--panel); color: var(--text-soft);
+    cursor: pointer; font-size: 12.5px; font-weight: 600;
+    font-family: inherit; transition: all 0.15s;
+  }
+  .quick-insert .chip:hover { background: var(--hover); color: var(--text); }
+  .quick-insert .chip .chip-dot {
+    width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0;
+  }
+  .quick-insert .chip.util { color: var(--text-faint); font-weight: 500; }
 
   /* ===== 내보내기 버튼 그룹 ===== */
   .export-actions { margin-top: 14px; }
@@ -323,6 +375,14 @@
     /* 입력창·미리보기 높이를 모바일에 맞게 줄임 */
     textarea { height: 300px; font-size: 16px; padding: 13px 14px; }
     .preview-area { height: 360px; }
+
+    /* 색상 4칸 → 모바일 2칸 */
+    .color-grid { grid-template-columns: 1fr 1fr; }
+
+    /* 빠른 입력 칩: 모바일에서 살짝 키워 누르기 쉽게 */
+    .quick-insert .chip { padding: 8px 13px; font-size: 13px; }
+    .opt-divider { display: none; }
+    .opt-group-label { width: 100%; margin-bottom: 2px; }
     .preview { padding: 16px 12px; }
 
     /* 버튼을 더 크고 누르기 쉽게, 가로로 꽉 차게 */
@@ -369,6 +429,7 @@
   <header class="top">
     <div>
       <h1>로그 변환기</h1>
+      <p class="desc">롤플레잉 로그를 단정하게 정돈해 백업하세요.</p>
     </div>
     <div class="top-actions">
       <span class="save-status" id="saveStatus">자동 저장됨</span>
@@ -402,28 +463,38 @@
       </div>
     </div>
 
-    <div class="meta-grid" style="margin-top: 12px;">
-      <div class="field">
-        <label>페이지 배경 색</label>
-        <div class="color-field">
-          <input type="color" id="colorPage" value="#fdfcf8">
-          <span class="color-label" id="colorPageLabel">#fdfcf8</span>
-        </div>
+    <div class="color-grid" style="margin-top: 12px;">
+      <div class="color-cell">
+        <label>페이지</label>
+        <input type="color" id="colorPage" value="#fdfcf8">
+        <span class="color-label" id="colorPageLabel">#fdfcf8</span>
       </div>
-      <div class="field">
-        <label>나레이션 글자 색</label>
-        <div class="color-field">
-          <input type="color" id="colorNarration" value="#6e6960">
-          <span class="color-label" id="colorNarrationLabel">#6e6960</span>
-        </div>
+      <div class="color-cell">
+        <label>본문</label>
+        <input type="color" id="colorText" value="#2a2724">
+        <span class="color-label" id="colorTextLabel">#2a2724</span>
+      </div>
+      <div class="color-cell">
+        <label>행동지문</label>
+        <input type="color" id="colorAction" value="#9a9489">
+        <span class="color-label" id="colorActionLabel">#9a9489</span>
+      </div>
+      <div class="color-cell">
+        <label>나레이션</label>
+        <input type="color" id="colorNarration" value="#6e6960">
+        <span class="color-label" id="colorNarrationLabel">#6e6960</span>
       </div>
     </div>
 
     <div class="options-row" style="margin-top: 14px;">
-      <label><input type="checkbox" id="optShowName" checked> 화자 이름 표시</label>
-      <label><input type="checkbox" id="optShowBar" checked> 좌측 컬러바 표시</label>
-      <label><input type="checkbox" id="optNovelMode"> 소설식 (대사에 따옴표 자동 추가)</label>
-      <label><input type="checkbox" id="optParenAction"> (괄호)도 행동 지문으로 인식</label>
+      <span class="opt-group-label">표시</span>
+      <label><input type="checkbox" id="optShowName" checked> 화자 이름</label>
+      <label><input type="checkbox" id="optShowDot" checked> 이름 앞 점</label>
+      <label><input type="checkbox" id="optShowBar" checked> 좌측 컬러바</label>
+      <span class="opt-divider"></span>
+      <span class="opt-group-label">변환</span>
+      <label><input type="checkbox" id="optNovelMode"> 소설식 따옴표</label>
+      <label><input type="checkbox" id="optParenAction"> (괄호) 행동 지문</label>
     </div>
   </div>
 
@@ -474,28 +545,28 @@
       <button class="preset-btn" onclick="applyPreset('vivid')">선명</button>
     </div>
 
-    <div class="options-row">
-      <label><input type="checkbox" id="optMergeSpeaker" checked> 같은 화자 연속 발화 시 이름 생략</label>
-      <label><input type="checkbox" id="optAutoRender" checked> 자동 변환</label>
-      <label><input type="checkbox" id="optAutoSave" checked> 자동 저장</label>
-    </div>
+    <details class="adv-settings">
+      <summary>고급 설정</summary>
+      <div class="options-row" style="margin-top: 8px;">
+        <label><input type="checkbox" id="optMergeSpeaker" checked> 같은 화자 연속 발화 시 이름 생략</label>
+        <label><input type="checkbox" id="optAutoRender" checked> 자동 변환 (입력하면 바로 미리보기)</label>
+        <label><input type="checkbox" id="optAutoSave" checked> 자동 저장 (브라우저에 보관)</label>
+      </div>
+    </details>
   </div>
 
   <div class="grid" style="margin-top: 14px;">
     <!-- 입력 -->
     <div class="panel">
       <h2>원본 로그</h2>
-      <textarea id="input" placeholder="A: 대사&#10;*행동 지문*&#10;다음 대사&#10;&#10;B: 대사&#10;&#10;N: 나레이션 문장&#10;&#10;--- (작은 구분선)&#10;*** (큰 구분선)"></textarea>
+      <div class="quick-insert" id="quickInsert"></div>
+      <textarea id="input" placeholder="A: 대사&#10;*행동 지문*&#10;다음 대사&#10;&#10;B: 대사&#10;&#10;N: 나레이션 문장&#10;&#10;*** (구분선)&#10;--- (여백)"></textarea>
       <div class="buttons">
         <button class="act" onclick="convert()">변환</button>
         <button class="act secondary" onclick="clearAll()">비우기</button>
         <button class="act danger" onclick="resetAll()">전체 초기화</button>
       </div>
-      <div class="stat-bar">
-        <span>단어 <strong id="statWords">0</strong></span>
-        <span>줄 <strong id="statLines">0</strong></span>
-        <span>발화 <strong id="statBlocks">0</strong></span>
-      </div>
+      <span id="statBlocks" style="display:none">0</span>
       <details>
         <summary>입력 규칙</summary>
         <pre>· 발화 블록은 [태그]: 로 시작 (A:, B:, N: 등)
@@ -509,9 +580,9 @@
 
 · // 만 있는 줄 → 한 칸 띄움 (단락 분리)
 
-· 장면 구분선:
-  --- → 작은 구분선
-  *** → 큰 구분선</pre>
+· 장면 나누기:
+  *** → 구분선 (가로줄)
+  --- → 여백 (빈 공간)</pre>
       </details>
     </div>
 
@@ -536,11 +607,12 @@
         </div>
       </div>
       <details>
-                <summary>티스토리 백업 방법</summary>
+        <summary>티스토리 백업 방법</summary>
         <pre>1. [HTML 복사] 클릭
 2. 티스토리 글쓰기 → 우측 상단 모드를 'HTML'로 전환
 3. 붙여넣기 → 발행
 ※ [이미지 저장]은 미리보기를 PNG로 내려받습니다</pre>
+      </details>
     </div>
   </div>
 </div>
@@ -612,11 +684,84 @@ function renderCharList() {
       const id = e.target.dataset.id;
       const field = e.target.dataset.field;
       const ch = characters.find(c => c.id === id);
-      if (ch) { ch[field] = e.target.value; scheduleRender(); }
+      if (ch) { ch[field] = e.target.value; renderQuickInsert(); scheduleRender(); }
     });
   });
   list.querySelectorAll('[data-remove]').forEach(btn => {
     btn.addEventListener('click', e => removeCharacter(e.target.dataset.remove));
+  });
+
+  renderQuickInsert();
+}
+
+// 입력창 커서 위치에 텍스트 삽입
+function insertAtCursor(before, after) {
+  after = after || '';
+  const ta = document.getElementById('input');
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const val = ta.value;
+
+  // 줄 시작 삽입이 자연스럽도록: 화자 태그는 줄 맨 앞에 와야 하므로,
+  // 현재 위치가 줄 중간이면 앞에 줄바꿈을 넣어준다.
+  let prefix = '';
+  if (before.endsWith(': ') && start > 0 && val[start - 1] !== '\n') {
+    prefix = '\n';
+  }
+
+  const selected = val.slice(start, end);
+  const insertText = prefix + before + selected + after;
+  ta.value = val.slice(0, start) + insertText + val.slice(end);
+
+  // 커서 위치 조정: 선택 텍스트를 감싼 경우엔 안쪽, 아니면 끝
+  const caret = start + prefix.length + before.length + selected.length;
+  ta.focus();
+  ta.setSelectionRange(caret, caret);
+
+  scheduleRender();
+}
+
+// 빠른 입력 칩 렌더링
+function renderQuickInsert() {
+  const box = document.getElementById('quickInsert');
+  if (!box) return;
+  box.innerHTML = '';
+
+  // 화자 칩
+  characters.forEach(c => {
+    const tag = (c.tag || '').trim();
+    if (!tag) return;
+    const chip = document.createElement('button');
+    chip.className = 'chip';
+    chip.innerHTML = `<span class="chip-dot" style="background:${c.color}"></span>${escapeAttr(c.name || tag)}`;
+    chip.title = `"${tag}: " 삽입`;
+    chip.addEventListener('click', () => insertAtCursor(tag + ': '));
+    box.appendChild(chip);
+  });
+
+  // 나레이션 칩
+  const nTag = (document.getElementById('tagN').value || 'N').trim();
+  if (nTag) {
+    const nChip = document.createElement('button');
+    nChip.className = 'chip util';
+    nChip.textContent = '나레이션';
+    nChip.title = `"${nTag}: " 삽입`;
+    nChip.addEventListener('click', () => insertAtCursor(nTag + ': '));
+    box.appendChild(nChip);
+  }
+
+  // 보조 칩들
+  const utils = [
+    { label: '행동', before: '*', after: '*' },
+    { label: '구분선', before: '\n***\n' },
+    { label: '여백', before: '\n---\n' },
+  ];
+  utils.forEach(u => {
+    const chip = document.createElement('button');
+    chip.className = 'chip util';
+    chip.textContent = u.label;
+    chip.addEventListener('click', () => insertAtCursor(u.before, u.after));
+    box.appendChild(chip);
   });
 }
 
@@ -646,6 +791,7 @@ function getConfig() {
     opts: {
       mergeSpeaker: optMergeSpeaker.checked,
       showName: optShowName.checked,
+      showDot: optShowDot.checked,
       showBar: optShowBar.checked,
       novelMode: optNovelMode.checked,
       parenAction: optParenAction.checked
@@ -659,6 +805,8 @@ function getConfig() {
     font: fontBody.value,
     fontSize: parseFloat(fontSize.value),
     pageColor: colorPage.value,
+    textColor: colorText.value,
+    actionColor: colorAction.value,
     narrationColor: colorNarration.value
   };
 }
@@ -733,17 +881,18 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
   const paras = buildParagraphs(lines, parenAction);
   if (!paras.length) return '';
 
-  const actionColMuted = '#9a9489';
+  const actionCol = cfg.actionColor;
+  const textCol = cfg.textColor;
 
   const body = paras.map(p => {
     if (p.type === 'action') {
-      return `<div style="margin:10px 0;color:${actionColMuted};font-style:italic;font-size:${cfg.fontSize - 0.5}px;line-height:1.9;">${escapeHTML(p.text)}</div>`;
+      return `<div style="margin:10px 0;color:${actionCol};font-style:italic;font-size:${cfg.fontSize - 0.5}px;line-height:1.9;">${escapeHTML(p.text)}</div>`;
     }
     let dialogue = p.text;
     if (cfg.opts.novelMode) {
       dialogue = '\u201C' + dialogue + '\u201D';
     }
-    return `<div style="margin:10px 0;line-height:1.95;color:#2a2724;">${processInline(dialogue, actionColMuted, parenAction)}</div>`;
+    return `<div style="margin:10px 0;line-height:1.95;color:${textCol};">${processInline(dialogue, actionCol, parenAction)}</div>`;
   }).join('');
 
   const showBar = cfg.opts.showBar;
@@ -758,9 +907,12 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
 
   let html = `<div style="${outerStyle}">`;
   if (showName) {
+    const dot = cfg.opts.showDot
+      ? `<span style="width:7px;height:7px;border-radius:50%;background:${speaker.color};display:inline-block;flex-shrink:0;"></span>`
+      : '';
     html += `
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-  <span style="width:7px;height:7px;border-radius:50%;background:${speaker.color};display:inline-block;flex-shrink:0;"></span>
+  ${dot}
   <span style="font-size:12px;font-weight:700;color:${speaker.color};letter-spacing:0.4px;">${escapeHTML(speaker.name)}</span>
   <span style="flex:1;height:1px;background:linear-gradient(to right, ${hexToRgba(speaker.color, 0.25)}, transparent);"></span>
 </div>`;
@@ -786,27 +938,30 @@ function renderNarration(lines, cfg) {
   return `<div style="margin:18px 0;${leftPad}font-family:${cfg.font};">${inner}</div>`;
 }
 
-function renderSeparator(big) {
+function renderSeparator(big, cfg) {
+  const sepCol = hexToRgba(cfg.textColor, 0.3);
   if (big) {
-    // *** : 줄만 (interval 텍스트 제거)
-    return `<div style="margin:34px 0;height:1px;background:#c4bdaf;"></div>`;
+    // *** : 가로줄 구분선
+    return `<div style="margin:34px 0;height:1px;background:${sepCol};"></div>`;
   }
-  // --- : 작은 점 구분
-  return `<div style="margin:24px 0;text-align:center;color:#c4bdaf;font-size:10px;letter-spacing:10px;">⋅ ⋅ ⋅</div>`;
+  // --- : 빈 여백 (한 박자 쉼) — 점 없이 위아래 공간만
+  return `<div style="height:28px;"></div>`;
 }
 
-function renderHeader(meta) {
+function renderHeader(meta, cfg) {
   const hasAny = meta.title || meta.chapter || meta.date || meta.place;
   if (!hasAny) return '';
-  let html = `<div style="text-align:center;margin:0 0 36px;padding:0 0 24px;border-bottom:1px solid #d8d3c8;">`;
+  const textCol = cfg.textColor;
+  const subCol = cfg.actionColor;
+  let html = `<div style="text-align:center;margin:0 0 36px;padding:0 0 24px;border-bottom:1px solid ${hexToRgba(textCol, 0.18)};">`;
   if (meta.chapter) {
-    html += `<div style="font-size:11px;letter-spacing:4px;color:#9a9489;text-transform:uppercase;margin-bottom:10px;font-weight:700;">${escapeHTML(meta.chapter)}</div>`;
+    html += `<div style="font-size:11px;letter-spacing:4px;color:${subCol};text-transform:uppercase;margin-bottom:10px;font-weight:700;">${escapeHTML(meta.chapter)}</div>`;
   }
   if (meta.title) {
-    html += `<div style="font-size:22px;font-weight:700;color:#2a2724;margin-bottom:10px;letter-spacing:-0.4px;">${escapeHTML(meta.title)}</div>`;
+    html += `<div style="font-size:22px;font-weight:700;color:${textCol};margin-bottom:10px;letter-spacing:-0.4px;">${escapeHTML(meta.title)}</div>`;
   }
   if (meta.date || meta.place) {
-    html += `<div style="color:#7a756e;font-size:12.5px;font-style:italic;">`;
+    html += `<div style="color:${subCol};font-size:12.5px;font-style:italic;">`;
     if (meta.date) html += escapeHTML(meta.date);
     if (meta.date && meta.place) html += ` &middot; `;
     if (meta.place) html += escapeHTML(meta.place);
@@ -817,12 +972,8 @@ function renderHeader(meta) {
 }
 
 function updateStats(raw, blockCount) {
-  const text = raw.replace(/\*[^*]*\*/g, '').replace(/^[A-Za-z가-힣]+:/gm, '');
-  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-  const lines = raw.split('\n').filter(l => l.trim()).length;
-  statWords.textContent = words;
-  statLines.textContent = lines;
-  statBlocks.textContent = blockCount;
+  // 통계 표시는 제거했지만, 내용 유무 판별(hasContent)을 위해 발화 수만 기록
+  document.getElementById('statBlocks').textContent = blockCount;
 }
 
 // 미리보기용 HTML (배경색 포함)
@@ -845,10 +996,28 @@ function buildOutputHTML(cfg, forExport) {
     if (/^\*{3,}$/.test(t)) { flushBlock(); tokens.push({ type: 'sep_big' }); continue; }
     if (/^-{3,}$/.test(t)) { flushBlock(); tokens.push({ type: 'sep_small' }); continue; }
 
-    const m = t.match(/^([A-Za-z0-9가-힣]+)\s*[:：]\s*(.*)$/);
-    if (m && tagMap[m[1].toUpperCase()]) {
-      const tag = m[1].toUpperCase();
-      const rest = m[2];
+    // 콜론(: 또는 ：) 기준으로 앞부분을 태그 후보로 추출
+    // 정규식이 아니라 "등록된 태그와 정확히 일치하는지"로 판별 → 공백 포함 태그도 인식되고,
+    // 대사 중간의 콜론(예: "3:30")으로 인한 오작동도 방지된다.
+    let matchedTag = null, matchedRest = null;
+    const colonIdx = (() => {
+      const a = t.indexOf(':');
+      const b = t.indexOf('：');
+      if (a === -1) return b;
+      if (b === -1) return a;
+      return Math.min(a, b);
+    })();
+    if (colonIdx > 0) {
+      const candidate = t.slice(0, colonIdx).trim().toUpperCase();
+      if (tagMap[candidate]) {
+        matchedTag = candidate;
+        matchedRest = t.slice(colonIdx + 1).trim();
+      }
+    }
+
+    if (matchedTag) {
+      const tag = matchedTag;
+      const rest = matchedRest;
       if (currentBlock && currentBlock.tag === tag) {
         if (rest) currentBlock.lines.push(rest);
       } else {
@@ -862,14 +1031,14 @@ function buildOutputHTML(cfg, forExport) {
   }
   flushBlock();
 
-  let inner = renderHeader(cfg.meta);
+  let inner = renderHeader(cfg.meta, cfg);
 
   let lastSpeakerTag = null;
   let blockCount = 0;
 
   tokens.forEach(tok => {
-    if (tok.type === 'sep_big') { inner += renderSeparator(true); lastSpeakerTag = null; return; }
-    if (tok.type === 'sep_small') { inner += renderSeparator(false); lastSpeakerTag = null; return; }
+    if (tok.type === 'sep_big') { inner += renderSeparator(true, cfg); lastSpeakerTag = null; return; }
+    if (tok.type === 'sep_small') { inner += renderSeparator(false, cfg); lastSpeakerTag = null; return; }
     const entry = tagMap[tok.tag];
     if (!entry) return;
     if (entry.kind === 'narration') {
@@ -885,7 +1054,7 @@ function buildOutputHTML(cfg, forExport) {
     }
   });
 
-  const html = `<div style="max-width:680px;margin:0 auto;padding:40px 28px 44px;background:${cfg.pageColor};color:#2a2724;font-family:${cfg.font};line-height:1.75;border-radius:12px;">${inner}</div>`;
+  const html = `<div style="max-width:680px;margin:0 auto;padding:40px 28px 44px;background:${cfg.pageColor};color:${cfg.textColor};font-family:${cfg.font};line-height:1.75;border-radius:12px;">${inner}</div>`;
   return { html, blockCount, raw };
 }
 
@@ -1064,11 +1233,13 @@ function saveState() {
       opts: {
         mergeSpeaker: optMergeSpeaker.checked, autoRender: optAutoRender.checked,
         showName: optShowName.checked, showBar: optShowBar.checked, novelMode: optNovelMode.checked,
+        showDot: optShowDot.checked,
         parenAction: optParenAction.checked
       },
       design: {
         font: fontBody.value, fontSize: fontSize.value,
-        pageColor: colorPage.value, narrationColor: colorNarration.value
+        pageColor: colorPage.value, narrationColor: colorNarration.value,
+        textColor: colorText.value, actionColor: colorAction.value
       }
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -1098,6 +1269,7 @@ function loadState() {
         if (s.opts.mergeSpeaker !== undefined) optMergeSpeaker.checked = s.opts.mergeSpeaker;
         if (s.opts.autoRender !== undefined) optAutoRender.checked = s.opts.autoRender;
         if (s.opts.showName !== undefined) optShowName.checked = s.opts.showName;
+        if (s.opts.showDot !== undefined) optShowDot.checked = s.opts.showDot;
         if (s.opts.showBar !== undefined) optShowBar.checked = s.opts.showBar;
         if (s.opts.novelMode !== undefined) optNovelMode.checked = s.opts.novelMode;
         if (s.opts.parenAction !== undefined) optParenAction.checked = s.opts.parenAction;
@@ -1107,6 +1279,8 @@ function loadState() {
         if (s.design.fontSize) fontSize.value = s.design.fontSize;
         if (s.design.pageColor) colorPage.value = s.design.pageColor;
         if (s.design.narrationColor) colorNarration.value = s.design.narrationColor;
+        if (s.design.textColor) colorText.value = s.design.textColor;
+        if (s.design.actionColor) colorAction.value = s.design.actionColor;
       }
     }
   } catch(e){}
@@ -1131,7 +1305,45 @@ function flashSaveStatus() {
 // 색상 라벨 업데이트
 function updateColorLabels() {
   colorPageLabel.textContent = colorPage.value;
+  colorTextLabel.textContent = colorText.value;
+  colorActionLabel.textContent = colorAction.value;
   colorNarrationLabel.textContent = colorNarration.value;
+}
+
+// 색의 밝기 (0~255). 어두운 배경인지 판단용
+function colorBrightness(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return (r*299 + g*587 + b*114) / 1000;
+}
+
+// 두 색을 t 비율(0~1)로 섞기 (t=0이면 a, t=1이면 b)
+function mixHex(a, b, t) {
+  const ar=parseInt(a.slice(1,3),16), ag=parseInt(a.slice(3,5),16), ab=parseInt(a.slice(5,7),16);
+  const br=parseInt(b.slice(1,3),16), bg=parseInt(b.slice(3,5),16), bb=parseInt(b.slice(5,7),16);
+  const r=Math.round(ar+(br-ar)*t), g=Math.round(ag+(bg-ag)*t), bl=Math.round(ab+(bb-ab)*t);
+  const h=x=>x.toString(16).padStart(2,'0');
+  return '#'+h(r)+h(g)+h(bl);
+}
+
+// 본문 색 + 배경 색을 바탕으로 행동지문·나레이션 색을 자연스럽게 파생
+// (본문 색을 배경 쪽으로 살짝 섞어 흐리게 만든 톤)
+function deriveSubColors() {
+  const textC = colorText.value;
+  const pageC = colorPage.value;
+  // 행동 지문: 본문을 배경 쪽으로 45% 섞어 흐리게
+  colorAction.value = mixHex(textC, pageC, 0.45);
+  // 나레이션: 본문을 배경 쪽으로 28% 섞어 살짝만 흐리게 (행동보다 진함)
+  colorNarration.value = mixHex(textC, pageC, 0.28);
+  updateColorLabels();
+}
+
+// 배경색을 바꿨을 때: 밝기에 맞춰 본문색을 정하고, 행동·나레이션은 파생
+function autoAdjustTextColors() {
+  const isDarkBg = colorBrightness(colorPage.value) < 128;
+  colorText.value = isDarkBg ? '#e8e3d8' : '#2a2724';
+  deriveSubColors();
 }
 
 try {
@@ -1154,9 +1366,14 @@ function scheduleRender() {
 }
 
 document.getElementById('input').addEventListener('input', scheduleRender);
-['tagN','fontBody','fontSize','colorPage','colorNarration',
+document.getElementById('tagN').addEventListener('input', renderQuickInsert);
+// 배경색을 바꾸면 글자색 자동 제안 (그 후 사용자가 개별 조정 가능)
+document.getElementById('colorPage').addEventListener('input', () => { autoAdjustTextColors(); scheduleRender(); });
+// 본문 색을 바꾸면 행동지문·나레이션을 어울리는 톤으로 자동 파생
+document.getElementById('colorText').addEventListener('input', () => { deriveSubColors(); scheduleRender(); });
+['tagN','fontBody','fontSize','colorAction','colorNarration',
  'logTitle','logChapter','logDate','logPlace',
- 'optMergeSpeaker','optShowName','optShowBar','optNovelMode','optParenAction'].forEach(id => {
+ 'optMergeSpeaker','optShowName','optShowDot','optShowBar','optNovelMode','optParenAction'].forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener('input', scheduleRender);
   el.addEventListener('change', scheduleRender);
