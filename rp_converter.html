@@ -492,6 +492,7 @@
       <label><input type="checkbox" id="optShowName" checked> 화자 이름</label>
       <label><input type="checkbox" id="optShowDot" checked> 이름 앞 점</label>
       <label><input type="checkbox" id="optShowBar" checked> 좌측 컬러바</label>
+      <label><input type="checkbox" id="optItalic" checked> 지문 기울임</label>
       <span class="opt-divider"></span>
       <span class="opt-group-label">변환</span>
       <label><input type="checkbox" id="optNovelMode"> 소설식 따옴표</label>
@@ -794,6 +795,7 @@ function getConfig() {
       showName: optShowName.checked,
       showDot: optShowDot.checked,
       showBar: optShowBar.checked,
+      italic: optItalic.checked,
       novelMode: optNovelMode.checked,
       parenAction: optParenAction.checked
     },
@@ -816,18 +818,19 @@ function escapeHTML(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function processInline(text, actionCol, parenAction) {
+function processInline(text, actionCol, parenAction, italic) {
+  const italicStyle = italic ? 'font-style:italic;' : '';
   let safe = escapeHTML(text);
   // *별표* 행동 지문
   safe = safe.replace(
     /\*([^*]+)\*/g,
-    `<em style="color:${actionCol};font-style:italic;font-weight:400;">$1</em>`
+    `<em style="color:${actionCol};${italicStyle}font-weight:400;">$1</em>`
   );
   // (괄호) 행동 지문 — 옵션이 켜진 경우에만
   if (parenAction) {
     safe = safe.replace(
       /\(([^()]+)\)/g,
-      `<em style="color:${actionCol};font-style:italic;font-weight:400;">($1)</em>`
+      `<em style="color:${actionCol};${italicStyle}font-weight:400;">($1)</em>`
     );
   }
   return safe;
@@ -884,16 +887,18 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
 
   const actionCol = cfg.actionColor;
   const textCol = cfg.textColor;
+  const italic = cfg.opts.italic;
+  const italicStyle = italic ? 'font-style:italic;' : '';
 
   const body = paras.map(p => {
     if (p.type === 'action') {
-      return `<div style="margin:10px 0;color:${actionCol};font-style:italic;font-size:${cfg.fontSize - 0.5}px;line-height:1.9;">${escapeHTML(p.text)}</div>`;
+      return `<div style="margin:10px 0;color:${actionCol};${italicStyle}font-size:${cfg.fontSize - 0.5}px;line-height:1.9;">${escapeHTML(p.text)}</div>`;
     }
     let dialogue = p.text;
     if (cfg.opts.novelMode) {
       dialogue = '\u201C' + dialogue + '\u201D';
     }
-    return `<div style="margin:10px 0;line-height:1.95;color:${textCol};">${processInline(dialogue, actionCol, parenAction)}</div>`;
+    return `<div style="margin:10px 0;line-height:1.95;color:${textCol};">${processInline(dialogue, actionCol, parenAction, italic)}</div>`;
   }).join('');
 
   const showBar = cfg.opts.showBar;
@@ -929,9 +934,11 @@ function renderNarration(lines, cfg) {
   if (!paras.length) return '';
 
   const nColor = cfg.narrationColor;
+  const italic = cfg.opts.italic;
+  const italicStyle = italic ? 'font-style:italic;' : '';
   const inner = paras.map(p => {
-    const text = p.type === 'action' ? escapeHTML(p.text) : processInline(p.text, nColor, parenAction);
-    return `<div style="margin:10px 0;color:${nColor};font-style:italic;font-size:${cfg.fontSize - 0.5}px;line-height:1.95;">${text}</div>`;
+    const text = p.type === 'action' ? escapeHTML(p.text) : processInline(p.text, nColor, parenAction, italic);
+    return `<div style="margin:10px 0;color:${nColor};${italicStyle}font-size:${cfg.fontSize - 0.5}px;line-height:1.95;">${text}</div>`;
   }).join('');
 
   // 컬러바를 쓰는 발화와 좌측 정렬을 맞추기 위해, 컬러바 옵션이 켜져 있으면 동일한 좌측 패딩을 줌
@@ -1235,6 +1242,7 @@ function saveState() {
         mergeSpeaker: optMergeSpeaker.checked, autoRender: optAutoRender.checked,
         showName: optShowName.checked, showBar: optShowBar.checked, novelMode: optNovelMode.checked,
         showDot: optShowDot.checked,
+        italic: optItalic.checked,
         parenAction: optParenAction.checked
       },
       design: {
@@ -1271,6 +1279,7 @@ function loadState() {
         if (s.opts.autoRender !== undefined) optAutoRender.checked = s.opts.autoRender;
         if (s.opts.showName !== undefined) optShowName.checked = s.opts.showName;
         if (s.opts.showDot !== undefined) optShowDot.checked = s.opts.showDot;
+        if (s.opts.italic !== undefined) optItalic.checked = s.opts.italic;
         if (s.opts.showBar !== undefined) optShowBar.checked = s.opts.showBar;
         if (s.opts.novelMode !== undefined) optNovelMode.checked = s.opts.novelMode;
         if (s.opts.parenAction !== undefined) optParenAction.checked = s.opts.parenAction;
@@ -1374,7 +1383,7 @@ document.getElementById('colorPage').addEventListener('input', () => { autoAdjus
 document.getElementById('colorText').addEventListener('input', () => { deriveSubColors(); scheduleRender(); });
 ['tagN','fontBody','fontSize','colorAction','colorNarration',
  'logTitle','logChapter','logDate','logPlace',
- 'optMergeSpeaker','optShowName','optShowDot','optShowBar','optNovelMode','optParenAction'].forEach(id => {
+ 'optMergeSpeaker','optShowName','optShowDot','optShowBar','optItalic','optNovelMode','optParenAction'].forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener('input', scheduleRender);
   el.addEventListener('change', scheduleRender);
