@@ -462,28 +462,23 @@
           <option value="17">아주 크게 (17px)</option>
         </select>
       </div>
-    </div>
-
-    <div class="color-grid" style="margin-top: 12px;">
-      <div class="color-cell">
-        <label>페이지</label>
-        <input type="color" id="colorPage" value="#fdfcf8">
-        <span class="color-label" id="colorPageLabel">#fdfcf8</span>
+      <div class="field">
+        <label>행간</label>
+        <select id="lineHeight">
+          <option value="1.6">작게 (1.6)</option>
+          <option value="1.8">보통 (1.8)</option>
+          <option value="1.95" selected>크게 (1.95)</option>
+          <option value="2.2">아주 크게 (2.2)</option>
+        </select>
       </div>
-      <div class="color-cell">
-        <label>본문</label>
-        <input type="color" id="colorText" value="#2a2724">
-        <span class="color-label" id="colorTextLabel">#2a2724</span>
-      </div>
-      <div class="color-cell">
-        <label>행동지문</label>
-        <input type="color" id="colorAction" value="#9a9489">
-        <span class="color-label" id="colorActionLabel">#9a9489</span>
-      </div>
-      <div class="color-cell">
-        <label>나레이션</label>
-        <input type="color" id="colorNarration" value="#6e6960">
-        <span class="color-label" id="colorNarrationLabel">#6e6960</span>
+      <div class="field">
+        <label>발화 사이 간격</label>
+        <select id="blockGap">
+          <option value="12">작게 (12px)</option>
+          <option value="22" selected>보통 (22px)</option>
+          <option value="34">크게 (34px)</option>
+          <option value="48">아주 크게 (48px)</option>
+        </select>
       </div>
     </div>
 
@@ -498,6 +493,38 @@
       <label><input type="checkbox" id="optNovelMode"> 소설식 따옴표</label>
       <label><input type="checkbox" id="optParenAction"> (괄호) 행동 지문</label>
     </div>
+
+    <details class="adv-settings" style="margin-top: 10px;">
+      <summary>고급 설정</summary>
+
+      <div class="options-row" style="margin-top: 8px;">
+        <label><input type="checkbox" id="optJustify"> 양쪽 정렬</label>
+        <label><input type="checkbox" id="optIndent"> 첫 줄 들여쓰기</label>
+      </div>
+
+      <div class="color-grid" style="margin-top: 12px;">
+        <div class="color-cell">
+          <label>페이지</label>
+          <input type="color" id="colorPage" value="#fdfcf8">
+          <span class="color-label" id="colorPageLabel">#fdfcf8</span>
+        </div>
+        <div class="color-cell">
+          <label>본문</label>
+          <input type="color" id="colorText" value="#2a2724">
+          <span class="color-label" id="colorTextLabel">#2a2724</span>
+        </div>
+        <div class="color-cell">
+          <label>행동지문</label>
+          <input type="color" id="colorAction" value="#9a9489">
+          <span class="color-label" id="colorActionLabel">#9a9489</span>
+        </div>
+        <div class="color-cell">
+          <label>나레이션</label>
+          <input type="color" id="colorNarration" value="#6e6960">
+          <span class="color-label" id="colorNarrationLabel">#6e6960</span>
+        </div>
+      </div>
+    </details>
   </div>
 
   <!-- 메타 -->
@@ -551,6 +578,7 @@
       <summary>고급 설정</summary>
       <div class="options-row" style="margin-top: 8px;">
         <label><input type="checkbox" id="optMergeSpeaker" checked> 같은 화자 연속 발화 시 이름 생략</label>
+        <label><input type="checkbox" id="optKeepBreaks"> 줄바꿈 유지</label>
         <label><input type="checkbox" id="optAutoRender" checked> 자동 변환 (입력하면 바로 미리보기)</label>
         <label><input type="checkbox" id="optAutoSave" checked> 자동 저장 (브라우저에 보관)</label>
       </div>
@@ -797,7 +825,8 @@ function getConfig() {
       showBar: optShowBar.checked,
       italic: optItalic.checked,
       novelMode: optNovelMode.checked,
-      parenAction: optParenAction.checked
+      parenAction: optParenAction.checked,
+      keepBreaks: optKeepBreaks.checked
     },
     meta: {
       title: logTitle.value.trim(),
@@ -807,6 +836,10 @@ function getConfig() {
     },
     font: fontBody.value,
     fontSize: parseFloat(fontSize.value),
+    lineHeight: parseFloat(lineHeight.value),
+    blockGap: parseFloat(blockGap.value),
+    textAlign: optJustify.checked ? 'justify' : 'left',
+    indent: optIndent.checked,
     pageColor: colorPage.value,
     textColor: colorText.value,
     actionColor: colorAction.value,
@@ -859,17 +892,27 @@ function hexToRgba(hex, a) {
   return `rgba(${r},${g},${b},${a})`;
 }
 
-function buildParagraphs(lines, parenAction) {
+function buildParagraphs(lines, parenAction, keepBreaks) {
   const paragraphs = [];
   let cur = null;
   function flush() { if (cur && cur.text.trim()) paragraphs.push(cur); cur = null; }
   for (let raw of lines) {
     const trimmed = raw.trim();
-    if (trimmed === '') continue;
+    if (trimmed === '') {
+      // keepBreaks 모드에선 빈 줄도 살려서 한 칸 띄움(빈 문단)으로 표현
+      if (keepBreaks) { flush(); paragraphs.push({ type: 'blank' }); }
+      continue;
+    }
     if (trimmed === '//') { flush(); continue; }
     if (isFullActionLine(trimmed, parenAction)) {
       flush();
       paragraphs.push({ type: 'action', text: stripActionWrapper(trimmed) });
+      continue;
+    }
+    if (keepBreaks) {
+      // 줄바꿈 그대로 모드: 각 줄을 별도 문단으로
+      flush();
+      paragraphs.push({ type: 'speech', text: trimmed });
       continue;
     }
     if (!cur || cur.type !== 'speech') {
@@ -882,7 +925,8 @@ function buildParagraphs(lines, parenAction) {
 
 function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
   const parenAction = cfg.opts.parenAction;
-  const paras = buildParagraphs(lines, parenAction);
+  const keepBreaks = cfg.opts.keepBreaks;
+  const paras = buildParagraphs(lines, parenAction, keepBreaks);
   if (!paras.length) return '';
 
   const actionCol = cfg.actionColor;
@@ -891,20 +935,27 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
   const italicStyle = italic ? 'font-style:italic;' : '';
 
   const body = paras.map(p => {
+    if (p.type === 'blank') {
+      return `<div style="height:0.6em;"></div>`;
+    }
     if (p.type === 'action') {
-      return `<div style="margin:10px 0;color:${actionCol};${italicStyle}font-size:${cfg.fontSize - 0.5}px;line-height:1.9;">${escapeHTML(p.text)}</div>`;
+      const actionIndent = cfg.indent ? 'text-indent:1em;' : '';
+      return `<div style="margin:10px 0;color:${actionCol};${italicStyle}font-size:${cfg.fontSize - 0.5}px;line-height:${cfg.lineHeight};${actionIndent}">${escapeHTML(p.text)}</div>`;
     }
     let dialogue = p.text;
     if (cfg.opts.novelMode) {
       dialogue = '\u201C' + dialogue + '\u201D';
     }
-    return `<div style="margin:10px 0;line-height:1.95;color:${textCol};">${processInline(dialogue, actionCol, parenAction, italic)}</div>`;
+    const indentStyle = cfg.indent ? 'text-indent:1em;' : '';
+    // keepBreaks 모드일 땐 문단 사이 간격을 더 좁게 (줄바꿈 느낌 살리기)
+    const margin = keepBreaks ? '2px 0' : '10px 0';
+    return `<div style="margin:${margin};line-height:${cfg.lineHeight};color:${textCol};${indentStyle}">${processInline(dialogue, actionCol, parenAction, italic)}</div>`;
   }).join('');
 
   const showBar = cfg.opts.showBar;
   const showName = cfg.opts.showName && showHeader;
 
-  let outerStyle = `margin:0 0 22px;font-family:${cfg.font};font-size:${cfg.fontSize}px;`;
+  let outerStyle = `margin:0 0 ${cfg.blockGap}px;font-family:${cfg.font};font-size:${cfg.fontSize}px;`;
   if (showBar) {
     outerStyle += `padding:2px 0 4px 18px;border-left:1.5px solid ${hexToRgba(speaker.color, 0.4)};`;
   } else {
@@ -930,20 +981,25 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
 // 나레이션: 가로 폭을 대사/행동과 동일하게 (margin 좌우 0), 색은 사용자 지정
 function renderNarration(lines, cfg) {
   const parenAction = cfg.opts.parenAction;
-  const paras = buildParagraphs(lines, parenAction);
+  const keepBreaks = cfg.opts.keepBreaks;
+  const paras = buildParagraphs(lines, parenAction, keepBreaks);
   if (!paras.length) return '';
 
   const nColor = cfg.narrationColor;
   const italic = cfg.opts.italic;
   const italicStyle = italic ? 'font-style:italic;' : '';
   const inner = paras.map(p => {
-    const text = p.type === 'action' ? escapeHTML(p.text) : processInline(p.text, nColor, parenAction, italic);
-    return `<div style="margin:10px 0;color:${nColor};${italicStyle}font-size:${cfg.fontSize - 0.5}px;line-height:1.95;">${text}</div>`;
+    if (p.type === 'blank') return `<div style="height:0.6em;"></div>`;
+    const isAction = p.type === 'action';
+    const text = isAction ? escapeHTML(p.text) : processInline(p.text, nColor, parenAction, italic);
+    const margin = keepBreaks ? '2px 0' : '10px 0';
+    const indentStyle = cfg.indent ? 'text-indent:1em;' : '';
+    return `<div style="margin:${margin};color:${nColor};${italicStyle}font-size:${cfg.fontSize - 0.5}px;line-height:${cfg.lineHeight};${indentStyle}">${text}</div>`;
   }).join('');
 
   // 컬러바를 쓰는 발화와 좌측 정렬을 맞추기 위해, 컬러바 옵션이 켜져 있으면 동일한 좌측 패딩을 줌
   const leftPad = cfg.opts.showBar ? 'padding-left:18px;' : '';
-  return `<div style="margin:18px 0;${leftPad}font-family:${cfg.font};">${inner}</div>`;
+  return `<div style="margin:${cfg.blockGap * 0.8}px 0;${leftPad}font-family:${cfg.font};">${inner}</div>`;
 }
 
 function renderSeparator(big, cfg) {
@@ -1062,7 +1118,8 @@ function buildOutputHTML(cfg, forExport) {
     }
   });
 
-  const html = `<div style="max-width:680px;margin:0 auto;padding:40px 28px 44px;background:${cfg.pageColor};color:${cfg.textColor};font-family:${cfg.font};line-height:1.75;border-radius:12px;">${inner}</div>`;
+  const breakStyle = cfg.textAlign === 'justify' ? 'word-break:keep-all;' : '';
+  const html = `<div style="max-width:680px;margin:0 auto;padding:40px 28px 44px;background:${cfg.pageColor};color:${cfg.textColor};font-family:${cfg.font};line-height:${cfg.lineHeight};text-align:${cfg.textAlign};${breakStyle}border-radius:12px;">${inner}</div>`;
   return { html, blockCount, raw };
 }
 
@@ -1243,10 +1300,13 @@ function saveState() {
         showName: optShowName.checked, showBar: optShowBar.checked, novelMode: optNovelMode.checked,
         showDot: optShowDot.checked,
         italic: optItalic.checked,
+        keepBreaks: optKeepBreaks.checked,
         parenAction: optParenAction.checked
       },
       design: {
         font: fontBody.value, fontSize: fontSize.value,
+        lineHeight: lineHeight.value, blockGap: blockGap.value,
+        textAlign: optJustify.checked, indent: optIndent.checked,
         pageColor: colorPage.value, narrationColor: colorNarration.value,
         textColor: colorText.value, actionColor: colorAction.value
       }
@@ -1280,6 +1340,7 @@ function loadState() {
         if (s.opts.showName !== undefined) optShowName.checked = s.opts.showName;
         if (s.opts.showDot !== undefined) optShowDot.checked = s.opts.showDot;
         if (s.opts.italic !== undefined) optItalic.checked = s.opts.italic;
+        if (s.opts.keepBreaks !== undefined) optKeepBreaks.checked = s.opts.keepBreaks;
         if (s.opts.showBar !== undefined) optShowBar.checked = s.opts.showBar;
         if (s.opts.novelMode !== undefined) optNovelMode.checked = s.opts.novelMode;
         if (s.opts.parenAction !== undefined) optParenAction.checked = s.opts.parenAction;
@@ -1287,6 +1348,17 @@ function loadState() {
       if (s.design) {
         if (s.design.font) fontBody.value = s.design.font;
         if (s.design.fontSize) fontSize.value = s.design.fontSize;
+        if (s.design.lineHeight !== undefined) lineHeight.value = s.design.lineHeight;
+        if (s.design.blockGap !== undefined) blockGap.value = s.design.blockGap;
+        if (s.design.textAlign !== undefined) {
+          const v = s.design.textAlign;
+          // 호환: 옛 셀렉트값 'justify'/'left' 또는 boolean
+          optJustify.checked = (v === true || v === 'justify');
+        }
+        if (s.design.indent !== undefined) {
+          const v = s.design.indent;
+          optIndent.checked = (v === true || v === '1' || v === 1);
+        }
         if (s.design.pageColor) colorPage.value = s.design.pageColor;
         if (s.design.narrationColor) colorNarration.value = s.design.narrationColor;
         if (s.design.textColor) colorText.value = s.design.textColor;
@@ -1381,9 +1453,9 @@ document.getElementById('tagN').addEventListener('input', renderQuickInsert);
 document.getElementById('colorPage').addEventListener('input', () => { autoAdjustTextColors(); scheduleRender(); });
 // 본문 색을 바꾸면 행동지문·나레이션을 어울리는 톤으로 자동 파생
 document.getElementById('colorText').addEventListener('input', () => { deriveSubColors(); scheduleRender(); });
-['tagN','fontBody','fontSize','colorAction','colorNarration',
+['tagN','fontBody','fontSize','lineHeight','blockGap','colorAction','colorNarration',
  'logTitle','logChapter','logDate','logPlace',
- 'optMergeSpeaker','optShowName','optShowDot','optShowBar','optItalic','optNovelMode','optParenAction'].forEach(id => {
+ 'optMergeSpeaker','optShowName','optShowDot','optShowBar','optItalic','optNovelMode','optParenAction','optKeepBreaks','optJustify','optIndent'].forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener('input', scheduleRender);
   el.addEventListener('change', scheduleRender);
