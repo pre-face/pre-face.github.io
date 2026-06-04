@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNION — 사원증 발급</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=Source+Code+Pro:wght@400;500;600&family=Oswald:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #edecea;
+    color: #222;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 20px 80px;
+  }
+
+  .page-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #aaa;
+    letter-spacing: 5px;
+    margin-bottom: 40px;
+  }
+
+  .workspace {
+    display: flex;
+    gap: 52px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* ── 패널 ── */
+  .panel {
+    width: 256px;
+    background: #fff;
+    border: 1px solid #e2e0dd;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .panel-head {
+    font-size: 10px;
+    font-weight: 600;
+    color: #b0ada8;
+    letter-spacing: 2px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0efed;
+  }
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #777;
+    margin-bottom: 5px;
+  }
+  .field label .opt { font-weight:400; color:#bbb; }
+  .field input, .field select {
+    width: 100%;
+    padding: 9px 11px;
+    background: #fafaf9;
+    border: 1px solid #e2e0dd;
+    color: #222;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .field input:focus, .field select:focus { border-color:#1a2e50; }
+  .field input::placeholder { color:#ccc; }
+
+  .photo-upload {
+    width: 100%;
+    aspect-ratio: 3/4;
+    max-height: 165px;
+    background: #fafaf9;
+    border: 1px dashed #d5d3d0;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .photo-upload:hover { border-color:#aaa; }
+  .photo-upload img { width:100%; height:100%; object-fit:cover; }
+  .photo-upload .ph { text-align:center; color:#ccc; font-size:11px; line-height:1.6; }
+  .photo-upload .ph .icon { font-size:20px; display:block; margin-bottom:2px; opacity:.5; }
+
+  .btn-export {
+    width: 100%;
+    padding: 11px;
+    background: #1a2e50;
+    color: #fff;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  .btn-export:hover { background:#15253f; }
+
+  /* ── 카드 ── */
+  .card-area { display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .card-note { font-size:10px; color:#c0bdb8; }
+
+  .id-card {
+    width: 308px;
+    height: 542px;
+    background: #fdfcfa;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 6px 20px rgba(0,0,0,.08);
+  }
+
+  /* 배경 워터마크 */
+  .c-watermark {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .c-watermark .wm-en {
+    font-family: 'Oswald', sans-serif;
+    font-size: 80px;
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.02);
+    letter-spacing: 8px;
+    line-height: 1;
+  }
+
+  /* 내용 요소들을 워터마크 위로 올림 */
+  .c-head, .c-gold, .c-photo-area, .c-name-area, .c-fields, .c-foot, .c-gold-bottom {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 헤더 */
+  .c-head {
+    background: #1a2e50;
+    height: 72px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  .c-head-logo svg { width:32px; height:32px; display:block; }
+  .c-head-text { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 2px; 
+  }
+  .c-head-en {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    color: #ffffff;
+    letter-spacing: 3px;
+    line-height: 1;
+  }
+  .c-head-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 7.5px;
+    color: #c9a84c;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+
+  .c-gold { height:2px; background:#c9a84c; flex-shrink:0; }
+
+  /* 사진 */
+  .c-photo-area {
+    padding: 32px 0 0;
+    display: flex;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .c-photo {
+    width: 136px;
+    height: 174px;
+    background: #f5f4f1;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .c-photo img { width:100%; height:100%; object-fit:cover; display:block; }
+  .c-photo .empty {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    color: #d8d6d2;
+    letter-spacing: 3px;
+    font-weight: 500;
+  }
+
+  /* 이름 */
+  .c-name-area {
+    text-align: center;
+    padding: 20px 24px 10px;
+    flex-shrink: 0;
+  }
+  .c-name {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    color: #1a2e50;
+    line-height: 1.1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+  .c-name.latin { font-family: 'DM Sans', sans-serif; font-weight: 700; }
+
+  /* 정보 그리드 - 중앙 정렬과 박스 프레임으로 허전함 완벽 방어 */
+  .c-fields {
+    flex: 1; /* 남은 공간 모두 차지 */
+    padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 항목이 1줄만 있어도 화면 중앙에 띄워 안정감 부여 */
+  }
+  .c-fields-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 0;
+    border-top: 1.5px solid #f0efed;   /* 위아래 얇은 선으로 데이터 영역을 프레이밍 */
+    border-bottom: 1.5px solid #f0efed;
+  }
+  .c-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .c-row.hidden-row { 
+    display: none !important; 
+  }
+  .c-cell {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .c-cell.right {
+    align-items: flex-end;
+    text-align: right;
+  }
+  .c-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 8px;
+    font-weight: 500;
+    color: #999;
+    letter-spacing: 1.5px;
+  }
+  .c-val {
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #222;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .c-val.empty { color: #d0d0d0; font-weight: 400; }
+
+  /* 푸터 - 얇고 밀도있는 바코드 */
+  .c-foot {
+    padding: 0 0 16px; /* 기존 28px에서 16px로 줄여 바코드를 아래로 조금 내림 */
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .c-bc-wrap {
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .c-bc {
+    display: flex;
+    height: 28px; /* 바코드 높이를 낮춰 비율을 세련되게 */
+    width: 100%;
+    justify-content: center;
+  }
+  .c-bc .b { height:100%; }
+  .c-bc .b.fill { background:#111; }
+  .c-bc .b.gap  { background: transparent; }
+
+  /* 바코드 아래의 ID 디자인 */
+  .c-id-number {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 9.5px;
+    font-weight: 500;
+    color: #666;
+    letter-spacing: 2px;
+    margin-top: 6px;
+  }
+  .c-id-number.empty {
+    color: transparent;
+  }
+
+  .c-gold-bottom { height:6px; background:#1a2e50; flex-shrink:0; }
+
+  @media (max-width: 700px) {
+    .workspace { flex-direction:column; align-items:center; gap:32px; }
+    .panel { width:100%; max-width:300px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">IDENTIFICATION</div>
+
+<div class="workspace">
+
+  <div class="panel">
+    <div class="panel-head">정보 입력</div>
+
+    <div class="field">
+      <label>소속</label>
+      <select id="inDept" onchange="rebuild()">
+        <option value="HUNTERS">헌터즈 (HUNTERS)</option>
+        <option value="EAGLE EYE">이글아이 (EAGLE EYE)</option>
+        <option value="DRACAL">드라칼 (DRACAL)</option>
+        <option value="UNDERGROUND">언더그라운드 (UNDERGROUND)</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>코드네임</label>
+      <input type="text" id="inName" placeholder="한글 · 영문 · 한자" oninput="rebuild()">
+    </div>
+
+    <div class="field">
+      <label>등급</label>
+      <input type="text" id="inGrade" placeholder="S, A, B1 …" maxlength="4" oninput="rebuild()">
+    </div>
+
+    <div class="field">
+      <label>능력 <span class="opt">(선택)</span></label>
+      <input type="text" id="inAbility" placeholder="예: COMBAT, 전투형, 화염 조작" maxlength="20" oninput="rebuild()">
+    </div>
+
+    <div class="field">
+      <label>발급일 <span class="opt">(선택)</span></label>
+      <input type="text" id="inDate" placeholder="2026.06.04" oninput="rebuild()">
+    </div>
+
+    <div class="field">
+      <label>증명사진</label>
+      <div class="photo-upload" onclick="document.getElementById('pf').click()">
+        <div class="ph" id="uPh"><span class="icon">+</span>클릭하여 업로드<br>권장 3:4 비율 · 420×560px</div>
+        <img id="uImg" style="display:none">
+      </div>
+      <input type="file" id="pf" accept="image/*" style="display:none" onchange="onPhoto(event)">
+    </div>
+
+    <button class="btn-export" onclick="savePng()">PNG 다운로드</button>
+  </div>
+
+  <div class="card-area">
+    <div class="id-card" id="card">
+      
+      <div class="c-watermark">
+        <div class="wm-en">UNION</div>
+      </div>
+
+      <div class="c-head">
+        <div class="c-head-logo">
+          <svg viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="12" stroke="#fff" stroke-width="1.5" opacity=".3"/>
+            <polygon points="14,4 17.3,12 14,10.4 10.7,12" fill="#c9a84c"/>
+            <polygon points="14,24 10.7,16 14,17.6 17.3,16" fill="#c9a84c"/>
+            <polygon points="4,14 12,10.7 10.4,14 12,17.3" fill="#c9a84c" opacity=".7"/>
+            <polygon points="24,14 16,17.3 17.6,14 16,10.7" fill="#c9a84c" opacity=".7"/>
+          </svg>
+        </div>
+        <div class="c-head-text">
+          <div class="c-head-en">UNION</div>
+          <div class="c-head-sub">ESPER MANAGEMENT DIV.</div>
+        </div>
+      </div>
+      <div class="c-gold"></div>
+
+      <div class="c-photo-area">
+        <div class="c-photo">
+          <img id="cImg" style="display:none">
+          <div class="empty" id="cPh">PHOTO</div>
+        </div>
+      </div>
+
+      <div class="c-name-area">
+        <div class="c-name" id="cName">―</div>
+      </div>
+
+      <!-- 정보 영역: 2단 그리드와 프레임으로 빈 공간 제어 -->
+      <div class="c-fields">
+        <div class="c-fields-inner">
+          <div class="c-row">
+            <div class="c-cell">
+              <div class="c-label">DIVISION</div>
+              <div class="c-val" id="cDept">HUNTERS</div>
+            </div>
+            <div class="c-cell right">
+              <div class="c-label">GRADE</div>
+              <div class="c-val empty" id="cGrade">—</div>
+            </div>
+          </div>
+          <div class="c-row hidden-row" id="cOptRow">
+            <div class="c-cell" id="cellAbility">
+              <div class="c-label">ABILITY</div>
+              <div class="c-val empty" id="cAbility">—</div>
+            </div>
+            <div class="c-cell right" id="cellIssue">
+              <div class="c-label">ISSUED</div>
+              <div class="c-val empty" id="cDateVal">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 바코드 영역 (얇은 두께 적용) -->
+      <div class="c-foot">
+        <div class="c-bc-wrap">
+          <div class="c-bc" id="cBc"></div>
+          <div class="c-id-number empty" id="cIdVal">ID : —</div>
+        </div>
+      </div>
+
+      <div class="c-gold-bottom"></div>
+    </div>
+    <div class="card-note">308 × 542 px · Digital ID Format</div>
+  </div>
+</div>
+
+<script>
+function h(s) {
+  let v = 0;
+  for (let i = 0; i < s.length; i++) v = ((v << 5) - v + s.charCodeAt(i)) | 0;
+  return Math.abs(v);
+}
+
+// 규칙성 있는 8자리 번호 생성
+function agentNo(dept, name, grade) {
+  const v = h((dept||'')+'|'+(name||'')+'|'+(grade||''));
+  return String(v % 10000).padStart(4,'0') + String(Math.floor(v/10000) % 10000).padStart(4,'0');
+}
+
+// ID 코드를 바탕으로 바코드 생성
+function drawBarcode(id) {
+  const el = document.getElementById('cBc');
+  el.innerHTML = '';
+  const digits = id.replace(/\D/g, '');
+  if (digits.length < 8) return;
+
+  const patterns = [
+    [2,1,1,2,1], [1,2,2,1,1], [2,2,1,1,1], [1,1,2,2,1], [2,1,2,1,1],
+    [1,2,1,2,1], [1,1,1,3,1], [3,1,1,1,1], [1,3,1,1,1], [1,1,3,1,1],
+  ];
+
+  // 바코드 굵기: 너무 두껍지 않으면서도 선명하게
+  const scale = 2.4;
+
+  function addBar(w, fill) {
+    const d = document.createElement('div');
+    d.className = 'b ' + (fill ? 'fill' : 'gap');
+    d.style.width = (w * scale) + 'px';
+    el.appendChild(d);
+  }
+
+  // 시작 가드
+  addBar(1, true); addBar(1, false); addBar(2, true); addBar(1, false);
+  
+  // 번호 패턴 렌더링 (8자리 모두 사용)
+  for (let i = 0; i < digits.length; i++) {
+    const p = patterns[parseInt(digits[i])];
+    p.forEach((w, idx) => addBar(w, idx % 2 === 0));
+  }
+  
+  // 종료 가드
+  addBar(2, true); addBar(1, false); addBar(1, true);
+}
+
+function isCJK(text) {
+  return /[\u3131-\uD79D\u4E00-\u9FFF\u3040-\u30FF]/.test(text);
+}
+
+function fitName(text) {
+  const el = document.getElementById('cName');
+  const len = text.length;
+  const cjk = isCJK(text);
+  el.className = 'c-name' + (cjk || len === 0 ? '' : ' latin');
+
+  let size, spacing;
+  if (len === 0)       { size='24px'; spacing='0'; }
+  else if (len === 1)  { size='34px'; spacing='0'; }
+  else if (len === 2)  { size = cjk ? '28px' : '30px'; spacing = cjk ? '4px' : '6px'; }
+  else if (len <= 4)   { size = '24px';                 spacing = cjk ? '2px' : '3px'; }
+  else if (len <= 7)   { size = cjk ? '20px' : '18px';  spacing = cjk ? '1px' : '2px'; }
+  else if (len <= 12)  { size = '15px';                 spacing = cjk ? '0' : '1px'; }
+  else                 { size='13px'; spacing='0'; }
+  el.style.fontSize = size;
+  el.style.letterSpacing = spacing;
+}
+
+function rebuild() {
+  const dept    = document.getElementById('inDept').value;
+  const name    = document.getElementById('inName').value;
+  const grade   = document.getElementById('inGrade').value;
+  const ability = document.getElementById('inAbility').value;
+  const date    = document.getElementById('inDate').value;
+
+  document.getElementById('cName').textContent = name || '―';
+  fitName(name);
+
+  document.getElementById('cDept').textContent = dept;
+  
+  if (grade && grade.trim()) {
+      document.getElementById('cGrade').textContent = grade;
+      document.getElementById('cGrade').classList.remove('empty');
+  } else {
+      document.getElementById('cGrade').textContent = '—';
+      document.getElementById('cGrade').classList.add('empty');
+  }
+
+  // 옵션 항목(능력, 발급일) 동적 렌더링 - 빈 공간 밸런스 유지
+  const optRow = document.getElementById('cOptRow');
+  const cellAbility = document.getElementById('cellAbility');
+  const cellIssue = document.getElementById('cellIssue');
+  let hasOpt = false;
+
+  if (ability.trim()) {
+    const el = document.getElementById('cAbility');
+    el.textContent = ability;
+    el.classList.remove('empty');
+    cellAbility.style.visibility = 'visible';
+    hasOpt = true;
+
+    // 글자 수에 따른 폰트 크기 동적 조절
+    const len = ability.length;
+    if (len > 14) {
+      el.style.fontSize = '9px';
+    } else if (len > 9) {
+      el.style.fontSize = '11px';
+    } else {
+      el.style.fontSize = '13px';
+    }
+  } else {
+    cellAbility.style.visibility = 'hidden';
+  }
+
+  if (date.trim()) {
+    document.getElementById('cDateVal').textContent = date;
+    document.getElementById('cDateVal').classList.remove('empty');
+    cellIssue.style.visibility = 'visible';
+    hasOpt = true;
+  } else {
+    cellIssue.style.visibility = 'hidden';
+  }
+
+  // 능력, 발급일 중 하나라도 있으면 해당 줄(Row) 자체를 살려 균형을 유지함
+  if (hasOpt) {
+    optRow.classList.remove('hidden-row');
+  } else {
+    optRow.classList.add('hidden-row');
+  }
+
+  const idVal = document.getElementById('cIdVal');
+  if (name || grade) {
+    const id = agentNo(dept, name, grade);
+    const formattedId = 'UNI-' + id.slice(0,4) + '-' + id.slice(4,8);
+    idVal.textContent = formattedId;
+    idVal.classList.remove('empty');
+    drawBarcode(id);
+  } else {
+    idVal.textContent = '—';
+    idVal.classList.add('empty');
+    document.getElementById('cBc').innerHTML = '';
+  }
+}
+
+function onPhoto(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = function(ev) {
+    const url = ev.target.result;
+    document.getElementById('uImg').src = url;
+    document.getElementById('uImg').style.display = 'block';
+    document.getElementById('uPh').style.display = 'none';
+    document.getElementById('cImg').src = url;
+    document.getElementById('cImg').style.display = 'block';
+    document.getElementById('cPh').style.display = 'none';
+  };
+  r.readAsDataURL(f);
+}
+
+function savePng() {
+  html2canvas(document.getElementById('card'), {
+    scale: 4,
+    backgroundColor: '#fdfcfa',
+    useCORS: true,
+    logging: false,
+  }).then(c => {
+    const a = document.createElement('a');
+    a.download = 'UNION_' + (document.getElementById('inName').value || 'card') + '.png';
+    a.href = c.toDataURL('image/png');
+    a.click();
+  });
+}
+
+rebuild();
+</script>
+</body>
+</html>
