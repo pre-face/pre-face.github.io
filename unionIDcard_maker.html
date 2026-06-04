@@ -89,9 +89,10 @@
     justify-content: center;
     cursor: pointer;
     overflow: hidden;
+    background-size: cover;
+    background-position: center;
   }
   .photo-upload:hover { border-color:#aaa; }
-  .photo-upload img { width:100%; height:100%; object-fit:cover; }
   .photo-upload .ph { text-align:center; color:#ccc; font-size:11px; line-height:1.6; }
   .photo-upload .ph .icon { font-size:20px; display:block; margin-bottom:2px; opacity:.5; }
 
@@ -208,8 +209,9 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    background-size: cover;
+    background-position: center;
   }
-  .c-photo img { width:100%; height:100%; object-fit:cover; display:block; }
   .c-photo .empty {
     font-family: 'Oswald', sans-serif;
     font-size: 10px;
@@ -236,13 +238,13 @@
   }
   .c-name.latin { font-family: 'DM Sans', sans-serif; font-weight: 700; }
 
-  /* 정보 그리드 */
+  /* 정보 그리드 - 중앙 정렬과 박스 프레임으로 허전함 완벽 방어 */
   .c-fields {
-    flex: 1;
+    flex: 1; /* 남은 공간 모두 차지 */
     padding: 0 32px;
     display: flex;
     flex-direction: column;
-    justify-content: center; 
+    justify-content: center; /* 항목이 1줄만 있어도 화면 중앙에 띄워 안정감 부여 */
   }
   .c-fields-inner {
     width: 100%;
@@ -291,9 +293,9 @@
   }
   .c-val.empty { color: #d0d0d0; font-weight: 400; }
 
-  /* 푸터 - 바코드 */
+  /* 푸터 - 얇고 밀도있는 바코드 */
   .c-foot {
-    padding: 0 0 16px; 
+    padding: 0 0 16px; /* 바코드를 아래로 살짝 내림 (기존 28px에서 16px로 조정) */
     flex-shrink: 0;
     display: flex;
     justify-content: center;
@@ -307,7 +309,7 @@
   }
   .c-bc {
     display: flex;
-    height: 28px; 
+    height: 28px; /* 바코드 높이를 낮춰 비율을 세련되게 */
     width: 100%;
     justify-content: center;
   }
@@ -360,7 +362,7 @@
       <input type="text" id="inName" placeholder="한글 · 영문 · 한자" oninput="rebuild()">
     </div>
 
-    <div class="field">
+   <div class="field">
       <label>등급</label>
       <input type="text" id="inGrade" placeholder="S, A, B, C …" maxlength="4" oninput="rebuild()">
     </div>
@@ -369,7 +371,7 @@
       <label>능력 <span class="opt">(선택)</span></label>
       <input type="text" id="inAbility" placeholder="예: 버스트 스위치, 必中, IGNIS 등" maxlength="20" oninput="rebuild()">
     </div>
-
+   
     <div class="field">
       <label>발급일 <span class="opt">(선택)</span></label>
       <input type="text" id="inDate" placeholder="2026.06.04" oninput="rebuild()">
@@ -377,9 +379,8 @@
 
     <div class="field">
       <label>증명사진</label>
-      <div class="photo-upload" onclick="document.getElementById('pf').click()">
+      <div class="photo-upload" id="uPhotoBox" onclick="document.getElementById('pf').click()">
         <div class="ph" id="uPh"><span class="icon">+</span>클릭하여 업로드<br>권장 3:4 비율 · 420×560px</div>
-        <img id="uImg" style="display:none">
       </div>
       <input type="file" id="pf" accept="image/*" style="display:none" onchange="onPhoto(event)">
     </div>
@@ -407,19 +408,18 @@
         <div class="c-head-text">
           <div class="c-head-en">UNION</div>
           <div class="c-head-sub">ESPER MANAGEMENT DIV.</div>
-        </div>
-      </div>
-      <div class="c-gold"></div>
+    </div>
+  </div>
+  <div class="c-gold"></div>
 
-      <div class="c-photo-area">
-        <div class="c-photo">
-          <img id="cImg" style="display:none">
-          <div class="empty" id="cPh">PHOTO</div>
-        </div>
-      </div>
+  <div class="c-photo-area">
+    <div class="c-photo" id="cPhotoBox">
+      <div class="empty" id="cPh">PHOTO</div>
+    </div>
+  </div>
 
-      <div class="c-name-area">
-        <div class="c-name" id="cName">―</div>
+  <div class="c-name-area">
+    <div class="c-name" id="cName">―</div>
       </div>
 
       <!-- 정보 영역: 2단 그리드와 프레임으로 빈 공간 제어 -->
@@ -448,7 +448,7 @@
         </div>
       </div>
 
-      <!-- 바코드 영역 -->
+      <!-- 바코드 영역 (얇은 두께 적용) -->
       <div class="c-foot">
         <div class="c-bc-wrap">
           <div class="c-bc" id="cBc"></div>
@@ -487,7 +487,7 @@ function drawBarcode(id) {
     [1,2,1,2,1], [1,1,1,3,1], [3,1,1,1,1], [1,3,1,1,1], [1,1,3,1,1],
   ];
 
-  // 바코드 굵기
+  // 바코드 굵기: 너무 두껍지 않으면서도 선명하게
   const scale = 2.4;
 
   function addBar(w, fill) {
@@ -614,11 +614,13 @@ function onPhoto(e) {
   const r = new FileReader();
   r.onload = function(ev) {
     const url = ev.target.result;
-    document.getElementById('uImg').src = url;
-    document.getElementById('uImg').style.display = 'block';
+    
+    const uBox = document.getElementById('uPhotoBox');
+    uBox.style.backgroundImage = `url(${url})`;
     document.getElementById('uPh').style.display = 'none';
-    document.getElementById('cImg').src = url;
-    document.getElementById('cImg').style.display = 'block';
+    
+    const cBox = document.getElementById('cPhotoBox');
+    cBox.style.backgroundImage = `url(${url})`;
     document.getElementById('cPh').style.display = 'none';
   };
   r.readAsDataURL(f);
@@ -627,7 +629,7 @@ function onPhoto(e) {
 function savePng() {
   html2canvas(document.getElementById('card'), {
     scale: 4,
-    backgroundColor: '#fdfcfa',
+    backgroundColor: null, /* 배경을 투명하게 설정 */
     useCORS: true,
     logging: false,
   }).then(c => {
