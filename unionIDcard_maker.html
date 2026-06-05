@@ -839,8 +839,13 @@ function onPhoto(e) {
 function savePng() {
   html2canvas(document.getElementById('card'), {
     scale: 4,
+    width: 308,           // 카드 CSS 너비 고정 - DPR 영향 차단
+    height: 542,          // 카드 CSS 높이 고정
+    windowWidth: 1280,    // 가상 데스크탑 뷰포트 - 모바일 뷰포트 차이 격리
+    windowHeight: 800,
     backgroundColor: null,
     useCORS: true,
+    allowTaint: true,
     logging: false,
   }).then(c => {
     const a = document.createElement('a');
@@ -855,6 +860,3 @@ rebuild();
 </script>
 </body>
 </html>
-
-
-
