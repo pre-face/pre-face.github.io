@@ -272,8 +272,18 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    background-size: cover;
-    background-position: center;
+    position: relative;
+  }
+  /* img 태그 스타일 추가 */
+  .c-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
   }
   .c-photo .empty {
     font-family: 'Saira Condensed', sans-serif;
@@ -281,23 +291,28 @@
     color: #d8d6d2;
     letter-spacing: 3px;
     font-weight: 600;
+    z-index: 1;
   }
 
   .c-name-area {
     text-align: center;
     padding: 20px 24px 10px;
     flex-shrink: 0;
+    width: 100%;
+    overflow: hidden;
   }
   .c-name {
     font-family: 'Pretendard', sans-serif;
     font-weight: 700;
     color: #1a2e50;
     line-height: 1.1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
+    text-align: center;
     font-size: 24px;
     transition: color .2s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .c-name.latin { font-family: 'Inter', sans-serif; font-weight: 700; }
   .id-card.temp .c-name { color: #3a3a3c; }
@@ -411,7 +426,6 @@
 
     <div class="panel-head">정보 입력</div>
 
-    <!-- 정식 사원증: 부서 dropdown -->
     <div class="field formal-only">
       <label>소속</label>
       <select id="inDept" onchange="rebuild()">
@@ -423,10 +437,9 @@
       </select>
     </div>
 
-    <!-- 임시 출입증: 외부 소속 자유 입력 -->
     <div class="field temp-only">
       <label>외부 소속 / 방문 사유</label>
-      <input type="text" id="inExtAffil" placeholder="예: 외무부, 패군, 00 소속 기자" oninput="rebuild()">
+      <input type="text" id="inExtAffil" placeholder="예: 외무부, 패군, 00 신문사"oninput="rebuild()">
     </div>
 
     <div class="field">
@@ -436,7 +449,7 @@
 
     <div class="field">
       <label id="lblGrade">등급</label>
-      <input type="text" id="inGrade" placeholder="S, A, B, C 등" maxlength="6" oninput="rebuild()">
+      <input type="text" id="inGrade" placeholder="S, A, B, C 등 " maxlength="6" oninput="rebuild()">
     </div>
 
     <div class="field">
@@ -448,7 +461,7 @@
       <label>발급일 <span class="opt">(선택)</span></label>
       <div class="date-stack">
         <select id="inDateMonth" onchange="rebuild()">
-          <option value="">월 선택 안 함</option>
+          <option value="">선택 안 함</option>
           <option value="1">1월</option>
           <option value="2">2월</option>
           <option value="3">3월</option>
@@ -466,12 +479,11 @@
       </div>
     </div>
 
-    <!-- 임시 전용: 만료일 -->
     <div class="field temp-only">
       <label>만료일 <span class="opt">(선택)</span></label>
       <div class="date-stack">
         <select id="inExpiryMonth" onchange="rebuild()">
-          <option value="">월 선택 안 함</option>
+          <option value="">선택 안 함</option>
           <option value="1">1월</option>
           <option value="2">2월</option>
           <option value="3">3월</option>
@@ -526,6 +538,7 @@
 
       <div class="c-photo-area">
         <div class="c-photo" id="cPhotoBox">
+          <img id="cPhotoImg" src="" alt="Profile Photo">
           <div class="empty" id="cPh">PHOTO</div>
         </div>
       </div>
@@ -584,7 +597,6 @@ function setMode(newMode) {
   document.getElementById('modeTemp').classList.toggle('active', mode === 'temp');
   document.getElementById('modeTemp').classList.toggle('temp', mode === 'temp');
 
-  // 카드 부제, 워터마크, 라벨 변경
   if (mode === 'temp') {
     document.getElementById('cSub').textContent = 'Temporary Access Pass';
     document.getElementById('cWm').textContent = 'VISITOR';
@@ -643,7 +655,6 @@ function isCJK(text) {
   return /[\u3131-\uD79D\u4E00-\u9FFF\u3040-\u30FF]/.test(text);
 }
 
-/* 월/직접입력 → 날짜 문자열 */
 function computeDate(monthId, manualId, seed) {
   const manual = document.getElementById(manualId).value;
   if (manual && manual.trim()) return manual.trim();
@@ -654,9 +665,8 @@ function computeDate(monthId, manualId, seed) {
   const m = parseInt(month);
   const mm = String(m).padStart(2, '0');
 
-  // 결정론적 YY, DD (seed 기반). 편향을 막기 위해 salt 값 추가
   const hYear = h(seed + '|year|' + month + '|salt123');
-  const year = 20 + (hYear % 11); // 2020-2030년대 고르게 산출
+  const year = 20 + (hYear % 11); 
 
   let maxDay = 31;
   if ([4, 6, 9, 11].includes(m)) maxDay = 30;
@@ -675,13 +685,24 @@ function fitName(text) {
   el.className = 'c-name' + (cjk || len === 0 ? '' : ' latin');
 
   let size, spacing;
-  if (len === 0)       { size='24px'; spacing='0'; }
-  else if (len === 1)  { size='34px'; spacing='0'; }
-  else if (len === 2)  { size = cjk ? '28px' : '30px'; spacing = cjk ? '4px' : '6px'; }
-  else if (len <= 4)   { size = '24px';                 spacing = cjk ? '2px' : '3px'; }
-  else if (len <= 7)   { size = cjk ? '20px' : '18px';  spacing = cjk ? '1px' : '2px'; }
-  else if (len <= 12)  { size = '15px';                 spacing = cjk ? '0' : '1px'; }
-  else                 { size='13px'; spacing='0'; }
+  if (len === 0) {
+    size = '24px'; spacing = '0';
+  } else if (cjk) {
+    if (len === 1)      { size = '34px'; spacing = '0'; }
+    else if (len === 2) { size = '28px'; spacing = '4px'; }
+    else if (len <= 4)  { size = '24px'; spacing = '2px'; }
+    else if (len <= 7)  { size = '20px'; spacing = '1px'; }
+    else if (len <= 10) { size = '16px'; spacing = '0'; }
+    else                { size = '14px'; spacing = '-0.5px'; }
+  } else {
+    if (len <= 5)       { size = '26px'; spacing = '1px'; }
+    else if (len <= 8)  { size = '22px'; spacing = '0px'; }
+    else if (len <= 12) { size = '18px'; spacing = '-0.5px'; }
+    else if (len <= 16) { size = '15px'; spacing = '-0.5px'; }
+    else if (len <= 20) { size = '13px'; spacing = '-1px'; }
+    else                { size = '11.5px'; spacing = '-1px'; }
+  }
+  
   el.style.fontSize = size;
   el.style.letterSpacing = spacing;
 }
@@ -691,7 +712,6 @@ function rebuild() {
   const grade   = document.getElementById('inGrade').value;
   const ability = document.getElementById('inAbility').value;
 
-  // 소속: 모드에 따라
   let dept;
   if (mode === 'formal') {
     dept = document.getElementById('inDept').value;
@@ -700,16 +720,13 @@ function rebuild() {
   }
   document.getElementById('cDept').textContent = dept;
 
-  // 날짜 계산 (seed = 코드네임 + 등급 + 소속)
   const seed = (name||'') + '|' + (grade||'') + '|' + dept;
   const date   = computeDate('inDateMonth',   'inDate',   seed + '|issued');
   const expiry = computeDate('inExpiryMonth', 'inExpiry', seed + '|expiry');
 
-  // 이름
   document.getElementById('cName').textContent = name || '―';
   fitName(name);
 
-  // 등급
   if (grade && grade.trim()) {
     document.getElementById('cGrade').textContent = grade;
     document.getElementById('cGrade').classList.remove('empty');
@@ -718,12 +735,10 @@ function rebuild() {
     document.getElementById('cGrade').classList.add('empty');
   }
 
-  // 옵션 행 (능력 + 발급일)
   const optRow = document.getElementById('cOptRow');
   const cellAbility = document.getElementById('cellAbility');
   const cellIssue = document.getElementById('cellIssue');
   const hasAbility = ability.trim().length > 0;
-  // 우측 셀: 정식이면 ISSUED+발급일, 임시면 VALID UNTIL+만료일
   const dateValue = mode === 'temp' ? expiry : date;
   const hasDate = dateValue.trim().length > 0;
 
@@ -754,7 +769,6 @@ function rebuild() {
   if (hasAbility || hasDate) optRow.classList.remove('hidden-row');
   else                       optRow.classList.add('hidden-row');
 
-  // ID 번호 + 바코드
   const idVal = document.getElementById('cIdVal');
   if (name || grade) {
     const id = agentNo(dept, name, grade);
@@ -776,9 +790,15 @@ function onPhoto(e) {
   const r = new FileReader();
   r.onload = function(ev) {
     const url = ev.target.result;
+    
+    // 좌측 패널 미리보기는 배경 이미지 유지
     document.getElementById('uPhotoBox').style.backgroundImage = `url(${url})`;
     document.getElementById('uPh').style.display = 'none';
-    document.getElementById('cPhotoBox').style.backgroundImage = `url(${url})`;
+    
+    // 우측 사원증은 img 태그로 변경하여 화질 보존
+    const imgEl = document.getElementById('cPhotoImg');
+    imgEl.src = url;
+    imgEl.style.display = 'block';
     document.getElementById('cPh').style.display = 'none';
   };
   r.readAsDataURL(f);
