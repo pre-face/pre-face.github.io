@@ -150,7 +150,6 @@
     line-height: 1;
   }
 
-  /* 내용 요소들을 워터마크 위로 올림 */
   .c-head, .c-gold, .c-photo-area, .c-name-area, .c-fields, .c-foot, .c-gold-bottom {
     position: relative;
     z-index: 1;
@@ -238,13 +237,13 @@
   }
   .c-name.latin { font-family: 'DM Sans', sans-serif; font-weight: 700; }
 
-  /* 정보 그리드 - 중앙 정렬과 박스 프레임으로 허전함 완벽 방어 */
+  /* 정보 그리드 */
   .c-fields {
-    flex: 1; /* 남은 공간 모두 차지 */
+    flex: 1;
     padding: 0 32px;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* 항목이 1줄만 있어도 화면 중앙에 띄워 안정감 부여 */
+    justify-content: center;
   }
   .c-fields-inner {
     width: 100%;
@@ -252,7 +251,7 @@
     flex-direction: column;
     gap: 16px;
     padding: 16px 0;
-    border-top: 1.5px solid #f0efed;   /* 위아래 얇은 선으로 데이터 영역을 프레이밍 */
+    border-top: 1.5px solid #f0efed;
     border-bottom: 1.5px solid #f0efed;
   }
   .c-row {
@@ -269,6 +268,9 @@
     flex-direction: column;
     gap: 4px;
     min-width: 0;
+  }
+  .c-cell.hidden-cell {
+    display: none !important;
   }
   .c-cell.right {
     align-items: flex-end;
@@ -293,9 +295,9 @@
   }
   .c-val.empty { color: #d0d0d0; font-weight: 400; }
 
-  /* 푸터 - 얇고 밀도있는 바코드 */
+  /* 푸터 */
   .c-foot {
-    padding: 0 0 16px; /* 바코드를 아래로 살짝 내림 (기존 28px에서 16px로 조정) */
+    padding: 0 0 16px;
     flex-shrink: 0;
     display: flex;
     justify-content: center;
@@ -309,7 +311,7 @@
   }
   .c-bc {
     display: flex;
-    height: 28px; /* 바코드 높이를 낮춰 비율을 세련되게 */
+    height: 28px;
     width: 100%;
     justify-content: center;
   }
@@ -317,7 +319,6 @@
   .c-bc .b.fill { background:#111; }
   .c-bc .b.gap  { background: transparent; }
 
-  /* 바코드 아래의 ID 디자인 */
   .c-id-number {
     font-family: 'Source Code Pro', monospace;
     font-size: 9.5px;
@@ -352,6 +353,7 @@
       <select id="inDept" onchange="rebuild()">
         <option value="HUNTERS">헌터즈 (HUNTERS)</option>
         <option value="EAGLE EYE">이글아이 (EAGLE EYE)</option>
+        <option value="WOLFDOG">울프독 (WOLFDOG)</option>
         <option value="DRACAL">드라칼 (DRACAL)</option>
         <option value="UNDERGROUND">언더그라운드 (UNDERGROUND)</option>
       </select>
@@ -408,21 +410,20 @@
         <div class="c-head-text">
           <div class="c-head-en">UNION</div>
           <div class="c-head-sub">ESPER MANAGEMENT DIV.</div>
-    </div>
-  </div>
-  <div class="c-gold"></div>
+        </div>
+      </div>
+      <div class="c-gold"></div>
 
-  <div class="c-photo-area">
-    <div class="c-photo" id="cPhotoBox">
-      <div class="empty" id="cPh">PHOTO</div>
-    </div>
-  </div>
-
-  <div class="c-name-area">
-    <div class="c-name" id="cName">―</div>
+      <div class="c-photo-area">
+        <div class="c-photo" id="cPhotoBox">
+          <div class="empty" id="cPh">PHOTO</div>
+        </div>
       </div>
 
-      <!-- 정보 영역: 2단 그리드와 프레임으로 빈 공간 제어 -->
+      <div class="c-name-area">
+        <div class="c-name" id="cName">―</div>
+      </div>
+
       <div class="c-fields">
         <div class="c-fields-inner">
           <div class="c-row">
@@ -448,7 +449,6 @@
         </div>
       </div>
 
-      <!-- 바코드 영역 (얇은 두께 적용) -->
       <div class="c-foot">
         <div class="c-bc-wrap">
           <div class="c-bc" id="cBc"></div>
@@ -469,13 +469,11 @@ function h(s) {
   return Math.abs(v);
 }
 
-// 규칙성 있는 8자리 번호 생성
 function agentNo(dept, name, grade) {
   const v = h((dept||'')+'|'+(name||'')+'|'+(grade||''));
   return String(v % 10000).padStart(4,'0') + String(Math.floor(v/10000) % 10000).padStart(4,'0');
 }
 
-// ID 코드를 바탕으로 바코드 생성
 function drawBarcode(id) {
   const el = document.getElementById('cBc');
   el.innerHTML = '';
@@ -487,7 +485,6 @@ function drawBarcode(id) {
     [1,2,1,2,1], [1,1,1,3,1], [3,1,1,1,1], [1,3,1,1,1], [1,1,3,1,1],
   ];
 
-  // 바코드 굵기: 너무 두껍지 않으면서도 선명하게
   const scale = 2.4;
 
   function addBar(w, fill) {
@@ -497,16 +494,13 @@ function drawBarcode(id) {
     el.appendChild(d);
   }
 
-  // 시작 가드
   addBar(1, true); addBar(1, false); addBar(2, true); addBar(1, false);
   
-  // 번호 패턴 렌더링 (8자리 모두 사용)
   for (let i = 0; i < digits.length; i++) {
     const p = patterns[parseInt(digits[i])];
     p.forEach((w, idx) => addBar(w, idx % 2 === 0));
   }
   
-  // 종료 가드
   addBar(2, true); addBar(1, false); addBar(1, true);
 }
 
@@ -552,20 +546,20 @@ function rebuild() {
       document.getElementById('cGrade').classList.add('empty');
   }
 
-  // 옵션 항목(능력, 발급일) 동적 렌더링 - 빈 공간 밸런스 유지
+  // 옵션 항목 동적 렌더링 — 단독 입력 시 좌측 정렬로 풀폭
   const optRow = document.getElementById('cOptRow');
   const cellAbility = document.getElementById('cellAbility');
   const cellIssue = document.getElementById('cellIssue');
-  let hasOpt = false;
 
-  if (ability.trim()) {
+  const hasAbility = ability.trim().length > 0;
+  const hasDate = date.trim().length > 0;
+
+  if (hasAbility) {
     const el = document.getElementById('cAbility');
     el.textContent = ability;
     el.classList.remove('empty');
-    cellAbility.style.visibility = 'visible';
-    hasOpt = true;
+    cellAbility.classList.remove('hidden-cell');
 
-    // 글자 수에 따른 폰트 크기 동적 조절
     const len = ability.length;
     if (len > 14) {
       el.style.fontSize = '9px';
@@ -575,20 +569,26 @@ function rebuild() {
       el.style.fontSize = '13px';
     }
   } else {
-    cellAbility.style.visibility = 'hidden';
+    cellAbility.classList.add('hidden-cell');
   }
 
-  if (date.trim()) {
+  if (hasDate) {
     document.getElementById('cDateVal').textContent = date;
     document.getElementById('cDateVal').classList.remove('empty');
-    cellIssue.style.visibility = 'visible';
-    hasOpt = true;
+    cellIssue.classList.remove('hidden-cell');
   } else {
-    cellIssue.style.visibility = 'hidden';
+    cellIssue.classList.add('hidden-cell');
   }
 
-  // 능력, 발급일 중 하나라도 있으면 해당 줄(Row) 자체를 살려 균형을 유지함
-  if (hasOpt) {
+  // 단독 입력 시 ISSUED의 우측 정렬(.right) 해제
+  if (hasDate && !hasAbility) {
+    cellIssue.classList.remove('right');
+  } else {
+    cellIssue.classList.add('right');
+  }
+
+  // 행 자체 표시 토글
+  if (hasAbility || hasDate) {
     optRow.classList.remove('hidden-row');
   } else {
     optRow.classList.add('hidden-row');
@@ -629,7 +629,7 @@ function onPhoto(e) {
 function savePng() {
   html2canvas(document.getElementById('card'), {
     scale: 4,
-    backgroundColor: null, /* 배경을 투명하게 설정 */
+    backgroundColor: null,
     useCORS: true,
     logging: false,
   }).then(c => {
