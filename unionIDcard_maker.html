@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,7 +7,8 @@
 <title>UNION — 사원증 발급</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Saira+Condensed:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<!-- Montserrat 폰트 추가 -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700&family=Saira+Condensed:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
@@ -273,8 +275,7 @@
   .c-photo img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: center;
+    object-fit: fill; /* 캔버스에서 자른 비율 그대로 덮어씀 */
     position: absolute;
     top: 0;
     left: 0;
@@ -299,8 +300,8 @@
     font-family: 'Pretendard', sans-serif;
     font-weight: 700;
     color: #1a2e50;
-    line-height: 1.35; /* 늘린 줄 간격 */
-    padding-bottom: 6px; /* 꼬리가 잘리지 않도록 하단 여백 추가 */
+    line-height: 1.3;
+    padding-bottom: 6px; /* g, y 등 아랫부분 잘림 방지 */
     display: block;
     text-align: center;
     font-size: 24px;
@@ -309,10 +310,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .c-name.latin { 
-    font-family: 'Montserrat', sans-serif; 
-    font-weight: 700; 
-  }
+  .c-name.latin { font-family: 'Montserrat', sans-serif; font-weight: 700; }
   .id-card.temp .c-name { color: #3a3a3c; }
 
   .c-fields {
@@ -452,13 +450,13 @@
 
     <div class="field">
       <label>능력 <span class="opt">(선택)</span></label>
-      <input type="text" id="inAbility" placeholder="예: 버스트 스위치, 必中, IGNIS …" maxlength="20" oninput="rebuild()">
+      <input type="text" id="inAbility" placeholder="예:버스트 스위치, 必中, IGNIS …" maxlength="20" oninput="rebuild()">
     </div>
     
     <div class="field formal-only">
       <label>발급일 <span class="opt">(선택)</span></label>
       <div class="date-stack">
-        <select id="inDateMonth" onchange="changeFormalMonth()">
+        <select id="inDateMonth" onchange="onDateMonthChange()">
           <option value="">선택 안 함</option>
           <option value="1">1월</option>
           <option value="2">2월</option>
@@ -480,7 +478,7 @@
     <div class="field temp-only">
       <label>만료일 <span class="opt">(선택)</span></label>
       <div class="date-stack">
-        <select id="inExpiryMonth" onchange="changeTempMonth()">
+        <select id="inExpiryMonth" onchange="onExpiryMonthChange()">
           <option value="">선택 안 함</option>
           <option value="1">1월</option>
           <option value="2">2월</option>
@@ -585,8 +583,18 @@
 
 <script>
 let mode = 'formal';
-let formalDateSalt = '';
-let tempDateSalt = '';
+let currentDateSalt = Math.random().toString();
+let currentExpirySalt = Math.random().toString();
+
+function onDateMonthChange() {
+  currentDateSalt = Math.random().toString();
+  rebuild();
+}
+
+function onExpiryMonthChange() {
+  currentExpirySalt = Math.random().toString();
+  rebuild();
+}
 
 function setMode(newMode) {
   mode = newMode;
@@ -609,16 +617,6 @@ function setMode(newMode) {
     document.getElementById('cLblIssue').textContent = 'ISSUED';
   }
 
-  rebuild();
-}
-
-function changeFormalMonth() {
-  formalDateSalt = Math.random().toString(36).substring(2, 8);
-  rebuild();
-}
-
-function changeTempMonth() {
-  tempDateSalt = Math.random().toString(36).substring(2, 8);
   rebuild();
 }
 
@@ -665,7 +663,7 @@ function isCJK(text) {
   return /[\u3131-\uD79D\u4E00-\u9FFF\u3040-\u30FF]/.test(text);
 }
 
-function computeDate(monthId, manualId, seed, dynamicSalt) {
+function computeDate(monthId, manualId, seedSalt) {
   const manual = document.getElementById(manualId).value;
   if (manual && manual.trim()) return manual.trim();
 
@@ -675,16 +673,14 @@ function computeDate(monthId, manualId, seed, dynamicSalt) {
   const m = parseInt(month);
   const mm = String(m).padStart(2, '0');
 
-  const hashInput = seed + '|' + month + '|' + dynamicSalt;
-  
-  const hYear = h(hashInput + '|year');
+  const hYear = h(seedSalt + '|year');
   const year = 20 + (hYear % 11); 
 
   let maxDay = 31;
   if ([4, 6, 9, 11].includes(m)) maxDay = 30;
   else if (m === 2) maxDay = 28;
 
-  const hDay = h(hashInput + '|day');
+  const hDay = h(seedSalt + '|day');
   const day = 1 + (hDay % maxDay);
 
   return String(year).padStart(2, '0') + '.' + mm + '.' + String(day).padStart(2, '0');
@@ -707,11 +703,11 @@ function fitName(text) {
     else if (len <= 10) { size = '16px'; spacing = '0'; }
     else                { size = '14px'; spacing = '-0.5px'; }
   } else {
-    if (len <= 5)       { size = '26px'; spacing = '0px'; }
-    else if (len <= 8)  { size = '22px'; spacing = '-0.5px'; }
-    else if (len <= 12) { size = '18px'; spacing = '-0.5px'; }
-    else if (len <= 16) { size = '14px'; spacing = '-1px'; }
-    else if (len <= 20) { size = '12px'; spacing = '-1px'; }
+    if (len <= 6)       { size = '26px'; spacing = '0px'; }
+    else if (len <= 9)  { size = '22px'; spacing = '-0.5px'; }
+    else if (len <= 12) { size = '18px'; spacing = '-1px'; }
+    else if (len <= 16) { size = '15px'; spacing = '-1px'; }
+    else if (len <= 20) { size = '13px'; spacing = '-1px'; }
     else                { size = '11px'; spacing = '-1px'; }
   }
   
@@ -732,9 +728,8 @@ function rebuild() {
   }
   document.getElementById('cDept').textContent = dept;
 
-  const seed = (name||'') + '|' + (grade||'') + '|' + dept;
-  const date   = computeDate('inDateMonth',   'inDate',   seed + '|issued', formalDateSalt);
-  const expiry = computeDate('inExpiryMonth', 'inExpiry', seed + '|expiry', tempDateSalt);
+  const date   = computeDate('inDateMonth',   'inDate',   currentDateSalt);
+  const expiry = computeDate('inExpiryMonth', 'inExpiry', currentExpirySalt);
 
   document.getElementById('cName').textContent = name || '―';
   fitName(name);
@@ -801,14 +796,43 @@ function onPhoto(e) {
   if (!f) return;
   const r = new FileReader();
   r.onload = function(ev) {
-    const url = ev.target.result;
-    document.getElementById('uPhotoBox').style.backgroundImage = `url(${url})`;
-    document.getElementById('uPh').style.display = 'none';
-    
-    const imgEl = document.getElementById('cPhotoImg');
-    imgEl.src = url;
-    imgEl.style.display = 'block';
-    document.getElementById('cPh').style.display = 'none';
+    const img = new Image();
+    img.onload = function() {
+      const targetW = 136 * 4;
+      const targetH = 174 * 4;
+      const canvas = document.createElement('canvas');
+      canvas.width = targetW;
+      canvas.height = targetH;
+      const ctx = canvas.getContext('2d');
+
+      const imgRatio = img.width / img.height;
+      const targetRatio = targetW / targetH;
+      let drawW, drawH, drawX, drawY;
+
+      if (imgRatio > targetRatio) {
+        drawH = img.height;
+        drawW = img.height * targetRatio;
+        drawX = (img.width - drawW) / 2;
+        drawY = 0;
+      } else {
+        drawW = img.width;
+        drawH = img.width / targetRatio;
+        drawX = 0;
+        drawY = (img.height - drawH) / 2;
+      }
+
+      ctx.drawImage(img, drawX, drawY, drawW, drawH, 0, 0, targetW, targetH);
+      const url = canvas.toDataURL('image/png', 1.0);
+
+      document.getElementById('uPhotoBox').style.backgroundImage = `url(${url})`;
+      document.getElementById('uPh').style.display = 'none';
+
+      const imgEl = document.getElementById('cPhotoImg');
+      imgEl.src = url;
+      imgEl.style.display = 'block';
+      document.getElementById('cPh').style.display = 'none';
+    };
+    img.src = ev.target.result;
   };
   r.readAsDataURL(f);
 }
@@ -832,3 +856,6 @@ rebuild();
 </script>
 </body>
 </html>
+
+
+```
