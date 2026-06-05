@@ -5,13 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UNION — 사원증 발급</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=Source+Code+Pro:wght@400;500;600&family=Oswald:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Saira+Condensed:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
     background: #edecea;
     color: #222;
-    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    font-family: 'Inter', 'Pretendard', sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -20,6 +21,7 @@
   }
 
   .page-title {
+    font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 600;
     color: #aaa;
@@ -46,7 +48,40 @@
     flex-direction: column;
     gap: 16px;
   }
+
+  /* 모드 토글 */
+  .mode-toggle {
+    display: flex;
+    gap: 4px;
+    padding: 3px;
+    background: #f5f4f1;
+    border-radius: 6px;
+  }
+  .mode-btn {
+    flex: 1;
+    padding: 8px 0;
+    background: transparent;
+    border: none;
+    color: #999;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all .15s;
+  }
+  .mode-btn:hover { color: #555; }
+  .mode-btn.active {
+    background: #fff;
+    color: #1a2e50;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  .mode-btn.active.temp {
+    color: #3a3a3c;
+  }
+
   .panel-head {
+    font-family: 'Inter', sans-serif;
     font-size: 10px;
     font-weight: 600;
     color: #b0ada8;
@@ -56,6 +91,7 @@
   }
   .field label {
     display: block;
+    font-family: 'Pretendard', 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 600;
     color: #777;
@@ -68,7 +104,7 @@
     background: #fafaf9;
     border: 1px solid #e2e0dd;
     color: #222;
-    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    font-family: 'Inter', 'Pretendard', sans-serif;
     font-size: 13px;
     border-radius: 5px;
     outline: none;
@@ -76,6 +112,11 @@
   }
   .field input:focus, .field select:focus { border-color:#1a2e50; }
   .field input::placeholder { color:#ccc; }
+  .field.temp-only { display: none; }
+  body.temp-mode .field.temp-only { display: block; }
+  body.temp-mode .field.formal-only { display: none; }
+  body.temp-mode .field input:focus,
+  body.temp-mode .field select:focus { border-color: #3a3a3c; }
 
   .photo-upload {
     width: 100%;
@@ -93,7 +134,10 @@
     background-position: center;
   }
   .photo-upload:hover { border-color:#aaa; }
-  .photo-upload .ph { text-align:center; color:#ccc; font-size:11px; line-height:1.6; }
+  .photo-upload .ph {
+    font-family: 'Pretendard', 'Inter', sans-serif;
+    text-align:center; color:#ccc; font-size:11px; line-height:1.6;
+  }
   .photo-upload .ph .icon { font-size:20px; display:block; margin-bottom:2px; opacity:.5; }
 
   .btn-export {
@@ -102,18 +146,24 @@
     background: #1a2e50;
     color: #fff;
     border: none;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 2px;
     cursor: pointer;
     border-radius: 5px;
+    transition: background .15s;
   }
   .btn-export:hover { background:#15253f; }
+  body.temp-mode .btn-export { background: #3a3a3c; }
+  body.temp-mode .btn-export:hover { background: #2d2d2f; }
 
   /* ── 카드 ── */
   .card-area { display:flex; flex-direction:column; align-items:center; gap:8px; }
-  .card-note { font-size:10px; color:#c0bdb8; }
+  .card-note {
+    font-family: 'Inter', sans-serif;
+    font-size:10px; color:#c0bdb8;
+  }
 
   .id-card {
     width: 308px;
@@ -127,7 +177,6 @@
     box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 6px 20px rgba(0,0,0,.08);
   }
 
-  /* 배경 워터마크 */
   .c-watermark {
     position: absolute;
     top: 50%;
@@ -142,12 +191,17 @@
     pointer-events: none;
   }
   .c-watermark .wm-en {
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Saira Condensed', sans-serif;
     font-size: 80px;
     font-weight: 700;
     color: rgba(0, 0, 0, 0.02);
     letter-spacing: 8px;
     line-height: 1;
+  }
+  .id-card.temp .c-watermark .wm-en {
+    font-size: 70px;
+    color: rgba(0, 0, 0, 0.045);
+    letter-spacing: 10px;
   }
 
   .c-head, .c-gold, .c-photo-area, .c-name-area, .c-fields, .c-foot, .c-gold-bottom {
@@ -155,7 +209,6 @@
     z-index: 1;
   }
 
-  /* 헤더 */
   .c-head {
     background: #1a2e50;
     height: 72px;
@@ -165,7 +218,10 @@
     justify-content: flex-start;
     gap: 14px;
     flex-shrink: 0;
+    transition: background .2s;
   }
+  .id-card.temp .c-head { background: #3a3a3c; }
+
   .c-head-logo svg { width:32px; height:32px; display:block; }
   .c-head-text { 
     display: flex; 
@@ -173,25 +229,26 @@
     gap: 2px; 
   }
   .c-head-en {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    font-size: 24px;
+    font-family: 'Saira Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
     color: #ffffff;
-    letter-spacing: 3px;
+    letter-spacing: 1.5px;
     line-height: 1;
   }
   .c-head-sub {
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 600;
-    font-size: 7.5px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 9px;
     color: #c9a84c;
-    letter-spacing: 2px;
+    letter-spacing: 0;
     line-height: 1;
   }
+  .id-card.temp .c-head-sub { color: #b5b3b0; }
 
   .c-gold { height:2px; background:#c9a84c; flex-shrink:0; }
+  .id-card.temp .c-gold { background: #a8a5a0; }
 
-  /* 사진 */
   .c-photo-area {
     padding: 32px 0 0;
     display: flex;
@@ -212,21 +269,20 @@
     background-position: center;
   }
   .c-photo .empty {
-    font-family: 'Oswald', sans-serif;
-    font-size: 10px;
+    font-family: 'Saira Condensed', sans-serif;
+    font-size: 11px;
     color: #d8d6d2;
     letter-spacing: 3px;
-    font-weight: 500;
+    font-weight: 600;
   }
 
-  /* 이름 */
   .c-name-area {
     text-align: center;
     padding: 20px 24px 10px;
     flex-shrink: 0;
   }
   .c-name {
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     font-weight: 700;
     color: #1a2e50;
     line-height: 1.1;
@@ -234,10 +290,11 @@
     align-items: center;
     justify-content: center;
     font-size: 24px;
+    transition: color .2s;
   }
-  .c-name.latin { font-family: 'DM Sans', sans-serif; font-weight: 700; }
+  .c-name.latin { font-family: 'Inter', sans-serif; font-weight: 700; }
+  .id-card.temp .c-name { color: #3a3a3c; }
 
-  /* 정보 그리드 */
   .c-fields {
     flex: 1;
     padding: 0 32px;
@@ -259,9 +316,7 @@
     justify-content: space-between;
     align-items: center;
   }
-  .c-row.hidden-row { 
-    display: none !important; 
-  }
+  .c-row.hidden-row { display: none !important; }
   .c-cell {
     flex: 1;
     display: flex;
@@ -269,24 +324,22 @@
     gap: 4px;
     min-width: 0;
   }
-  .c-cell.hidden-cell {
-    display: none !important;
-  }
+  .c-cell.hidden-cell { display: none !important; }
   .c-cell.right {
     align-items: flex-end;
     text-align: right;
   }
   .c-label {
-    font-family: 'Oswald', sans-serif;
-    font-size: 8px;
-    font-weight: 500;
+    font-family: 'Saira Condensed', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
     color: #999;
     letter-spacing: 1.5px;
   }
   .c-val {
-    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
+    font-family: 'Inter', 'Pretendard', sans-serif;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     color: #222;
     white-space: nowrap;
     overflow: hidden;
@@ -295,9 +348,8 @@
   }
   .c-val.empty { color: #d0d0d0; font-weight: 400; }
 
-  /* 푸터 */
   .c-foot {
-    padding: 0 0 16px;
+    padding: 0 0 8px;
     flex-shrink: 0;
     display: flex;
     justify-content: center;
@@ -320,18 +372,17 @@
   .c-bc .b.gap  { background: transparent; }
 
   .c-id-number {
-    font-family: 'Source Code Pro', monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 9.5px;
     font-weight: 500;
     color: #666;
     letter-spacing: 2px;
     margin-top: 6px;
   }
-  .c-id-number.empty {
-    color: transparent;
-  }
+  .c-id-number.empty { color: transparent; }
 
-  .c-gold-bottom { height:6px; background:#1a2e50; flex-shrink:0; }
+  .c-gold-bottom { height:6px; background:#1a2e50; flex-shrink:0; transition: background .2s; }
+  .id-card.temp .c-gold-bottom { background: #3a3a3c; }
 
   @media (max-width: 700px) {
     .workspace { flex-direction:column; align-items:center; gap:32px; }
@@ -346,9 +397,15 @@
 <div class="workspace">
 
   <div class="panel">
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeFormal" onclick="setMode('formal')">정식 사원증</button>
+      <button class="mode-btn" id="modeTemp" onclick="setMode('temp')">임시 출입증</button>
+    </div>
+
     <div class="panel-head">정보 입력</div>
 
-    <div class="field">
+    <!-- 정식 사원증: 부서 dropdown -->
+    <div class="field formal-only">
       <label>소속</label>
       <select id="inDept" onchange="rebuild()">
         <option value="HUNTERS">헌터즈 (HUNTERS)</option>
@@ -359,24 +416,36 @@
       </select>
     </div>
 
+    <!-- 임시 출입증: 외부 소속 자유 입력 -->
+    <div class="field temp-only">
+      <label>외부 소속 / 방문 사유</label>
+      <input type="text" id="inExtAffil" placeholder="예: 외무부, 패군, 00 소속 기자" oninput="rebuild()">
+    </div>
+
     <div class="field">
       <label>코드네임</label>
       <input type="text" id="inName" placeholder="한글 · 영문 · 한자" oninput="rebuild()">
     </div>
 
-   <div class="field">
-      <label>등급</label>
-      <input type="text" id="inGrade" placeholder="S, A, B, C …" maxlength="4" oninput="rebuild()">
+    <div class="field">
+      <label id="lblGrade">등급</label>
+      <input type="text" id="inGrade" placeholder="S, A, B, C 등" maxlength="6" oninput="rebuild()">
     </div>
 
     <div class="field">
       <label>능력 <span class="opt">(선택)</span></label>
-      <input type="text" id="inAbility" placeholder="예: 버스트 스위치, 必中, IGNIS 등" maxlength="20" oninput="rebuild()">
+      <input type="text" id="inAbility" placeholder="버스트 스위치, 必中, Ignis 등" maxlength="20" oninput="rebuild()">
     </div>
    
-    <div class="field">
+    <div class="field formal-only">
       <label>발급일 <span class="opt">(선택)</span></label>
       <input type="text" id="inDate" placeholder="2026.06.04" oninput="rebuild()">
+    </div>
+
+    <!-- 임시 전용: 만료일 -->
+    <div class="field temp-only">
+      <label>만료일 <span class="opt">(선택)</span></label>
+      <input type="text" id="inExpiry" placeholder="2026.06.11" oninput="rebuild()">
     </div>
 
     <div class="field">
@@ -394,7 +463,7 @@
     <div class="id-card" id="card">
       
       <div class="c-watermark">
-        <div class="wm-en">UNION</div>
+        <div class="wm-en" id="cWm">UNION</div>
       </div>
 
       <div class="c-head">
@@ -409,7 +478,7 @@
         </div>
         <div class="c-head-text">
           <div class="c-head-en">UNION</div>
-          <div class="c-head-sub">ESPER MANAGEMENT DIV.</div>
+          <div class="c-head-sub" id="cSub">Esper Management Agency</div>
         </div>
       </div>
       <div class="c-gold"></div>
@@ -428,11 +497,11 @@
         <div class="c-fields-inner">
           <div class="c-row">
             <div class="c-cell">
-              <div class="c-label">DIVISION</div>
+              <div class="c-label" id="cLblDept">DIVISION</div>
               <div class="c-val" id="cDept">HUNTERS</div>
             </div>
             <div class="c-cell right">
-              <div class="c-label">GRADE</div>
+              <div class="c-label" id="cLblGrade">GRADE</div>
               <div class="c-val empty" id="cGrade">—</div>
             </div>
           </div>
@@ -442,7 +511,7 @@
               <div class="c-val empty" id="cAbility">—</div>
             </div>
             <div class="c-cell right" id="cellIssue">
-              <div class="c-label">ISSUED</div>
+              <div class="c-label" id="cLblIssue">ISSUED</div>
               <div class="c-val empty" id="cDateVal">—</div>
             </div>
           </div>
@@ -463,6 +532,33 @@
 </div>
 
 <script>
+let mode = 'formal';
+
+function setMode(newMode) {
+  mode = newMode;
+  document.body.classList.toggle('temp-mode', mode === 'temp');
+  document.getElementById('card').classList.toggle('temp', mode === 'temp');
+
+  document.getElementById('modeFormal').classList.toggle('active', mode === 'formal');
+  document.getElementById('modeTemp').classList.toggle('active', mode === 'temp');
+  document.getElementById('modeTemp').classList.toggle('temp', mode === 'temp');
+
+  // 카드 부제, 워터마크, 라벨 변경
+  if (mode === 'temp') {
+    document.getElementById('cSub').textContent = 'Temporary Access Pass';
+    document.getElementById('cWm').textContent = 'VISITOR';
+    document.getElementById('cLblDept').textContent = 'AFFILIATION';
+    document.getElementById('cLblIssue').textContent = 'VALID UNTIL';
+  } else {
+    document.getElementById('cSub').textContent = 'Esper Management Agency';
+    document.getElementById('cWm').textContent = 'UNION';
+    document.getElementById('cLblDept').textContent = 'DIVISION';
+    document.getElementById('cLblIssue').textContent = 'ISSUED';
+  }
+
+  rebuild();
+}
+
 function h(s) {
   let v = 0;
   for (let i = 0; i < s.length; i++) v = ((v << 5) - v + s.charCodeAt(i)) | 0;
@@ -495,12 +591,10 @@ function drawBarcode(id) {
   }
 
   addBar(1, true); addBar(1, false); addBar(2, true); addBar(1, false);
-  
   for (let i = 0; i < digits.length; i++) {
     const p = patterns[parseInt(digits[i])];
     p.forEach((w, idx) => addBar(w, idx % 2 === 0));
   }
-  
   addBar(2, true); addBar(1, false); addBar(1, true);
 }
 
@@ -527,77 +621,76 @@ function fitName(text) {
 }
 
 function rebuild() {
-  const dept    = document.getElementById('inDept').value;
   const name    = document.getElementById('inName').value;
   const grade   = document.getElementById('inGrade').value;
   const ability = document.getElementById('inAbility').value;
   const date    = document.getElementById('inDate').value;
+  const expiry  = document.getElementById('inExpiry').value;
 
+  // 소속: 모드에 따라
+  let dept;
+  if (mode === 'formal') {
+    dept = document.getElementById('inDept').value;
+  } else {
+    dept = document.getElementById('inExtAffil').value || '—';
+  }
+  document.getElementById('cDept').textContent = dept;
+
+  // 이름
   document.getElementById('cName').textContent = name || '―';
   fitName(name);
 
-  document.getElementById('cDept').textContent = dept;
-  
+  // 등급
   if (grade && grade.trim()) {
-      document.getElementById('cGrade').textContent = grade;
-      document.getElementById('cGrade').classList.remove('empty');
+    document.getElementById('cGrade').textContent = grade;
+    document.getElementById('cGrade').classList.remove('empty');
   } else {
-      document.getElementById('cGrade').textContent = '—';
-      document.getElementById('cGrade').classList.add('empty');
+    document.getElementById('cGrade').textContent = '—';
+    document.getElementById('cGrade').classList.add('empty');
   }
 
-  // 옵션 항목 동적 렌더링 — 단독 입력 시 좌측 정렬로 풀폭
+  // 옵션 행 (능력 + 발급일)
   const optRow = document.getElementById('cOptRow');
   const cellAbility = document.getElementById('cellAbility');
   const cellIssue = document.getElementById('cellIssue');
-
   const hasAbility = ability.trim().length > 0;
-  const hasDate = date.trim().length > 0;
+  // 우측 셀: 정식이면 ISSUED+발급일, 임시면 VALID UNTIL+만료일
+  const dateValue = mode === 'temp' ? expiry : date;
+  const hasDate = dateValue.trim().length > 0;
 
   if (hasAbility) {
     const el = document.getElementById('cAbility');
     el.textContent = ability;
     el.classList.remove('empty');
     cellAbility.classList.remove('hidden-cell');
-
     const len = ability.length;
-    if (len > 14) {
-      el.style.fontSize = '9px';
-    } else if (len > 9) {
-      el.style.fontSize = '11px';
-    } else {
-      el.style.fontSize = '13px';
-    }
+    if (len > 14)      el.style.fontSize = '9px';
+    else if (len > 9)  el.style.fontSize = '11px';
+    else               el.style.fontSize = '13px';
   } else {
     cellAbility.classList.add('hidden-cell');
   }
 
   if (hasDate) {
-    document.getElementById('cDateVal').textContent = date;
+    document.getElementById('cDateVal').textContent = dateValue;
     document.getElementById('cDateVal').classList.remove('empty');
     cellIssue.classList.remove('hidden-cell');
   } else {
     cellIssue.classList.add('hidden-cell');
   }
 
-  // 단독 입력 시 ISSUED의 우측 정렬(.right) 해제
-  if (hasDate && !hasAbility) {
-    cellIssue.classList.remove('right');
-  } else {
-    cellIssue.classList.add('right');
-  }
+  if (hasDate && !hasAbility) cellIssue.classList.remove('right');
+  else                        cellIssue.classList.add('right');
 
-  // 행 자체 표시 토글
-  if (hasAbility || hasDate) {
-    optRow.classList.remove('hidden-row');
-  } else {
-    optRow.classList.add('hidden-row');
-  }
+  if (hasAbility || hasDate) optRow.classList.remove('hidden-row');
+  else                       optRow.classList.add('hidden-row');
 
+  // ID 번호 + 바코드
   const idVal = document.getElementById('cIdVal');
   if (name || grade) {
     const id = agentNo(dept, name, grade);
-    const formattedId = 'UNI-' + id.slice(0,4) + '-' + id.slice(4,8);
+    const prefix = mode === 'temp' ? 'TMP-' : 'UNI-';
+    const formattedId = prefix + id.slice(0,4) + '-' + id.slice(4,8);
     idVal.textContent = formattedId;
     idVal.classList.remove('empty');
     drawBarcode(id);
@@ -614,13 +707,9 @@ function onPhoto(e) {
   const r = new FileReader();
   r.onload = function(ev) {
     const url = ev.target.result;
-    
-    const uBox = document.getElementById('uPhotoBox');
-    uBox.style.backgroundImage = `url(${url})`;
+    document.getElementById('uPhotoBox').style.backgroundImage = `url(${url})`;
     document.getElementById('uPh').style.display = 'none';
-    
-    const cBox = document.getElementById('cPhotoBox');
-    cBox.style.backgroundImage = `url(${url})`;
+    document.getElementById('cPhotoBox').style.backgroundImage = `url(${url})`;
     document.getElementById('cPh').style.display = 'none';
   };
   r.readAsDataURL(f);
@@ -634,7 +723,8 @@ function savePng() {
     logging: false,
   }).then(c => {
     const a = document.createElement('a');
-    a.download = 'UNION_' + (document.getElementById('inName').value || 'card') + '.png';
+    const prefix = mode === 'temp' ? 'VISITOR_' : 'UNION_';
+    a.download = prefix + (document.getElementById('inName').value || 'card') + '.png';
     a.href = c.toDataURL('image/png');
     a.click();
   });
