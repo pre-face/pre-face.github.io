@@ -6,7 +6,7 @@
 <title>UNION — 사원증 발급</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Saira+Condensed:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Saira+Condensed:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
@@ -37,7 +37,6 @@
     justify-content: center;
   }
 
-  /* ── 패널 ── */
   .panel {
     width: 256px;
     background: #fff;
@@ -49,7 +48,6 @@
     gap: 16px;
   }
 
-  /* 모드 토글 */
   .mode-toggle {
     display: flex;
     gap: 4px;
@@ -118,7 +116,6 @@
   body.temp-mode .field input:focus,
   body.temp-mode .field select:focus { border-color: #3a3a3c; }
 
-  /* 발급일 / 만료일 컨트롤 */
   .date-stack {
     display: flex;
     flex-direction: column;
@@ -165,7 +162,6 @@
   body.temp-mode .btn-export { background: #3a3a3c; }
   body.temp-mode .btn-export:hover { background: #2d2d2f; }
 
-  /* ── 카드 ── */
   .card-area { display:flex; flex-direction:column; align-items:center; gap:8px; }
   .card-note {
     font-family: 'Inter', sans-serif;
@@ -274,7 +270,6 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     position: relative;
   }
-  /* img 태그 스타일 추가 */
   .c-photo img {
     width: 100%;
     height: 100%;
@@ -299,13 +294,13 @@
     padding: 20px 24px 10px;
     flex-shrink: 0;
     width: 100%;
-    overflow: hidden;
   }
   .c-name {
     font-family: 'Pretendard', sans-serif;
     font-weight: 700;
     color: #1a2e50;
-    line-height: 1.1;
+    line-height: 1.35; /* 늘린 줄 간격 */
+    padding-bottom: 6px; /* 꼬리가 잘리지 않도록 하단 여백 추가 */
     display: block;
     text-align: center;
     font-size: 24px;
@@ -314,7 +309,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .c-name.latin { font-family: 'Inter', sans-serif; font-weight: 700; }
+  .c-name.latin { 
+    font-family: 'Montserrat', sans-serif; 
+    font-weight: 700; 
+  }
   .id-card.temp .c-name { color: #3a3a3c; }
 
   .c-fields {
@@ -439,7 +437,7 @@
 
     <div class="field temp-only">
       <label>외부 소속 / 방문 사유</label>
-      <input type="text" id="inExtAffil" placeholder="예: 외무부, 패군, 00 신문사"oninput="rebuild()">
+      <input type="text" id="inExtAffil" placeholder="예: 외무부, 패군, 00 신문사 …" oninput="rebuild()">
     </div>
 
     <div class="field">
@@ -449,18 +447,18 @@
 
     <div class="field">
       <label id="lblGrade">등급</label>
-      <input type="text" id="inGrade" placeholder="S, A, B, C 등 " maxlength="6" oninput="rebuild()">
+      <input type="text" id="inGrade" placeholder="S, A, B, C …" maxlength="6" oninput="rebuild()">
     </div>
 
     <div class="field">
       <label>능력 <span class="opt">(선택)</span></label>
-      <input type="text" id="inAbility" placeholder="버스트 스위치, 必中, IGNIS 등" maxlength="20" oninput="rebuild()">
+      <input type="text" id="inAbility" placeholder="예: 버스트 스위치, 必中, IGNIS …" maxlength="20" oninput="rebuild()">
     </div>
     
     <div class="field formal-only">
       <label>발급일 <span class="opt">(선택)</span></label>
       <div class="date-stack">
-        <select id="inDateMonth" onchange="rebuild()">
+        <select id="inDateMonth" onchange="changeFormalMonth()">
           <option value="">선택 안 함</option>
           <option value="1">1월</option>
           <option value="2">2월</option>
@@ -475,14 +473,14 @@
           <option value="11">11월</option>
           <option value="12">12월</option>
         </select>
-        <input type="text" id="inDate" placeholder="또는 직접 입력 (YY.MM.DD)" oninput="rebuild()">
+        <input type="text" id="inDate" placeholder="또는 직접 입력 (예: 24.06.15)" oninput="rebuild()">
       </div>
     </div>
 
     <div class="field temp-only">
       <label>만료일 <span class="opt">(선택)</span></label>
       <div class="date-stack">
-        <select id="inExpiryMonth" onchange="rebuild()">
+        <select id="inExpiryMonth" onchange="changeTempMonth()">
           <option value="">선택 안 함</option>
           <option value="1">1월</option>
           <option value="2">2월</option>
@@ -587,6 +585,8 @@
 
 <script>
 let mode = 'formal';
+let formalDateSalt = '';
+let tempDateSalt = '';
 
 function setMode(newMode) {
   mode = newMode;
@@ -609,6 +609,16 @@ function setMode(newMode) {
     document.getElementById('cLblIssue').textContent = 'ISSUED';
   }
 
+  rebuild();
+}
+
+function changeFormalMonth() {
+  formalDateSalt = Math.random().toString(36).substring(2, 8);
+  rebuild();
+}
+
+function changeTempMonth() {
+  tempDateSalt = Math.random().toString(36).substring(2, 8);
   rebuild();
 }
 
@@ -655,7 +665,7 @@ function isCJK(text) {
   return /[\u3131-\uD79D\u4E00-\u9FFF\u3040-\u30FF]/.test(text);
 }
 
-function computeDate(monthId, manualId, seed) {
+function computeDate(monthId, manualId, seed, dynamicSalt) {
   const manual = document.getElementById(manualId).value;
   if (manual && manual.trim()) return manual.trim();
 
@@ -665,14 +675,16 @@ function computeDate(monthId, manualId, seed) {
   const m = parseInt(month);
   const mm = String(m).padStart(2, '0');
 
-  const hYear = h(seed + '|year|' + month + '|salt123');
+  const hashInput = seed + '|' + month + '|' + dynamicSalt;
+  
+  const hYear = h(hashInput + '|year');
   const year = 20 + (hYear % 11); 
 
   let maxDay = 31;
   if ([4, 6, 9, 11].includes(m)) maxDay = 30;
   else if (m === 2) maxDay = 28;
 
-  const hDay = h(seed + '|day|' + month + '|salt123');
+  const hDay = h(hashInput + '|day');
   const day = 1 + (hDay % maxDay);
 
   return String(year).padStart(2, '0') + '.' + mm + '.' + String(day).padStart(2, '0');
@@ -695,12 +707,12 @@ function fitName(text) {
     else if (len <= 10) { size = '16px'; spacing = '0'; }
     else                { size = '14px'; spacing = '-0.5px'; }
   } else {
-    if (len <= 5)       { size = '26px'; spacing = '1px'; }
-    else if (len <= 8)  { size = '22px'; spacing = '0px'; }
+    if (len <= 5)       { size = '26px'; spacing = '0px'; }
+    else if (len <= 8)  { size = '22px'; spacing = '-0.5px'; }
     else if (len <= 12) { size = '18px'; spacing = '-0.5px'; }
-    else if (len <= 16) { size = '15px'; spacing = '-0.5px'; }
-    else if (len <= 20) { size = '13px'; spacing = '-1px'; }
-    else                { size = '11.5px'; spacing = '-1px'; }
+    else if (len <= 16) { size = '14px'; spacing = '-1px'; }
+    else if (len <= 20) { size = '12px'; spacing = '-1px'; }
+    else                { size = '11px'; spacing = '-1px'; }
   }
   
   el.style.fontSize = size;
@@ -721,8 +733,8 @@ function rebuild() {
   document.getElementById('cDept').textContent = dept;
 
   const seed = (name||'') + '|' + (grade||'') + '|' + dept;
-  const date   = computeDate('inDateMonth',   'inDate',   seed + '|issued');
-  const expiry = computeDate('inExpiryMonth', 'inExpiry', seed + '|expiry');
+  const date   = computeDate('inDateMonth',   'inDate',   seed + '|issued', formalDateSalt);
+  const expiry = computeDate('inExpiryMonth', 'inExpiry', seed + '|expiry', tempDateSalt);
 
   document.getElementById('cName').textContent = name || '―';
   fitName(name);
@@ -790,12 +802,9 @@ function onPhoto(e) {
   const r = new FileReader();
   r.onload = function(ev) {
     const url = ev.target.result;
-    
-    // 좌측 패널 미리보기는 배경 이미지 유지
     document.getElementById('uPhotoBox').style.backgroundImage = `url(${url})`;
     document.getElementById('uPh').style.display = 'none';
     
-    // 우측 사원증은 img 태그로 변경하여 화질 보존
     const imgEl = document.getElementById('cPhotoImg');
     imgEl.src = url;
     imgEl.style.display = 'block';
