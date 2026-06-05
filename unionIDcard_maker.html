@@ -426,7 +426,7 @@
     <!-- 임시 출입증: 외부 소속 자유 입력 -->
     <div class="field temp-only">
       <label>외부 소속 / 방문 사유</label>
-      <input type="text" id="inExtAffil" placeholder="예: 외무부 협력관, KBS 보도국" oninput="rebuild()">
+      <input type="text" id="inExtAffil" placeholder="예: 외무부, 패군, 00 소속 기자" oninput="rebuild()">
     </div>
 
     <div class="field">
@@ -436,12 +436,12 @@
 
     <div class="field">
       <label id="lblGrade">등급</label>
-      <input type="text" id="inGrade" placeholder="S, A, B, C …" maxlength="6" oninput="rebuild()">
+      <input type="text" id="inGrade" placeholder="S, A, B, C 등" maxlength="6" oninput="rebuild()">
     </div>
 
     <div class="field">
       <label>능력 <span class="opt">(선택)</span></label>
-      <input type="text" id="inAbility" placeholder="예: 버스트 스위치, 必中, IGNIS 등" maxlength="20" oninput="rebuild()">
+      <input type="text" id="inAbility" placeholder="버스트 스위치, 必中, IGNIS 등" maxlength="20" oninput="rebuild()">
     </div>
     
     <div class="field formal-only">
@@ -462,7 +462,7 @@
           <option value="11">11월</option>
           <option value="12">12월</option>
         </select>
-        <input type="text" id="inDate" placeholder="또는 직접 입력 (예: 24.06.15)" oninput="rebuild()">
+        <input type="text" id="inDate" placeholder="또는 직접 입력 (YY.MM.DD)" oninput="rebuild()">
       </div>
     </div>
 
