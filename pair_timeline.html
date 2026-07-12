@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>페어 타임라인 정리</title>
+<title>캐릭터 타임라인 메이커</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{
@@ -298,6 +298,7 @@ details.adv .inner{margin-top:10px;}
   <div class="stage">
     <div class="stagebar">
       <span style="font-size:12px;color:var(--muted);font-weight:600;">미리보기</span>
+      <button class="mini" id="zoomBtn">확대</button>
       <span class="sp"></span>
       <select id="inSplit" title="긴 타임라인 나눠 저장">
         <option value="none">한 장으로</option>
@@ -588,13 +589,22 @@ function render(){
   persist();
 }
 
+let previewZoom = false;
 function fitPreview(){
   const vp = $("#viewport"), sc = $("#scaler"), tl = $("#tl");
-  const scale = Math.min(1, vp.clientWidth / state.width);
+  const fit = Math.min(1, vp.clientWidth / state.width);
+  const scale = previewZoom ? Math.max(fit, .85) : fit;
   sc.style.transform = `scale(${scale})`;
-  sc.style.width = state.width + "px";
+  sc.style.width = (state.width * scale) + "px";
+  vp.style.overflowX = previewZoom ? "auto" : "hidden";
   vp.style.height = (tl.offsetHeight * scale) + "px";
 }
+$("#zoomBtn").addEventListener("click", ()=>{
+  previewZoom = !previewZoom;
+  $("#zoomBtn").classList.toggle("on", previewZoom);
+  $("#zoomBtn").textContent = previewZoom ? "맞춤" : "확대";
+  fitPreview();
+});
 window.addEventListener("resize", fitPreview);
 
 function renderList(){
