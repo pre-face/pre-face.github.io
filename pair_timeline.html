@@ -339,15 +339,40 @@ function ensureFont(key){
     document.head.appendChild(l);
   }
 }
-const BG_PRESETS = [
-  ["#141824","#2a1c3d"], ["#0f1c24","#173a3a"], ["#241a2e","#3d2438"],
-  ["#101116","#26313f"], ["#f6f3ec","#ece0d2"], ["#eef1f5","#dde5f2"]
+/* 첫 번째 색을 기준으로 어울리는 두 번째 색을 만든다 (색상·채도·명도 조화 변형) */
+function hexToHsl(hex){
+  let [r,g,b] = hexRgb(hex).map(v=>v/255);
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h=0, ss=0; const l=(max+min)/2;
+  if(max!==min){
+    const d=max-min;
+    ss = l>0.5 ? d/(2-max-min) : d/(max+min);
+    if(max===r) h=(g-b)/d + (g<b?6:0);
+    else if(max===g) h=(b-r)/d + 2;
+    else h=(r-g)/d + 4;
+    h*=60;
+  }
+  return [h, ss*100, l*100];
+}
+function hslToHex(h, ss, l){
+  h=((h%360)+360)%360; ss=Math.min(100,Math.max(0,ss))/100; l=Math.min(96,Math.max(4,l))/100;
+  const c=(1-Math.abs(2*l-1))*ss, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2;
+  let [r,g,b] = h<60?[c,x,0]:h<120?[x,c,0]:h<180?[0,c,x]:h<240?[0,x,c]:h<300?[x,0,c]:[c,0,x];
+  return "#"+[r+m,g+m,b+m].map(v=>Math.round(v*255).toString(16).padStart(2,"0")).join("");
+}
+const HARMONIES = [
+  [ 28,   0,   0],   // 유사색
+  [-28,   0,   0],   // 반대쪽 유사색
+  [  0, -10,  15],   // 같은 색의 밝은 톤
+  [ 14,   6, -13],   // 살짝 틀어진 깊은 톤
+  [180, -20,   0],   // 부드러운 보색
+  [120, -12,   4]    // 삼각 배색
 ];
-const CH_PRESETS = [
-  ["#6ea8ff","#7fe0d4"], ["#8f7bff","#c98fff"], ["#ff8fa8","#ffb37a"],
-  ["#ff6f7d","#ff9f68"], ["#63d6a3","#a8e063"], ["#ffc65c","#ff8f5c"],
-  ["#7fd4ff","#b59dff"], ["#e8e8ec","#9aa4b8"]
-];
+function harmony(hex, i){
+  const [h, ss, l] = hexToHsl(hex);
+  const [dh, ds, dl] = HARMONIES[i % HARMONIES.length];
+  return hslToHex(h+dh, ss+ds, l+dl);
+}
 
 /* ───────────── 상태 ───────────── */
 const STORE_KEY = "character-timeline-v1";
@@ -379,7 +404,7 @@ function defaultState(){
 }
 let state = defaultState();
 let nextId = 7, editingId = null, curOwner = "A";
-const presetIdx = {bg:0, A:0, B:2, P:0};
+const presetIdx = {bg:-1, A:-1, B:-1, P:-1};
 
 const $ = s => document.querySelector(s);
 const esc = t => String(t??"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -636,7 +661,7 @@ function renderList(){
 }
 
 /* ───────────── 색 컨트롤 ───────────── */
-function wireColor(prefix, getCol, presetList, presetKey){
+function wireColor(prefix, getCol, presetKey){
   const i1 = $("#"+prefix+"1"), i2 = $("#"+prefix+"2");
   const g = $("#"+prefix+"Grad"), p = $("#"+prefix+"Preset");
   function sync(){
@@ -651,16 +676,16 @@ function wireColor(prefix, getCol, presetList, presetKey){
   g.addEventListener("click", ()=>{ const col=getCol(); col.grad=!col.grad; sync(); render(); });
   p.addEventListener("click", ()=>{
     const col = getCol();
-    presetIdx[presetKey] = (presetIdx[presetKey]+1) % presetList.length;
-    [col.c1, col.c2] = presetList[presetIdx[presetKey]];
+    presetIdx[presetKey] = (presetIdx[presetKey]+1) % HARMONIES.length;
+    col.c2 = harmony(col.c1, presetIdx[presetKey]);
     col.grad = true; sync(); render();
   });
   return sync;
 }
-const syncBg = wireColor("bg", ()=>state.bg, BG_PRESETS, "bg");
-const syncCa = wireColor("ca", ()=>state.chars.A.color, CH_PRESETS, "A");
-const syncCb = wireColor("cb", ()=>state.chars.B.color, CH_PRESETS, "B");
-const syncPc = wireColor("pc", ()=>state.pair.color, CH_PRESETS, "P");
+const syncBg = wireColor("bg", ()=>state.bg, "bg");
+const syncCa = wireColor("ca", ()=>state.chars.A.color, "A");
+const syncCb = wireColor("cb", ()=>state.chars.B.color, "B");
+const syncPc = wireColor("pc", ()=>state.pair.color, "P");
 
 $("#pairAuto").addEventListener("click", ()=>{ state.pair.auto=true; syncPairSeg(); render(); });
 $("#pairCustom").addEventListener("click", ()=>{
