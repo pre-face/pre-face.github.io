@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>캐릭터 타임라인 메이커</title>
+<title>페어 타임라인 메이커</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{
@@ -427,6 +427,7 @@ function persist(){
 function hexRgb(h){ h=h.replace('#',''); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
 function lum(h){ const [r,g,b]=hexRgb(h).map(v=>{v/=255; return v<=.03928? v/12.92 : Math.pow((v+.055)/1.055,2.4);}); return .2126*r+.7152*g+.0722*b; }
 function rgba(h,a){ const [r,g,b]=hexRgb(h); return `rgba(${r},${g},${b},${a})`; }
+function mixHex(h1,h2,t){ const a=hexRgb(h1), b=hexRgb(h2); return "#"+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,"0")).join(""); }
 function blendHex(h1,h2){ const a=hexRgb(h1), b=hexRgb(h2); return "#"+a.map((v,i)=>Math.round((v+b[i])/2).toString(16).padStart(2,"0")).join(""); }
 const cssCol   = (col, ang="135deg") => col.grad ? `linear-gradient(${ang}, ${col.c1}, ${col.c2})` : col.c1;
 const solidCol = col => col.grad ? blendHex(col.c1, col.c2) : col.c1;
@@ -611,11 +612,46 @@ function styleTL(el){
   el.style.setProperty("--gap", state.gap + "px");
 }
 
+/* 레일 그라데이션의 특정 높이 지점 색 (레일은 55% 지점에서 c2에 도달) */
+function railColorAt(col, f){
+  if(!col.grad) return col.c1;
+  return mixHex(col.c1, col.c2, Math.min(1, f/0.55));
+}
+/* 노드·연결선을 그 높이의 레일 색과 일치시킨다 */
+function tintNodes(el){
+  const body = el.querySelector(".body"); if(!body) return;
+  const H = body.offsetHeight; if(!H) return;
+  const {A, B} = state.chars;
+  body.querySelectorAll(".item").forEach(item=>{
+    const f = (item.offsetTop + 17) / H;
+    if(item.classList.contains("x")){
+      const ca = railColorAt(A.color, f), cb = railColorAt(B.color, f);
+      const na = item.querySelector(".node.na"), nb = item.querySelector(".node.nb");
+      if(na) na.style.background = ca;
+      if(nb) nb.style.background = cb;
+      const cca = item.querySelector(".connector.ca"), ccb = item.querySelector(".connector.cb");
+      if(cca) cca.style.background = `linear-gradient(90deg, ${ca}, ${rgba(ca,.2)})`;
+      if(ccb) ccb.style.background = `linear-gradient(270deg, ${cb}, ${rgba(cb,.2)})`;
+    }else{
+      const isA = item.classList.contains("a");
+      const c = railColorAt((isA ? A : B).color, f);
+      const n = item.querySelector(".node");
+      if(n){
+        if(n.classList.contains("fw")) n.style.borderColor = c;
+        else n.style.background = c;
+      }
+      const con = item.querySelector(".connector");
+      if(con) con.style.background = `linear-gradient(${isA?"90deg":"270deg"}, ${c}, ${rgba(c,.15)})`;
+    }
+  });
+}
+
 /* ───────────── 렌더링 ───────────── */
 function render(){
   const tl = $("#tl");
   styleTL(tl);
   tl.innerHTML = buildTL(state.events, {header:true, footer:true});
+  tintNodes(tl);
   fitPreview();
   renderList();
   persist();
@@ -1019,6 +1055,7 @@ async function renderPart(events, opts, scale){
   el.innerHTML = buildTL(events, opts);
   wrap.appendChild(el);
   document.body.appendChild(wrap);
+  tintNodes(el);
   try{
     const canvas = await html2canvas(el, {scale, backgroundColor:solidCol(state.bg), width:state.width, logging:false});
     const url = canvas.toDataURL("image/png");
