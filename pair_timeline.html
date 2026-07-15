@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>페어 타임라인 메이커</title>
+<title>캐릭터 타임라인 메이커</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{
@@ -179,6 +179,12 @@ details.adv .inner{margin-top:10px;}
       <div class="row"><label class="small">폭</label>
         <input type="number" id="inWidth" min="600" max="2000" step="10" value="1080">
         <span style="font-size:12px;color:var(--muted);flex-shrink:0;">px</span>
+      </div>
+      <div class="row"><label class="small">선 끝</label>
+        <select id="inEnding">
+          <option value="fade">서서히 사라짐</option>
+          <option value="end">또렷한 선</option>
+        </select>
       </div>
     </div>
 
@@ -382,6 +388,7 @@ function defaultState(){
     title: "TIMELINE",
     width: 1080,
     gap: 26,
+    ending: "fade",
     font: "system",
     bg: {grad:true, c1:"#141824", c2:"#2a1c3d"},
     synopsis: "", footnote: "",
@@ -622,9 +629,14 @@ function tintNodes(el){
   const body = el.querySelector(".body"); if(!body) return;
   const H = body.offsetHeight; if(!H) return;
   const {A, B} = state.chars;
+  let lastA = 0, lastB = 0, botA = 0, botB = 0;
   body.querySelectorAll(".item").forEach(item=>{
-    const f = (item.offsetTop + 17) / H;
+    const y = item.offsetTop + 17;
+    const bot = item.offsetTop + item.offsetHeight;
+    const f = y / H;
     if(item.classList.contains("x")){
+      lastA = Math.max(lastA, y); lastB = Math.max(lastB, y);
+      botA = Math.max(botA, bot); botB = Math.max(botB, bot);
       const ca = railColorAt(A.color, f), cb = railColorAt(B.color, f);
       const na = item.querySelector(".node.na"), nb = item.querySelector(".node.nb");
       if(na) na.style.background = ca;
@@ -634,6 +646,8 @@ function tintNodes(el){
       if(ccb) ccb.style.background = `linear-gradient(270deg, ${cb}, ${rgba(cb,.2)})`;
     }else{
       const isA = item.classList.contains("a");
+      if(isA){ lastA = Math.max(lastA, y); botA = Math.max(botA, bot); }
+      else{ lastB = Math.max(lastB, y); botB = Math.max(botB, bot); }
       const c = railColorAt((isA ? A : B).color, f);
       const n = item.querySelector(".node");
       if(n){
@@ -644,6 +658,24 @@ function tintNodes(el){
       if(con) con.style.background = `linear-gradient(${isA?"90deg":"270deg"}, ${c}, ${rgba(c,.15)})`;
     }
   });
+  const setRail = (side, col, lastY, botY)=>{
+    const r = body.querySelector(".rail."+side); if(!r) return;
+    const end = col.grad ? col.c2 : col.c1;
+    if(state.ending === "end"){
+      const botF = Math.max(.1, Math.min(.995, botY / H));
+      r.style.bottom = (H - botY) + "px";
+      if(botF >= .55) r.style.background = `linear-gradient(to bottom, ${col.c1} 0%, ${end} ${(55/botF).toFixed(1)}%, ${end} 100%)`;
+      else r.style.background = `linear-gradient(to bottom, ${col.c1} 0%, ${railColorAt(col, botF)} 100%)`;
+    }else{
+      const lastF = Math.max(.1, Math.min(.985, lastY / H));
+      const pct = (lastF*100).toFixed(1);
+      r.style.bottom = "";
+      if(lastF >= .55) r.style.background = `linear-gradient(to bottom, ${col.c1} 0%, ${end} 55%, ${end} ${pct}%, transparent 100%)`;
+      else r.style.background = `linear-gradient(to bottom, ${col.c1} 0%, ${railColorAt(col, lastF)} ${pct}%, transparent 100%)`;
+    }
+  };
+  setRail("a", A.color, lastA, botA);
+  setRail("b", B.color, lastB, botB);
 }
 
 /* ───────────── 렌더링 ───────────── */
@@ -864,6 +896,7 @@ $("#inWidth").addEventListener("change", e=>{
   e.target.value = v; state.width = v; render();
 });
 $("#inFont").addEventListener("change", e=>{ state.font=e.target.value; ensureFont(state.font); render(); });
+$("#inEnding").addEventListener("change", e=>{ state.ending=e.target.value; render(); });
 $("#inPairRatio").addEventListener("change", e=>{ state.pairRatio=e.target.value; render(); });
 $("#inPairStyle").addEventListener("change", e=>{ state.pairStyle=e.target.value; render(); });
 $("#chkAvatars").addEventListener("change", e=>{ state.showAvatars=e.target.checked; render(); });
@@ -956,7 +989,7 @@ function applyState(s){
   nextId = Math.max(0, ...state.events.map(e=>e.id)) + 1;
   ensureFont(state.font);
 
-  $("#inTitle").value=state.title; $("#inWidth").value=state.width; $("#inFont").value=state.font;
+  $("#inTitle").value=state.title; $("#inWidth").value=state.width; $("#inFont").value=state.font; $("#inEnding").value=state.ending;
   $("#nameA").value=state.chars.A.name; $("#descA").value=state.chars.A.desc;
   $("#nameB").value=state.chars.B.name; $("#descB").value=state.chars.B.desc;
   $("#inSynopsis").value=state.synopsis; $("#inFootnote").value=state.footnote;
