@@ -324,6 +324,81 @@
 
   /* ===== 내보내기 버튼 그룹 ===== */
   .export-actions { margin-top: 14px; }
+  .img-format-row {
+    display: flex; align-items: center; gap: 10px; margin-top: 8px;
+  }
+  .img-format-row label {
+    font-size: 11.5px; color: var(--text-faint); font-weight: 600; flex-shrink: 0;
+  }
+  .img-format-row select {
+    flex: 1; padding: 8px 10px; font-size: 12.5px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--text-soft); font-family: inherit;
+  }
+  .page-count {
+    font-size: 12px; color: var(--text-soft); font-weight: 700;
+    flex-shrink: 0; min-width: 44px; text-align: right;
+  }
+  .page-preview-btn {
+    flex-shrink: 0; padding: 8px 12px; font-size: 12px; font-weight: 600;
+    border: 1px solid var(--border-strong); border-radius: 8px;
+    background: var(--panel); color: var(--text-soft);
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .page-preview-btn:hover { background: var(--hover); color: var(--text); }
+  .cover-row { margin-top: 7px; }
+  .cover-row label {
+    font-size: 12px; color: var(--text-soft); font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  }
+  .cover-row input[type="checkbox"] { accent-color: var(--text); }
+
+  /* 페이지 미리보기 모달 */
+  .page-modal {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .page-modal[hidden] { display: none; }
+  .page-modal-inner {
+    background: var(--panel); border-radius: 14px;
+    max-width: 640px; width: 100%; max-height: 88vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.3);
+  }
+  .page-modal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
+    font-size: 13.5px; font-weight: 700; color: var(--text);
+  }
+  .page-modal-close {
+    padding: 6px 12px; font-size: 12px; font-weight: 600;
+    border: 1px solid var(--border-strong); border-radius: 8px;
+    background: var(--panel); color: var(--text-soft);
+    cursor: pointer; font-family: inherit;
+  }
+  .page-modal-close:hover { background: var(--hover); color: var(--text); }
+  .page-modal-save {
+    padding: 6px 14px; font-size: 12px; font-weight: 700;
+    border: 1px solid var(--text); border-radius: 8px;
+    background: var(--text); color: var(--panel);
+    cursor: pointer; font-family: inherit;
+  }
+  .page-modal-save:hover { opacity: 0.85; }
+  .page-modal-body {
+    overflow-y: auto; padding: 18px;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .page-modal-body .page-wrap {
+    overflow: hidden; flex-shrink: 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.14);
+    border-radius: 4px;
+  }
+  .page-modal-body .page-label {
+    font-size: 11px; color: var(--text-faint); font-weight: 600;
+    margin: 2px 0 12px;
+  }
   .primary-export {
     width: 100%;
     padding: 13px 18px;
@@ -413,7 +488,6 @@
       font-size: 16px; padding: 11px 12px;
     }
 
-    .stat-bar { gap: 12px; padding: 8px 12px; }
     .options-row { gap: 10px 14px; }
     .color-field input[type="color"] { width: 44px; height: 44px; }
     .add-char-btn { padding: 11px 14px; font-size: 13.5px; }
@@ -492,6 +566,7 @@
       <span class="opt-group-label">변환</span>
       <label><input type="checkbox" id="optNovelMode"> 소설식 따옴표</label>
       <label><input type="checkbox" id="optParenAction"> (괄호) 행동 지문</label>
+      <label><input type="checkbox" id="optNovelUnified"> 소설 모드 (화자 통합)</label>
     </div>
 
     <details class="adv-settings" style="margin-top: 10px;">
@@ -525,6 +600,7 @@
           <span class="color-label" id="colorNarrationLabel">#6e6960</span>
         </div>
       </div>
+      <button class="preset-btn" style="margin-top: 10px;" onclick="resetColors()">색상 초기화</button>
     </details>
   </div>
 
@@ -593,7 +669,7 @@
       <div class="quick-insert" id="quickInsert"></div>
       <textarea id="input" placeholder="A: 대사&#10;*행동 지문*&#10;다음 대사&#10;&#10;B: 대사&#10;&#10;N: 나레이션 문장&#10;&#10;*** (구분선)&#10;--- (여백)"></textarea>
       <div class="buttons">
-        <button class="act" onclick="convert()">변환</button>
+        <button class="act" id="convertBtn" onclick="convert()">변환</button>
         <button class="act secondary" onclick="clearAll()">비우기</button>
         <button class="act danger" onclick="resetAll()">전체 초기화</button>
       </div>
@@ -636,6 +712,18 @@
             <span class="ico">⌹</span> HTML 파일
           </button>
         </div>
+        <div class="img-format-row">
+          <label for="imgFormat">이미지 저장</label>
+          <select id="imgFormat">
+            <option value="none" selected>한 장으로 (통짜)</option>
+            <option value="pages">페이지로 나누기</option>
+          </select>
+          <span id="pageCount" class="page-count"></span>
+          <button class="page-preview-btn" onclick="openPagePreview()">페이지 확인</button>
+        </div>
+        <div class="cover-row">
+          <label><input type="checkbox" id="optCover"> 표지 페이지 추가 (제목을 1쪽에 크게)</label>
+        </div>
       </div>
       <details>
         <summary>티스토리 백업 방법</summary>
@@ -649,6 +737,19 @@
 </div>
 
 <div id="toast" class="toast"></div>
+
+<div id="pageModal" class="page-modal" hidden>
+  <div class="page-modal-inner">
+    <div class="page-modal-head">
+      <span id="pageModalTitle"></span>
+      <div style="display:flex;gap:8px;">
+        <button class="page-modal-save" onclick="saveFromPreview()">이대로 저장</button>
+        <button class="page-modal-close" onclick="closePagePreview()">닫기 ✕</button>
+      </div>
+    </div>
+    <div id="pageModalBody" class="page-modal-body"></div>
+  </div>
+</div>
 
 <script>
 const STORAGE_KEY = 'rp_log_v7';
@@ -816,7 +917,7 @@ function getConfig() {
   const nTag = (tagN.value || 'N').toUpperCase();
   charMap[nTag] = { kind: 'narration' };
 
-  return {
+  const cfg = {
     charMap,
     nTag,
     opts: {
@@ -845,8 +946,24 @@ function getConfig() {
     pageColor: colorPage.value,
     textColor: colorText.value,
     actionColor: colorAction.value,
-    narrationColor: colorNarration.value
+    narrationColor: colorNarration.value,
+    unified: false
   };
+
+  // 소설 모드(화자 통합): 화자 구분 요소를 모두 끄고,
+  // 나레이션·행동지문을 본문과 같은 크기·색으로 통일해 소설 문장처럼
+  if (optNovelUnified.checked) {
+    cfg.unified = true;
+    cfg.opts.showName = false;
+    cfg.opts.showDot = false;
+    cfg.opts.showBar = false;
+    cfg.opts.novelMode = true;   // 대사에 따옴표 자동
+    cfg.opts.italic = false;     // 서술도 본문처럼 정자체
+    cfg.actionColor = cfg.textColor;
+    cfg.narrationColor = cfg.textColor;
+  }
+
+  return cfg;
 }
 
 function escapeHTML(s) {
@@ -1084,7 +1201,7 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
     }
     if (p.type === 'action') {
       const actionIndent = cfg.indent ? 'text-indent:1em;' : '';
-      return `<div style="margin:10px 0;color:${actionCol};${italicStyle}font-size:${cfg.fontSize - 0.5}px;line-height:${cfg.lineHeight};${actionIndent}">${escapeHTML(p.text)}</div>`;
+      return `<div style="margin:10px 0;color:${actionCol};${italicStyle}font-size:${cfg.unified ? cfg.fontSize : cfg.fontSize - 0.5}px;line-height:${cfg.lineHeight};${actionIndent}">${escapeHTML(p.text)}</div>`;
     }
     let dialogue = p.text;
     if (cfg.opts.novelMode) {
@@ -1171,7 +1288,7 @@ function renderNarration(lines, cfg) {
     const text = isAction ? escapeHTML(p.text) : processInline(p.text, nColor, parenAction, italic, markdown);
     const margin = keepBreaks ? '2px 0' : '10px 0';
     const indentStyle = cfg.indent ? 'text-indent:1em;' : '';
-    return `<div style="margin:${margin};color:${nColor};${italicStyle}font-size:${cfg.fontSize - 0.5}px;line-height:${cfg.lineHeight};${indentStyle}">${text}</div>`;
+    return `<div style="margin:${margin};color:${nColor};${italicStyle}font-size:${cfg.unified ? cfg.fontSize : cfg.fontSize - 0.5}px;line-height:${cfg.lineHeight};${indentStyle}">${text}</div>`;
   }).join('');
 
   // 컬러바를 쓰는 발화와 좌측 정렬을 맞추기 위해, 컬러바 옵션이 켜져 있으면 동일한 좌측 패딩을 줌
@@ -1194,7 +1311,7 @@ function renderHeader(meta, cfg) {
   if (!hasAny) return '';
   const textCol = cfg.textColor;
   const subCol = cfg.actionColor;
-  let html = `<div style="text-align:center;margin:0 0 36px;padding:0 0 24px;border-bottom:1px solid ${hexToRgba(textCol, 0.18)};">`;
+  let html = `<div data-log-header="1" style="text-align:center;margin:0 0 36px;padding:0 0 24px;border-bottom:1px solid ${hexToRgba(textCol, 0.18)};">`;
   if (meta.chapter) {
     html += `<div style="font-size:11px;letter-spacing:4px;color:${subCol};text-transform:uppercase;margin-bottom:10px;font-weight:700;">${escapeHTML(meta.chapter)}</div>`;
   }
@@ -1311,6 +1428,7 @@ function convert() {
     previewEl.innerHTML = html;
   }
   updateStats(raw, blockCount);
+  updatePageCount();
   saveState();
 }
 
@@ -1319,6 +1437,7 @@ function clearAll() {
   document.getElementById('input').value = '';
   document.getElementById('preview').innerHTML = '';
   updateStats('', 0);
+  updatePageCount();
   saveState();
 }
 
@@ -1353,24 +1472,15 @@ async function copyHTML() {
   }
 }
 
-async function copyRendered() {
-  if (!hasContent()) { showToast('먼저 로그를 입력해주세요'); return; }
-  const el = document.getElementById('preview');
-  const range = document.createRange();
-  range.selectNodeContents(el);
-  const sel = window.getSelection();
-  sel.removeAllRanges(); sel.addRange(range);
-  try { document.execCommand('copy'); showToast('서식이 복사되었습니다'); }
-  catch(e) { showToast('실패 — HTML 복사를 사용하세요'); }
-  sel.removeAllRanges();
-}
-
 // 이미지 저장 (PNG)
 async function saveImage() {
   if (!hasContent()) { showToast('먼저 로그를 입력해주세요'); return; }
   const target = document.getElementById('preview').firstElementChild;
   if (!target) { showToast('먼저 로그를 입력해주세요'); return; }
   if (typeof html2canvas === 'undefined') { showToast('이미지 라이브러리 로딩 중...'); return; }
+
+  const fmt = document.getElementById('imgFormat').value;
+  if (fmt !== 'none') { savePagedImages(); return; }
 
   showToast('이미지를 만드는 중...');
   try {
@@ -1401,6 +1511,277 @@ async function saveImage() {
     console.error(e);
     showToast('이미지 저장 실패');
   }
+}
+
+// 인쇄 규격별 300dpi 기준 가로 픽셀 (모든 규격의 비율은 1:√2로 동일)
+// 페이지 저장 출력 해상도 (A4 300dpi 기준 가로 픽셀 — 인쇄까지 충분한 고해상도)
+const PAGE_WIDTH_PX = 2480;
+
+// 규격 페이지로 나눠서 여러 장 저장
+// 미리보기 내용을 1:√2 페이지들로 나눔 (저장·쪽수 계산 공용)
+// 반환: { holder, pages, width, pageH } — 사용 후 holder를 반드시 제거할 것
+function buildPages() {
+  const target = document.getElementById('preview').firstElementChild;
+  if (!target) return null;
+  const width = target.offsetWidth;
+  if (!width) return null;
+  const pageH = Math.round(width * Math.SQRT2); // 1:√2 (A/B 계열 공통 비율)
+
+  // 화면 밖 임시 작업 공간
+  const holder = document.createElement('div');
+  holder.style.cssText = 'position:fixed;left:-99999px;top:0;';
+  document.body.appendChild(holder);
+
+  const styleStr = target.getAttribute('style') || '';
+  const pages = [];
+  let pageEl = null;
+  function newPage() {
+    pageEl = document.createElement('div');
+    pageEl.setAttribute('style', styleStr);
+    pageEl.style.width = width + 'px';
+    pageEl.style.maxWidth = 'none';
+    pageEl.style.boxSizing = 'border-box';
+    // 인쇄물처럼 여유 있는 페이지 여백 (기본 미리보기보다 넉넉하게)
+    pageEl.style.padding = '58px 56px 64px';
+    holder.appendChild(pageEl);
+    pages.push(pageEl);
+  }
+  function overflows() { return pageEl.offsetHeight > pageH; }
+
+  // 표지 페이지: 옵션이 켜져 있고 장면 정보가 있으면 1쪽을 표지로
+  const cfg = getConfig();
+  const meta = cfg.meta;
+  const useCover = document.getElementById('optCover').checked &&
+                   (meta.title || meta.chapter || meta.date || meta.place);
+  let coverPage = null;
+  if (useCover) {
+    newPage();
+    coverPage = pageEl;
+    coverPage.style.display = 'flex';
+    coverPage.style.flexDirection = 'column';
+    coverPage.style.alignItems = 'center';
+    coverPage.style.justifyContent = 'center';
+    coverPage.style.textAlign = 'center';
+    const subCol = hexToRgba(cfg.textColor, 0.55);
+    let inner = '';
+    if (meta.chapter) inner += `<div style="font-size:13px;letter-spacing:6px;color:${subCol};text-transform:uppercase;margin-bottom:22px;font-weight:700;">${escapeHTML(meta.chapter)}</div>`;
+    if (meta.title)   inner += `<div style="font-size:34px;font-weight:700;color:${cfg.textColor};letter-spacing:-0.5px;line-height:1.35;margin-bottom:26px;">${escapeHTML(meta.title)}</div>`;
+    if (meta.date || meta.place) {
+      inner += `<div style="color:${subCol};font-size:14px;font-style:italic;">`;
+      if (meta.date) inner += escapeHTML(meta.date);
+      if (meta.date && meta.place) inner += ` &middot; `;
+      if (meta.place) inner += escapeHTML(meta.place);
+      inner += `</div>`;
+    }
+    coverPage.innerHTML = inner;
+  }
+
+  newPage();
+
+  // 페이지를 꽉 채우기 위해, 블록이 한도를 넘으면 블록 내부 문단 단위로 쪼개서 담는다.
+  Array.from(target.children).forEach(k => {
+    // 표지가 있으면 본문 상단 헤더(제목·날짜)는 중복이므로 생략
+    if (useCover && k.dataset && k.dataset.logHeader) return;
+    const clone = k.cloneNode(true);
+    pageEl.appendChild(clone);
+    if (!overflows()) return; // 통째로 들어가면 끝
+
+    pageEl.removeChild(clone);
+    const innerKids = Array.from(k.children);
+
+    // 내부가 없는 단일 요소(구분선·여백·헤더 등)는 그냥 다음 페이지로
+    if (innerKids.length <= 1) {
+      if (pageEl.children.length === 0) {
+        // 빈 페이지인데도 안 들어가는 거대 요소: 그대로 넣고 넘어감 (잘림 감수)
+        pageEl.appendChild(clone);
+      } else {
+        newPage();
+        pageEl.appendChild(clone);
+      }
+      return;
+    }
+
+    // 블록 겉껍데기(컬러바·여백 등 스타일 유지)를 복제해 문단을 나눠 담는다
+    let shell = k.cloneNode(false);
+    pageEl.appendChild(shell);
+    innerKids.forEach(inner => {
+      const ic = inner.cloneNode(true);
+      shell.appendChild(ic);
+      if (overflows()) {
+        // 이 문단이 안 들어감 — 단, 페이지가 완전히 비어 있고 이 문단 하나뿐이면 잘림 감수하고 둔다
+        const shellOnly = pageEl.children.length === 1;
+        const firstPara = shell.children.length === 1;
+        if (shellOnly && firstPara) return;
+
+        shell.removeChild(ic);
+        if (shell.children.length === 0) pageEl.removeChild(shell);
+        newPage();
+        shell = k.cloneNode(false);
+        pageEl.appendChild(shell);
+        shell.appendChild(ic);
+      }
+    });
+    if (shell.children.length === 0) pageEl.removeChild(shell);
+  });
+
+  // 마지막 페이지가 완전히 비었으면 제거
+  if (pages.length > 1 && pages[pages.length - 1].children.length === 0) {
+    holder.removeChild(pages.pop());
+  }
+
+  // 모든 페이지를 같은 높이로 고정 (책 페이지처럼 균일하게)
+  pages.forEach(p => {
+    p.style.height = pageH + 'px';
+    p.style.overflow = 'hidden';
+    p.style.position = 'relative';
+  });
+
+  return { holder, pages, width, pageH, hasCover: !!coverPage };
+}
+
+// 각 페이지 하단 가운데에 쪽수 표기 (저장·미리보기 공용)
+function addPageFooters(pages, cfg, hasCover) {
+  const footCol = hexToRgba(cfg.textColor, 0.45);
+  pages.forEach((p, i) => {
+    if (hasCover && i === 0) return; // 표지엔 쪽수 없음
+    const num = hasCover ? i : i + 1; // 표지 다음 장부터 1쪽
+    const foot = document.createElement('div');
+    foot.textContent = `- ${num} -`;
+    foot.style.cssText = `position:absolute;bottom:13px;left:0;width:100%;text-align:center;font-size:11px;letter-spacing:1px;color:${footCol};font-family:${cfg.font};`;
+    p.appendChild(foot);
+  });
+}
+
+// 규격 페이지로 나눠서 여러 장 저장
+async function savePagedImages() {
+  const cfg = getConfig();
+  const built = buildPages();
+  if (!built) { showToast('먼저 로그를 입력해주세요'); return; }
+  const { holder, pages, width, hasCover } = built;
+
+  // 각 페이지 하단 가운데에 쪽수 표기
+  addPageFooters(pages, cfg, hasCover);
+
+  const scale = Math.min(4, PAGE_WIDTH_PX / width);
+  const fname = (cfg.meta.title || 'log').replace(/[^\w가-힣\-]/g,'_');
+
+  try {
+    for (let i = 0; i < pages.length; i++) {
+      showToast(`${i + 1} / ${pages.length} 페이지 저장 중...`);
+      const canvas = await html2canvas(pages[i], {
+        backgroundColor: cfg.pageColor, scale, useCORS: true, logging: false
+      });
+      await new Promise(resolve => {
+        canvas.toBlob(blob => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${fname}_${i + 1}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+          }
+          resolve();
+        }, 'image/png');
+      });
+      // 브라우저의 연속 다운로드 차단을 피하기 위한 짧은 텀
+      if (i < pages.length - 1) await new Promise(r => setTimeout(r, 700));
+    }
+    showToast(`이미지 ${pages.length}장이 저장되었습니다`);
+  } catch(e) {
+    console.error(e);
+    showToast('이미지 저장 실패');
+  } finally {
+    document.body.removeChild(holder);
+  }
+}
+
+// 규격 기준 예상 페이지 수를 계산해 표시
+// 자동 변환이 켜져 있으면 수동 변환 버튼은 불필요하므로 숨김
+function updateConvertBtn() {
+  document.getElementById('convertBtn').style.display =
+    optAutoRender.checked ? 'none' : '';
+}
+
+// 소설 모드가 켜지면 무력화되는 옵션들을 흐리게 표시 (소설 모드가 대신 관리 중임을 알림)
+function updateUnifiedLock() {
+  const on = document.getElementById('optNovelUnified').checked;
+  ['optShowName','optShowDot','optShowBar','optItalic','optNovelMode'].forEach(id => {
+    const el = document.getElementById(id);
+    el.disabled = on;
+    const label = el.closest('label');
+    if (label) {
+      label.style.opacity = on ? '0.4' : '';
+      label.style.pointerEvents = on ? 'none' : '';
+    }
+  });
+}
+
+function updatePageCount() {
+  const el = document.getElementById('pageCount');
+  if (!el) return;
+  const fmt = document.getElementById('imgFormat').value;
+  if (fmt === 'none' || !hasContent()) { el.textContent = ''; return; }
+  const built = buildPages();
+  if (!built) { el.textContent = ''; return; }
+  el.textContent = `약 ${built.pages.length}장`;
+  document.body.removeChild(built.holder);
+}
+
+// 저장 전에 페이지가 어떻게 나뉘는지 확인하는 미리보기
+function openPagePreview() {
+  const fmt = document.getElementById('imgFormat').value;
+  if (fmt === 'none') { showToast('먼저 페이지로 나누기를 선택해주세요'); return; }
+  if (!hasContent()) { showToast('먼저 로그를 입력해주세요'); return; }
+
+  const cfg = getConfig();
+  const built = buildPages();
+  if (!built) { showToast('먼저 로그를 입력해주세요'); return; }
+  const { holder, pages, width, pageH, hasCover } = built;
+
+  addPageFooters(pages, cfg, hasCover);
+
+  const body = document.getElementById('pageModalBody');
+  body.innerHTML = '';
+
+  // 모달 폭에 맞춰 페이지 축소 배율 계산
+  const avail = Math.min(window.innerWidth - 40, 640) - 36; // 모달 안쪽 폭 근사
+  const s = Math.min(1, avail / width);
+
+  pages.forEach((p, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'page-wrap';
+    wrap.style.width = Math.round(width * s) + 'px';
+    wrap.style.height = Math.round(pageH * s) + 'px';
+    p.style.transform = `scale(${s})`;
+    p.style.transformOrigin = 'top left';
+    wrap.appendChild(p);
+    body.appendChild(wrap);
+
+    const label = document.createElement('div');
+    label.className = 'page-label';
+    label.textContent = `${i + 1} / ${pages.length}`;
+    body.appendChild(label);
+  });
+
+  document.body.removeChild(holder); // 페이지들은 모달로 옮겨졌으므로 빈 holder 제거
+  document.getElementById('pageModalTitle').textContent = `페이지 미리보기 · 총 ${pages.length}장`;
+  document.getElementById('pageModal').hidden = false;
+}
+
+function closePagePreview() {
+  document.getElementById('pageModal').hidden = true;
+  document.getElementById('pageModalBody').innerHTML = '';
+}
+
+// 미리보기에서 바로 저장 (모달 닫고 현재 규격으로 저장 시작)
+function saveFromPreview() {
+  const fmt = document.getElementById('imgFormat').value;
+  closePagePreview();
+  if (fmt === 'none') { showToast('저장 규격이 해제되어 있어요'); return; }
+  savePagedImages();
 }
 
 // 이미지를 클립보드에 복사
@@ -1479,12 +1860,15 @@ function saveState() {
         italic: optItalic.checked,
         keepBreaks: optKeepBreaks.checked,
         markdown: optMarkdown.checked,
+        novelUnified: optNovelUnified.checked,
         parenAction: optParenAction.checked
       },
       design: {
         font: fontBody.value, fontSize: fontSize.value,
         lineHeight: lineHeight.value, blockGap: blockGap.value,
         textAlign: optJustify.checked, indent: optIndent.checked,
+        imgFormat: imgFormat.value,
+        cover: optCover.checked,
         pageColor: colorPage.value, narrationColor: colorNarration.value,
         textColor: colorText.value, actionColor: colorAction.value
       }
@@ -1520,6 +1904,7 @@ function loadState() {
         if (s.opts.italic !== undefined) optItalic.checked = s.opts.italic;
         if (s.opts.keepBreaks !== undefined) optKeepBreaks.checked = s.opts.keepBreaks;
         if (s.opts.markdown !== undefined) optMarkdown.checked = s.opts.markdown;
+        if (s.opts.novelUnified !== undefined) optNovelUnified.checked = s.opts.novelUnified;
         if (s.opts.showBar !== undefined) optShowBar.checked = s.opts.showBar;
         if (s.opts.novelMode !== undefined) optNovelMode.checked = s.opts.novelMode;
         if (s.opts.parenAction !== undefined) optParenAction.checked = s.opts.parenAction;
@@ -1538,6 +1923,12 @@ function loadState() {
           const v = s.design.indent;
           optIndent.checked = (v === true || v === '1' || v === 1);
         }
+        if (s.design.imgFormat !== undefined) {
+          // 구버전(a4/b5/b4) 호환: 페이지 나누기로 통합
+          const v = s.design.imgFormat;
+          imgFormat.value = (v === 'none') ? 'none' : 'pages';
+        }
+        if (s.design.cover !== undefined) optCover.checked = s.design.cover;
         if (s.design.pageColor) colorPage.value = s.design.pageColor;
         if (s.design.narrationColor) colorNarration.value = s.design.narrationColor;
         if (s.design.textColor) colorText.value = s.design.textColor;
@@ -1607,6 +1998,17 @@ function autoAdjustTextColors() {
   deriveSubColors();
 }
 
+// 색상 4종을 기본값으로 되돌리기
+function resetColors() {
+  colorPage.value = '#fdfcf8';
+  colorText.value = '#2a2724';
+  colorAction.value = '#9a9489';
+  colorNarration.value = '#6e6960';
+  updateColorLabels();
+  scheduleRender();
+  showToast('색상이 초기화되었습니다');
+}
+
 try {
   if (localStorage.getItem('rp_dark') === '1') {
     document.body.classList.add('dark');
@@ -1630,11 +2032,24 @@ document.getElementById('input').addEventListener('input', scheduleRender);
 document.getElementById('tagN').addEventListener('input', renderQuickInsert);
 // 배경색을 바꾸면 글자색 자동 제안 (그 후 사용자가 개별 조정 가능)
 document.getElementById('colorPage').addEventListener('input', () => { autoAdjustTextColors(); scheduleRender(); });
+// 규격 변경 시 예상 장수 즉시 갱신 (미리보기 재변환은 불필요하므로 별도 처리)
+document.getElementById('imgFormat').addEventListener('change', () => { updatePageCount(); saveState(); });
+document.getElementById('optCover').addEventListener('change', () => { updatePageCount(); saveState(); });
+// 소설 모드 토글 시 무력화 옵션 흐리게 갱신
+document.getElementById('optNovelUnified').addEventListener('change', updateUnifiedLock);
+// ESC 키로 페이지 미리보기 닫기
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !document.getElementById('pageModal').hidden) closePagePreview();
+});
+// 모달 배경 클릭으로 닫기
+document.getElementById('pageModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closePagePreview();
+});
 // 본문 색을 바꾸면 행동지문·나레이션을 어울리는 톤으로 자동 파생
 document.getElementById('colorText').addEventListener('input', () => { deriveSubColors(); scheduleRender(); });
 ['tagN','fontBody','fontSize','lineHeight','blockGap','colorAction','colorNarration',
  'logTitle','logChapter','logDate','logPlace',
- 'optMergeSpeaker','optShowName','optShowDot','optShowBar','optItalic','optNovelMode','optParenAction','optKeepBreaks','optJustify','optIndent','optMarkdown'].forEach(id => {
+ 'optMergeSpeaker','optShowName','optShowDot','optShowBar','optItalic','optNovelMode','optParenAction','optKeepBreaks','optJustify','optIndent','optMarkdown','optNovelUnified'].forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener('input', scheduleRender);
   el.addEventListener('change', scheduleRender);
@@ -1644,8 +2059,10 @@ optAutoSave.addEventListener('change', () => {
   if (!optAutoSave.checked) { try { localStorage.removeItem(STORAGE_KEY); } catch(e){} }
   else saveState();
 });
-optAutoRender.addEventListener('change', saveState);
+optAutoRender.addEventListener('change', () => { updateConvertBtn(); saveState(); });
 
+updateUnifiedLock();
+updateConvertBtn();
 convert();
 </script>
 </body>
