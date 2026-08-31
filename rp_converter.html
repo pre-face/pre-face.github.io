@@ -530,6 +530,7 @@
       <div class="field">
         <label>글자 크기</label>
         <select id="fontSize">
+          <option value="12.5">아주 작게 (12.5px)</option>
           <option value="13.5">작게 (13.5px)</option>
           <option value="14.5" selected>보통 (14.5px)</option>
           <option value="15.5">크게 (15.5px)</option>
@@ -539,6 +540,7 @@
       <div class="field">
         <label>행간</label>
         <select id="lineHeight">
+          <option value="1.45">아주 작게 (1.45)</option>
           <option value="1.6">작게 (1.6)</option>
           <option value="1.8">보통 (1.8)</option>
           <option value="1.95" selected>크게 (1.95)</option>
@@ -548,6 +550,7 @@
       <div class="field">
         <label>발화 사이 간격</label>
         <select id="blockGap">
+          <option value="6">아주 작게 (6px)</option>
           <option value="12">작게 (12px)</option>
           <option value="22" selected>보통 (22px)</option>
           <option value="34">크게 (34px)</option>
@@ -720,6 +723,14 @@
           </select>
           <span id="pageCount" class="page-count"></span>
           <button class="page-preview-btn" onclick="openPagePreview()">페이지 확인</button>
+        </div>
+        <div class="img-format-row" style="margin-top: 6px;">
+          <label for="pageBreakUnit">페이지 넘김</label>
+          <select id="pageBreakUnit">
+            <option value="word" selected>단어 단위</option>
+            <option value="para">문단 단위</option>
+            <option value="char">글자 단위</option>
+          </select>
         </div>
         <div class="cover-row">
           <label><input type="checkbox" id="optCover"> 표지 페이지 추가 (제목을 1쪽에 크게)</label>
@@ -1520,6 +1531,54 @@ const PAGE_WIDTH_PX = 2480;
 // 규격 페이지로 나눠서 여러 장 저장
 // 미리보기 내용을 1:√2 페이지들로 나눔 (저장·쪽수 계산 공용)
 // 반환: { holder, pages, width, pageH } — 사용 후 holder를 반드시 제거할 것
+// 텍스트를 토큰(단어/글자) 단위로 dest에 채워 넣고, 안 들어간 나머지 문자열을 반환
+// 이진 탐색으로 들어갈 최대 토큰 수를 찾아 리플로우 횟수를 최소화
+function fillTextNode(text, destParent, fits, unit) {
+  const tokens = unit === 'char'
+    ? Array.from(text)
+    : text.split(/(\s+)/).filter(t => t !== '');
+  const tn = document.createTextNode('');
+  destParent.appendChild(tn);
+  let lo = 0, hi = tokens.length;
+  while (lo < hi) {
+    const mid = Math.ceil((lo + hi) / 2);
+    tn.textContent = tokens.slice(0, mid).join('');
+    if (fits()) lo = mid; else hi = mid - 1;
+  }
+  tn.textContent = tokens.slice(0, lo).join('');
+  if (lo === 0) destParent.removeChild(tn);
+  return tokens.slice(lo).join(''); // 전부 들어갔으면 ''
+}
+
+// srcEl의 내용을 destEl로 페이지에 들어가는 만큼 옮김 (인라인 태그는 쪼개서 보존)
+// 반환: srcEl이 완전히 비워졌으면 true
+function moveToFit(srcEl, destEl, fits, unit) {
+  const ATOMIC = ['TABLE','UL','OL','IMG','HR']; // 중간에서 쪼개면 이상해지는 요소
+  while (srcEl.firstChild) {
+    const node = srcEl.firstChild;
+    if (node.nodeType === 3) { // 텍스트
+      const remainder = fillTextNode(node.textContent, destEl, fits, unit);
+      if (remainder) { node.textContent = remainder; return false; }
+      srcEl.removeChild(node);
+    } else if (node.nodeType === 1) { // 요소
+      if (ATOMIC.includes(node.tagName)) {
+        destEl.appendChild(node);
+        if (!fits()) { srcEl.insertBefore(node, srcEl.firstChild); return false; }
+      } else {
+        const shell = node.cloneNode(false);
+        destEl.appendChild(shell);
+        const emptied = moveToFit(node, shell, fits, unit);
+        if (!shell.childNodes.length) destEl.removeChild(shell);
+        if (!emptied) return false;
+        srcEl.removeChild(node);
+      }
+    } else {
+      srcEl.removeChild(node);
+    }
+  }
+  return true;
+}
+
 function buildPages() {
   const target = document.getElementById('preview').firstElementChild;
   if (!target) return null;
@@ -1604,11 +1663,15 @@ function buildPages() {
     // 블록 겉껍데기(컬러바·여백 등 스타일 유지)를 복제해 문단을 나눠 담는다
     let shell = k.cloneNode(false);
     pageEl.appendChild(shell);
+    const unit = document.getElementById('pageBreakUnit').value; // para | word | char
     innerKids.forEach(inner => {
       const ic = inner.cloneNode(true);
       shell.appendChild(ic);
-      if (overflows()) {
-        // 이 문단이 안 들어감 — 단, 페이지가 완전히 비어 있고 이 문단 하나뿐이면 잘림 감수하고 둔다
+      if (!overflows()) return;
+
+      if (unit === 'para') {
+        // 문단 단위: 문단 통째로 다음 페이지로
+        // 단, 페이지가 완전히 비어 있고 이 문단 하나뿐이면 잘림 감수하고 둔다
         const shellOnly = pageEl.children.length === 1;
         const firstPara = shell.children.length === 1;
         if (shellOnly && firstPara) return;
@@ -1619,6 +1682,30 @@ function buildPages() {
         shell = k.cloneNode(false);
         pageEl.appendChild(shell);
         shell.appendChild(ic);
+        return;
+      }
+
+      // 단어/글자 단위: 문단을 쪼개 현재 페이지를 끝까지 채우고 나머지는 다음 페이지로
+      shell.removeChild(ic);
+      let dest = inner.cloneNode(false);
+      shell.appendChild(dest);
+      let emptied = moveToFit(ic, dest, () => !overflows(), unit);
+      if (!dest.childNodes.length) shell.removeChild(dest);
+      if (shell.children.length === 0) pageEl.removeChild(shell);
+      while (!emptied) {
+        newPage();
+        shell = k.cloneNode(false);
+        pageEl.appendChild(shell);
+        dest = inner.cloneNode(false);
+        // 문단이 중간에 끊겨 이어지는 조각은 문단의 시작이 아니므로 들여쓰기 제거
+        dest.style.textIndent = '0';
+        shell.appendChild(dest);
+        emptied = moveToFit(ic, dest, () => !overflows(), unit);
+        if (!dest.childNodes.length) {
+          // 새 페이지에도 한 토큰도 안 들어가는 비정상 상황: 통째로 넣고 종료 (잘림 감수)
+          while (ic.firstChild) dest.appendChild(ic.firstChild);
+          emptied = true;
+        }
       }
     });
     if (shell.children.length === 0) pageEl.removeChild(shell);
@@ -1869,6 +1956,7 @@ function saveState() {
         textAlign: optJustify.checked, indent: optIndent.checked,
         imgFormat: imgFormat.value,
         cover: optCover.checked,
+        pageBreakUnit: pageBreakUnit.value,
         pageColor: colorPage.value, narrationColor: colorNarration.value,
         textColor: colorText.value, actionColor: colorAction.value
       }
@@ -1929,6 +2017,7 @@ function loadState() {
           imgFormat.value = (v === 'none') ? 'none' : 'pages';
         }
         if (s.design.cover !== undefined) optCover.checked = s.design.cover;
+        if (s.design.pageBreakUnit !== undefined) pageBreakUnit.value = s.design.pageBreakUnit;
         if (s.design.pageColor) colorPage.value = s.design.pageColor;
         if (s.design.narrationColor) colorNarration.value = s.design.narrationColor;
         if (s.design.textColor) colorText.value = s.design.textColor;
@@ -2035,6 +2124,7 @@ document.getElementById('colorPage').addEventListener('input', () => { autoAdjus
 // 규격 변경 시 예상 장수 즉시 갱신 (미리보기 재변환은 불필요하므로 별도 처리)
 document.getElementById('imgFormat').addEventListener('change', () => { updatePageCount(); saveState(); });
 document.getElementById('optCover').addEventListener('change', () => { updatePageCount(); saveState(); });
+document.getElementById('pageBreakUnit').addEventListener('change', () => { updatePageCount(); saveState(); });
 // 소설 모드 토글 시 무력화 옵션 흐리게 갱신
 document.getElementById('optNovelUnified').addEventListener('change', updateUnifiedLock);
 // ESC 키로 페이지 미리보기 닫기
