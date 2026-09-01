@@ -82,6 +82,26 @@
   }
 
   .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .meta-grid.three { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .meta-grid.three select { font-size: 12.5px; padding: 8px 8px; }
+  .sel-wrap { position: relative; }
+  .sel-wrap select { width: 100%; }
+  .sel-wrap select[hidden] { display: none; }
+  .custom-row { display: flex; gap: 4px; align-items: stretch; }
+  .custom-row[hidden] { display: none; }
+  .sel-custom {
+    flex: 1; min-width: 0; padding: 8px 10px; font-size: 12.5px;
+    border: 1px solid var(--text-soft); border-radius: 8px;
+    background: var(--bg); color: var(--text); font-family: inherit;
+  }
+  .custom-back {
+    flex-shrink: 0; width: 30px; padding: 0;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--panel); color: var(--text-faint);
+    cursor: pointer; font-size: 13px; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .custom-back:hover { background: var(--hover); color: var(--text); }
   @media (max-width: 600px) { .meta-grid { grid-template-columns: 1fr; } }
   .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
   .field label { font-size: 11px; color: var(--text-faint); font-weight: 600; letter-spacing: 0.3px; }
@@ -109,23 +129,25 @@
 
   /* 색상 4칸 한 줄 배치 */
   .color-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px;
   }
   .color-cell {
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    padding: 12px 8px;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    padding: 10px 5px;
     border: 1px solid var(--border); border-radius: 10px;
     background: var(--bg);
+    min-width: 0;
   }
   .color-cell label {
-    font-size: 11.5px; color: var(--text-soft); font-weight: 600; letter-spacing: 0.2px;
+    font-size: 11px; color: var(--text-soft); font-weight: 600; letter-spacing: 0;
+    white-space: nowrap;
   }
   .color-cell input[type="color"] {
-    width: 100%; height: 38px; border: 1px solid var(--border);
+    width: 100%; height: 34px; border: 1px solid var(--border);
     border-radius: 8px; cursor: pointer; padding: 2px; background: var(--panel);
   }
   .color-cell .color-label {
-    font-size: 10.5px; color: var(--text-faint); font-weight: 500;
+    font-size: 9.5px; color: var(--text-faint); font-weight: 500;
     font-family: ui-monospace, monospace;
   }
 
@@ -323,21 +345,73 @@
   .quick-insert .chip.util { color: var(--text-faint); font-weight: 500; }
 
   /* ===== 내보내기 버튼 그룹 ===== */
+  /* 형광펜 */
+  .preview-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .hl-btn {
+    padding: 6px 13px; font-size: 12px; font-weight: 600;
+    border: 1px solid var(--border-strong); border-radius: 999px;
+    background: var(--panel); color: var(--text-soft);
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .hl-btn:hover { background: var(--hover); color: var(--text); }
+  .hl-btn.on {
+    background: #ffd600; border-color: #e6c000; color: #3a3320;
+  }
+  .preview-head > div { display: flex; gap: 6px; }
+
+  /* 발췌 모달 안 카드 설정 */
+  .pick-settings {
+    display: flex; gap: 10px; padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .pick-set-field { display: flex; align-items: center; gap: 6px; flex: 1; }
+  .pick-set-field label {
+    font-size: 11px; color: var(--text-faint); font-weight: 700; flex-shrink: 0;
+  }
+  .merge-check {
+    display: inline-flex !important; align-items: center; gap: 5px;
+    cursor: pointer; white-space: nowrap; color: var(--text-soft) !important;
+    font-size: 11.5px !important;
+  }
+  .merge-check input[type="checkbox"] { accent-color: var(--text); }
+  .pick-set-field select {
+    flex: 1; min-width: 0; padding: 6px 8px; font-size: 12px;
+    border: 1px solid var(--border); border-radius: 7px;
+    background: var(--bg); color: var(--text-soft); font-family: inherit;
+  }
+  .preview-area.hl-mode { cursor: text; }
+  .preview-area.hl-mode .preview ::selection { background: rgba(255,214,0,0.55); }
+
   .export-actions { margin-top: 14px; }
-  .img-format-row {
-    display: flex; align-items: center; gap: 10px; margin-top: 8px;
+  .save-opts { margin-top: 10px; }
+  .save-selects { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .save-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .save-field label {
+    font-size: 10.5px; color: var(--text-faint); font-weight: 700;
+    letter-spacing: 0.3px;
   }
-  .img-format-row label {
-    font-size: 11.5px; color: var(--text-faint); font-weight: 600; flex-shrink: 0;
-  }
-  .img-format-row select {
-    flex: 1; padding: 8px 10px; font-size: 12.5px;
+  .save-field select {
+    width: 100%; padding: 8px 10px; font-size: 12.5px;
     border: 1px solid var(--border); border-radius: 8px;
     background: var(--bg); color: var(--text-soft); font-family: inherit;
   }
+  .save-field.off { opacity: 0.35; pointer-events: none; }
+  .save-sub {
+    display: flex; align-items: center; gap: 10px; margin-top: 8px;
+  }
+  .save-sub.off { display: none; }
+  .cover-check {
+    font-size: 12px; color: var(--text-soft); font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    flex-shrink: 0;
+  }
+  .cover-check input[type="checkbox"] { accent-color: var(--text); }
   .page-count {
     font-size: 12px; color: var(--text-soft); font-weight: 700;
-    flex-shrink: 0; min-width: 44px; text-align: right;
+    margin-left: auto; flex-shrink: 0;
   }
   .page-preview-btn {
     flex-shrink: 0; padding: 8px 12px; font-size: 12px; font-weight: 600;
@@ -346,12 +420,6 @@
     cursor: pointer; font-family: inherit; transition: all 0.15s;
   }
   .page-preview-btn:hover { background: var(--hover); color: var(--text); }
-  .cover-row { margin-top: 7px; }
-  .cover-row label {
-    font-size: 12px; color: var(--text-soft); font-weight: 500;
-    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
-  }
-  .cover-row input[type="checkbox"] { accent-color: var(--text); }
 
   /* 페이지 미리보기 모달 */
   .page-modal {
@@ -395,6 +463,33 @@
     box-shadow: 0 2px 12px rgba(0,0,0,0.14);
     border-radius: 4px;
   }
+  /* 발췌 선택 모달 */
+  .pick-body { align-items: stretch; gap: 8px; }
+  .pick-item {
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; cursor: pointer; background: var(--bg);
+    transition: all 0.12s; position: relative;
+    font-size: 13px; color: var(--text-soft); line-height: 1.7;
+  }
+  .pick-item:hover { border-color: var(--text-soft); }
+  .pick-item.on {
+    border-color: var(--text); background: var(--hover);
+    color: var(--text); box-shadow: inset 0 0 0 1px var(--text);
+  }
+  .pick-item .pick-who {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    margin-bottom: 5px; opacity: 0.75;
+  }
+  .pick-item.on::after {
+    content: '✓'; position: absolute; top: 10px; right: 12px;
+    font-size: 13px; font-weight: 700; color: var(--text);
+  }
+  .pick-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 18px; border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--text-soft); font-weight: 600;
+  }
+
   .page-modal-body .page-label {
     font-size: 11px; color: var(--text-faint); font-weight: 600;
     margin: 2px 0 12px;
@@ -453,8 +548,17 @@
     textarea { height: 300px; font-size: 16px; padding: 13px 14px; }
     .preview-area { height: 360px; }
 
-    /* 색상 4칸 → 모바일 2칸 */
-    .color-grid { grid-template-columns: 1fr 1fr; }
+    /* 색상 5칸 → 모바일 2칸 (칸이 넓어지므로 크기 복원) */
+    .color-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .color-cell { padding: 12px 8px; }
+    .color-cell label { font-size: 11.5px; }
+    .color-cell .color-label { font-size: 10.5px; }
+    .color-cell input[type="color"] { height: 42px; }
+
+    /* 저장 옵션: 모바일에선 셀렉트를 세로로 */
+    .save-selects { grid-template-columns: 1fr; }
+    .save-field select { font-size: 16px; }
+    .save-sub { flex-wrap: wrap; gap: 8px; }
 
     /* 빠른 입력 칩: 모바일에서 살짝 키워 누르기 쉽게 */
     .quick-insert .chip { padding: 8px 13px; font-size: 13px; }
@@ -529,33 +633,62 @@
       </div>
       <div class="field">
         <label>글자 크기</label>
-        <select id="fontSize">
-          <option value="12.5">아주 작게 (12.5px)</option>
-          <option value="13.5">작게 (13.5px)</option>
-          <option value="14.5" selected>보통 (14.5px)</option>
-          <option value="15.5">크게 (15.5px)</option>
-          <option value="17">아주 크게 (17px)</option>
-        </select>
+        <div class="sel-wrap">
+          <select id="fontSize" data-unit="px" data-min="8" data-max="48">
+            <option value="12.5">아주 작게 (12.5px)</option>
+            <option value="13.5">작게 (13.5px)</option>
+            <option value="14.5" selected>보통 (14.5px)</option>
+            <option value="15.5">크게 (15.5px)</option>
+            <option value="17">아주 크게 (17px)</option>
+            <option value="custom">직접 입력…</option>
+          </select>
+          <div class="custom-row" id="fontSizeRow" hidden><input type="number" class="sel-custom" id="fontSizeCustom" step="0.5"><button class="custom-back" onclick="exitCustom('fontSize')" title="목록에서 고르기">↺</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-grid three" style="margin-top: 8px;">
+      <div class="field">
+        <label>좌우 여백</label>
+        <div class="sel-wrap">
+          <select id="bodyPadding" data-unit="px" data-min="0" data-max="200">
+            <option value="16">아주 좁게 (16px)</option>
+            <option value="22">좁게 (22px)</option>
+            <option value="28" selected>보통 (28px)</option>
+            <option value="40">넓게 (40px)</option>
+            <option value="56">아주 넓게 (56px)</option>
+            <option value="custom">직접 입력…</option>
+          </select>
+          <div class="custom-row" id="bodyPaddingRow" hidden><input type="number" class="sel-custom" id="bodyPaddingCustom" step="1"><button class="custom-back" onclick="exitCustom('bodyPadding')" title="목록에서 고르기">↺</button></div>
+        </div>
       </div>
       <div class="field">
         <label>행간</label>
-        <select id="lineHeight">
-          <option value="1.45">아주 작게 (1.45)</option>
-          <option value="1.6">작게 (1.6)</option>
-          <option value="1.8">보통 (1.8)</option>
-          <option value="1.95" selected>크게 (1.95)</option>
-          <option value="2.2">아주 크게 (2.2)</option>
-        </select>
+        <div class="sel-wrap">
+          <select id="lineHeight" data-unit="" data-min="1" data-max="4">
+            <option value="1.45">아주 작게 (1.45)</option>
+            <option value="1.6">작게 (1.6)</option>
+            <option value="1.8">보통 (1.8)</option>
+            <option value="1.95" selected>크게 (1.95)</option>
+            <option value="2.2">아주 크게 (2.2)</option>
+            <option value="custom">직접 입력…</option>
+          </select>
+          <div class="custom-row" id="lineHeightRow" hidden><input type="number" class="sel-custom" id="lineHeightCustom" step="0.05"><button class="custom-back" onclick="exitCustom('lineHeight')" title="목록에서 고르기">↺</button></div>
+        </div>
       </div>
       <div class="field">
         <label>발화 사이 간격</label>
-        <select id="blockGap">
-          <option value="6">아주 작게 (6px)</option>
-          <option value="12">작게 (12px)</option>
-          <option value="22" selected>보통 (22px)</option>
-          <option value="34">크게 (34px)</option>
-          <option value="48">아주 크게 (48px)</option>
-        </select>
+        <div class="sel-wrap">
+          <select id="blockGap" data-unit="px" data-min="0" data-max="200">
+            <option value="6">아주 작게 (6px)</option>
+            <option value="12">작게 (12px)</option>
+            <option value="22" selected>보통 (22px)</option>
+            <option value="34">크게 (34px)</option>
+            <option value="48">아주 크게 (48px)</option>
+            <option value="custom">직접 입력…</option>
+          </select>
+          <div class="custom-row" id="blockGapRow" hidden><input type="number" class="sel-custom" id="blockGapCustom" step="1"><button class="custom-back" onclick="exitCustom('blockGap')" title="목록에서 고르기">↺</button></div>
+        </div>
       </div>
     </div>
 
@@ -601,6 +734,11 @@
           <label>나레이션</label>
           <input type="color" id="colorNarration" value="#6e6960">
           <span class="color-label" id="colorNarrationLabel">#6e6960</span>
+        </div>
+        <div class="color-cell">
+          <label>형광펜</label>
+          <input type="color" id="colorHighlight" value="#ffd600">
+          <span class="color-label" id="colorHighlightLabel">#ffd600</span>
         </div>
       </div>
       <button class="preset-btn" style="margin-top: 10px;" onclick="resetColors()">색상 초기화</button>
@@ -686,6 +824,9 @@
 · *별표 사이*는 행동 지문 (이탤릭, 색 분리)
   (괄호)도 행동 지문으로 쓰려면 디자인 옵션에서 켜기
 
+· ==등호 두 개 사이==는 형광펜
+  미리보기 위 [형광펜] 켜고 드래그해도 칠해집니다
+
 · N: 으로 시작하면 나레이션 (이름 없이)
 
 · // 만 있는 줄 → 한 칸 띄움 (단락 분리)
@@ -698,7 +839,13 @@
 
     <!-- 미리보기 -->
     <div class="panel">
-      <h2>미리보기</h2>
+      <div class="preview-head">
+        <h2 style="margin:0;">미리보기</h2>
+        <div>
+          <button id="hlBtn" class="hl-btn" onclick="toggleHighlightMode()">형광펜</button>
+          <button id="quoteBtn" class="hl-btn quote" onclick="openQuotePicker()">발췌</button>
+        </div>
+      </div>
       <div class="preview-area">
         <div id="preview" class="preview"></div>
       </div>
@@ -715,25 +862,28 @@
             <span class="ico">⌹</span> HTML 파일
           </button>
         </div>
-        <div class="img-format-row">
-          <label for="imgFormat">이미지 저장</label>
-          <select id="imgFormat">
-            <option value="none" selected>한 장으로 (통짜)</option>
-            <option value="pages">페이지로 나누기</option>
-          </select>
-          <span id="pageCount" class="page-count"></span>
-          <button class="page-preview-btn" onclick="openPagePreview()">페이지 확인</button>
-        </div>
-        <div class="img-format-row" style="margin-top: 6px;">
-          <label for="pageBreakUnit">페이지 넘김</label>
-          <select id="pageBreakUnit">
-            <option value="word" selected>단어 단위</option>
-            <option value="para">문단 단위</option>
-            <option value="char">글자 단위</option>
-          </select>
-        </div>
-        <div class="cover-row">
-          <label><input type="checkbox" id="optCover"> 표지 페이지 추가 (제목을 1쪽에 크게)</label>
+        <div class="save-opts">
+          <div class="save-selects">
+            <div class="save-field">
+              <label for="imgFormat">이미지 저장</label>
+              <select id="imgFormat">
+                <option value="none" selected>한 장으로 (통짜)</option>
+                <option value="pages">페이지로 나누기</option>
+              </select>
+            </div>
+            <div class="save-field" id="breakField">
+              <label for="pageBreakUnit">페이지 넘김</label>
+              <select id="pageBreakUnit">
+                <option value="word" selected>단어 단위</option>
+                <option value="para">문단 단위</option>
+                <option value="char">글자 단위</option>
+              </select>
+            </div>
+          <div class="save-sub" id="pageExtra">
+            <label class="cover-check"><input type="checkbox" id="optCover"> 표지 페이지 추가</label>
+            <span id="pageCount" class="page-count"></span>
+            <button class="page-preview-btn" id="previewBtn" onclick="openPagePreview()">페이지 확인</button>
+          </div>
         </div>
       </div>
       <details>
@@ -749,7 +899,83 @@
 
 <div id="toast" class="toast"></div>
 
-<div id="pageModal" class="page-modal" hidden>
+<div id="pickModal" class="page-modal" hidden>
+  <div class="page-modal-inner">
+    <div class="page-modal-head">
+      <span id="pickTitle">발췌할 부분 고르기</span>
+      <div style="display:flex;gap:8px;">
+        <button class="page-modal-close" onclick="pickAll(true)">전체 선택</button>
+        <button class="page-modal-close" onclick="pickAll(false)">전체 해제</button>
+        <button class="page-modal-close" onclick="closeQuotePicker()">닫기 ✕</button>
+      </div>
+    </div>
+    <div class="pick-settings">
+      <div class="pick-set-field">
+        <label for="pickSource">대상</label>
+        <select id="pickSource" onchange="renderPickList()">
+          <option value="block" selected>발화 블록</option>
+          <option value="mark">형광 친 부분</option>
+        </select>
+      </div>
+      <div class="pick-set-field">
+        <label for="cardRatio">비율</label>
+        <select id="cardRatio">
+          <option value="1" selected>정사각형 (1:1)</option>
+          <option value="1.25">세로형 (4:5)</option>
+          <option value="0.5625">가로형 (16:9)</option>
+        </select>
+      </div>
+      <div class="pick-set-field">
+        <label class="merge-check"><input type="checkbox" id="cardMerge" checked> 한 장에 합치기</label>
+      </div>
+      <div class="pick-set-field">
+        <label for="cardScale">글자</label>
+        <select id="cardScale">
+          <option value="0.6">60%</option>
+          <option value="0.7">70%</option>
+          <option value="0.8">80%</option>
+          <option value="0.85">85%</option>
+          <option value="0.9">90%</option>
+          <option value="0.95">95%</option>
+          <option value="1" selected>자동 (100%)</option>
+          <option value="1.05">105%</option>
+          <option value="1.1">110%</option>
+          <option value="1.2">120%</option>
+          <option value="1.35">135%</option>
+          <option value="1.5">150%</option>
+        </select>
+      </div>
+      <div class="pick-set-field">
+        <label for="cardGap">간격</label>
+        <select id="cardGap">
+          <option value="0.3">아주 좁게</option>
+          <option value="0.6">좁게</option>
+          <option value="1" selected>기본</option>
+          <option value="1.5">넓게</option>
+          <option value="2.2">아주 넓게</option>
+        </select>
+      </div>
+      <div class="pick-set-field">
+        <label for="cardAlign">정렬</label>
+        <select id="cardAlign">
+          <option value="center" selected>가운데</option>
+          <option value="justify">양쪽 맞춤</option>
+          <option value="left">왼쪽</option>
+        </select>
+      </div>
+    </div>
+    <div id="pickBody" class="page-modal-body pick-body"></div>
+    <div class="pick-foot">
+      <span id="pickCount">0개 선택됨</span>
+      <div style="display:flex;gap:8px;">
+        <button class="page-modal-close" onclick="previewPickedCards()">카드 미리보기</button>
+        <button class="page-modal-save" onclick="savePickedCards()">카드 저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="pageModal" class="page-modal" style="z-index:1100;" hidden>
   <div class="page-modal-inner">
     <div class="page-modal-head">
       <span id="pageModalTitle"></span>
@@ -896,6 +1122,7 @@ function renderQuickInsert() {
   // 보조 칩들
   const utils = [
     { label: '행동', before: '*', after: '*' },
+    { label: '형광', before: '==', after: '==' },
     { label: '구분선', before: '\n***\n' },
     { label: '여백', before: '\n---\n' },
   ];
@@ -949,15 +1176,17 @@ function getConfig() {
       place: logPlace.value.trim()
     },
     font: fontBody.value,
-    fontSize: parseFloat(fontSize.value),
-    lineHeight: parseFloat(lineHeight.value),
-    blockGap: parseFloat(blockGap.value),
+    fontSize: selValue('fontSize'),
+    lineHeight: selValue('lineHeight'),
+    blockGap: selValue('blockGap'),
+    bodyPadding: selValue('bodyPadding'),
     textAlign: optJustify.checked ? 'justify' : 'left',
     indent: optIndent.checked,
     pageColor: colorPage.value,
     textColor: colorText.value,
     actionColor: colorAction.value,
     narrationColor: colorNarration.value,
+    highlightColor: hexToRgba(colorHighlight.value, 0.38),
     unified: false
   };
 
@@ -981,40 +1210,52 @@ function escapeHTML(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function processInline(text, actionCol, parenAction, italic, markdown) {
+function processInline(text, actionCol, parenAction, italic, markdown, hlColor) {
   const italicStyle = italic ? 'font-style:italic;' : '';
   let safe = escapeHTML(text);
+
+  // 생성한 HTML 태그를 뒤따르는 규칙이 다시 건드리지 않도록 자리표시자로 보호한다.
+  // (예: 스타일 속성의 rgba(...) 괄호를 "(괄호) 행동 지문" 규칙이 먹어버리는 문제 방지)
+  const slots = [];
+  const keep = html => { slots.push(html); return '\u0000' + (slots.length - 1) + '\u0000'; };
+
+  // === 형광펜 ==텍스트== (옵션과 무관하게 항상 인식) ===
+  safe = safe.replace(/==([^=]+)==/g, (m, inner) =>
+    keep(`<mark data-hl="1" style="background:${hlColor};color:inherit;padding:0 2px;border-radius:2px;">`) + inner + keep('</mark>'));
 
   // === 마크다운 인라인 (행동 지문 처리 전에 먼저!) ===
   if (markdown) {
     // 코드 `code` (가장 먼저 처리해서 내부 마크다운 무력화)
-    safe = safe.replace(/`([^`]+)`/g, '<code style="background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:3px;font-family:ui-monospace,monospace;font-size:0.92em;">$1</code>');
+    safe = safe.replace(/`([^`]+)`/g, (m, inner) =>
+      keep('<code style="background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:3px;font-family:ui-monospace,monospace;font-size:0.92em;">') + inner + keep('</code>'));
     // 굵게 **text** (별표 한 개 행동 지문보다 먼저)
-    safe = safe.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    safe = safe.replace(/\*\*([^*]+)\*\*/g, (m, inner) => keep('<strong>') + inner + keep('</strong>'));
     // 굵은 기울임 ___text___
-    safe = safe.replace(/___([^_]+)___/g, '<strong><em>$1</em></strong>');
+    safe = safe.replace(/___([^_]+)___/g, (m, inner) => keep('<strong><em>') + inner + keep('</em></strong>'));
     // 기울임 __text__
-    safe = safe.replace(/__([^_]+)__/g, '<em>$1</em>');
+    safe = safe.replace(/__([^_]+)__/g, (m, inner) => keep('<em>') + inner + keep('</em>'));
     // 기울임 _text_ (단어 경계: 앞뒤가 영숫자 아닐 때만 — 단어 안 언더스코어 방지)
-    safe = safe.replace(/(^|[^A-Za-z0-9_])_([^_\n]+)_(?=$|[^A-Za-z0-9_])/g, '$1<em>$2</em>');
+    safe = safe.replace(/(^|[^A-Za-z0-9_])_([^_\n]+)_(?=$|[^A-Za-z0-9_])/g, (m, pre, inner) =>
+      pre + keep('<em>') + inner + keep('</em>'));
     // 취소선 ~~text~~
-    safe = safe.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+    safe = safe.replace(/~~([^~]+)~~/g, (m, inner) => keep('<del>') + inner + keep('</del>'));
     // 링크 [text](url)
-    safe = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:inherit;text-decoration:underline;">$1</a>');
+    safe = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, label, url) =>
+      keep(`<a href="${url}" style="color:inherit;text-decoration:underline;">`) + label + keep('</a>'));
   }
 
-  // *별표* 행동 지문 (단, **굵게**는 위에서 이미 strong으로 치환돼서 별표가 안 남음)
-  safe = safe.replace(
-    /\*([^*]+)\*/g,
-    `<em style="color:${actionCol};${italicStyle}font-weight:400;">$1</em>`
-  );
+  // *별표* 행동 지문 (**굵게**는 위에서 이미 치환돼 별표가 남지 않음)
+  safe = safe.replace(/\*([^*]+)\*/g, (m, inner) =>
+    keep(`<em style="color:${actionCol};${italicStyle}font-weight:400;">`) + inner + keep('</em>'));
+
   // (괄호) 행동 지문 — 옵션이 켜진 경우에만
   if (parenAction) {
-    safe = safe.replace(
-      /\(([^()]+)\)/g,
-      `<em style="color:${actionCol};${italicStyle}font-weight:400;">($1)</em>`
-    );
+    safe = safe.replace(/\(([^()]+)\)/g, (m, inner) =>
+      keep(`<em style="color:${actionCol};${italicStyle}font-weight:400;">(`) + inner + keep(')</em>'));
   }
+
+  // 자리표시자 복원
+  safe = safe.replace(/\u0000(\d+)\u0000/g, (m, n) => slots[+n]);
   return safe;
 }
 
@@ -1181,15 +1422,15 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
       // 헤딩 크기: h1 1.7em ~ h6 1em
       const sizes = [1.7, 1.45, 1.25, 1.1, 1, 0.95];
       const size = sizes[p.level - 1] || 1;
-      return `<div style="margin:18px 0 8px;font-size:${size}em;font-weight:700;color:${textCol};line-height:1.3;">${processInline(p.text, actionCol, parenAction, italic, markdown)}</div>`;
+      return `<div style="margin:18px 0 8px;font-size:${size}em;font-weight:700;color:${textCol};line-height:1.3;">${processInline(p.text, actionCol, parenAction, italic, markdown, cfg.highlightColor)}</div>`;
     }
     if (p.type === 'quote') {
       const qCol = hexToRgba(textCol, 0.5);
-      return `<div style="margin:10px 0;padding:4px 0 4px 14px;border-left:3px solid ${qCol};color:${qCol};font-style:italic;">${processInline(p.text, actionCol, parenAction, italic, markdown)}</div>`;
+      return `<div style="margin:10px 0;padding:4px 0 4px 14px;border-left:3px solid ${qCol};color:${qCol};font-style:italic;">${processInline(p.text, actionCol, parenAction, italic, markdown, cfg.highlightColor)}</div>`;
     }
     if (p.type === 'list') {
       const tag = p.ordered ? 'ol' : 'ul';
-      const items = p.items.map(it => `<li style="margin:4px 0;">${processInline(it, actionCol, parenAction, italic, markdown)}</li>`).join('');
+      const items = p.items.map(it => `<li style="margin:4px 0;">${processInline(it, actionCol, parenAction, italic, markdown, cfg.highlightColor)}</li>`).join('');
       return `<${tag} style="margin:10px 0;padding-left:1.5em;color:${textCol};">${items}</${tag}>`;
     }
     if (p.type === 'table') {
@@ -1203,7 +1444,7 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
         const rowStyle = isHead ? `background:${headBg};font-weight:700;` : '';
         out += `<tr style="${rowStyle}">`;
         row.forEach(c => {
-          out += `<${cellTag} style="${cellStyle}">${processInline(c, actionCol, parenAction, italic, markdown)}</${cellTag}>`;
+          out += `<${cellTag} style="${cellStyle}">${processInline(c, actionCol, parenAction, italic, markdown, cfg.highlightColor)}</${cellTag}>`;
         });
         out += `</tr>`;
       });
@@ -1221,7 +1462,7 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
     const indentStyle = cfg.indent ? 'text-indent:1em;' : '';
     // keepBreaks 모드일 땐 문단 사이 간격을 더 좁게 (줄바꿈 느낌 살리기)
     const margin = keepBreaks ? '2px 0' : '10px 0';
-    return `<div style="margin:${margin};line-height:${cfg.lineHeight};color:${textCol};${indentStyle}">${processInline(dialogue, actionCol, parenAction, italic, markdown)}</div>`;
+    return `<div style="margin:${margin};line-height:${cfg.lineHeight};color:${textCol};${indentStyle}">${processInline(dialogue, actionCol, parenAction, italic, markdown, cfg.highlightColor)}</div>`;
   }).join('');
 
   const showBar = cfg.opts.showBar;
@@ -1266,15 +1507,15 @@ function renderNarration(lines, cfg) {
     if (p.type === 'heading') {
       const sizes = [1.7, 1.45, 1.25, 1.1, 1, 0.95];
       const size = sizes[p.level - 1] || 1;
-      return `<div style="margin:18px 0 8px;font-size:${size}em;font-weight:700;color:${nColor};line-height:1.3;">${processInline(p.text, nColor, parenAction, italic, markdown)}</div>`;
+      return `<div style="margin:18px 0 8px;font-size:${size}em;font-weight:700;color:${nColor};line-height:1.3;">${processInline(p.text, nColor, parenAction, italic, markdown, cfg.highlightColor)}</div>`;
     }
     if (p.type === 'quote') {
       const qCol = hexToRgba(nColor, 0.7);
-      return `<div style="margin:10px 0;padding:4px 0 4px 14px;border-left:3px solid ${qCol};color:${qCol};font-style:italic;">${processInline(p.text, nColor, parenAction, italic, markdown)}</div>`;
+      return `<div style="margin:10px 0;padding:4px 0 4px 14px;border-left:3px solid ${qCol};color:${qCol};font-style:italic;">${processInline(p.text, nColor, parenAction, italic, markdown, cfg.highlightColor)}</div>`;
     }
     if (p.type === 'list') {
       const tag = p.ordered ? 'ol' : 'ul';
-      const items = p.items.map(it => `<li style="margin:4px 0;">${processInline(it, nColor, parenAction, italic, markdown)}</li>`).join('');
+      const items = p.items.map(it => `<li style="margin:4px 0;">${processInline(it, nColor, parenAction, italic, markdown, cfg.highlightColor)}</li>`).join('');
       return `<${tag} style="margin:10px 0;padding-left:1.5em;color:${nColor};">${items}</${tag}>`;
     }
     if (p.type === 'table') {
@@ -1288,7 +1529,7 @@ function renderNarration(lines, cfg) {
         const rowStyle = isHead ? `background:${headBg};font-weight:700;` : '';
         out += `<tr style="${rowStyle}">`;
         row.forEach(c => {
-          out += `<${cellTag} style="${cellStyle}">${processInline(c, nColor, parenAction, italic, markdown)}</${cellTag}>`;
+          out += `<${cellTag} style="${cellStyle}">${processInline(c, nColor, parenAction, italic, markdown, cfg.highlightColor)}</${cellTag}>`;
         });
         out += `</tr>`;
       });
@@ -1296,7 +1537,7 @@ function renderNarration(lines, cfg) {
       return out;
     }
     const isAction = p.type === 'action';
-    const text = isAction ? escapeHTML(p.text) : processInline(p.text, nColor, parenAction, italic, markdown);
+    const text = isAction ? escapeHTML(p.text) : processInline(p.text, nColor, parenAction, italic, markdown, cfg.highlightColor);
     const margin = keepBreaks ? '2px 0' : '10px 0';
     const indentStyle = cfg.indent ? 'text-indent:1em;' : '';
     return `<div style="margin:${margin};color:${nColor};${italicStyle}font-size:${cfg.unified ? cfg.fontSize : cfg.fontSize - 0.5}px;line-height:${cfg.lineHeight};${indentStyle}">${text}</div>`;
@@ -1424,7 +1665,7 @@ function buildOutputHTML(cfg, forExport) {
   });
 
   const breakStyle = cfg.textAlign === 'justify' ? 'word-break:keep-all;' : '';
-  const html = `<div style="max-width:680px;margin:0 auto;padding:40px 28px 44px;background:${cfg.pageColor};color:${cfg.textColor};font-family:${cfg.font};line-height:${cfg.lineHeight};text-align:${cfg.textAlign};${breakStyle}border-radius:12px;">${inner}</div>`;
+  const html = `<div style="max-width:680px;margin:0 auto;padding:40px ${cfg.bodyPadding}px 44px;background:${cfg.pageColor};color:${cfg.textColor};font-family:${cfg.font};line-height:${cfg.lineHeight};text-align:${cfg.textAlign};${breakStyle}border-radius:12px;">${inner}</div>`;
   return { html, blockCount, raw };
 }
 
@@ -1600,8 +1841,10 @@ function buildPages() {
     pageEl.style.width = width + 'px';
     pageEl.style.maxWidth = 'none';
     pageEl.style.boxSizing = 'border-box';
-    // 인쇄물처럼 여유 있는 페이지 여백 (기본 미리보기보다 넉넉하게)
-    pageEl.style.padding = '58px 56px 64px';
+    // 페이지 여백: 본문 여백 설정을 따르되 인쇄물답게 조금 더 여유 있게
+    const bp = selValue('bodyPadding') || 28;
+    const side = Math.round(bp * 2);
+    pageEl.style.padding = `58px ${side}px 64px`;
     holder.appendChild(pageEl);
     pages.push(pageEl);
   }
@@ -1740,6 +1983,323 @@ function addPageFooters(pages, cfg, hasCover) {
 }
 
 // 규격 페이지로 나눠서 여러 장 저장
+// === 발췌 카드 ===
+let pickedIdx = new Set();
+
+// 미리보기의 발화 블록 목록 (헤더·구분선 제외)
+function getQuotableBlocks() {
+  // 구조가 preview > 종이 컨테이너 > 발화 블록 이므로 컨테이너의 자식을 봐야 한다
+  const container = document.getElementById('preview').firstElementChild;
+  if (!container) return [];
+  return Array.from(container.children).filter(el => {
+    if (el.dataset && el.dataset.logHeader) return false;      // 제목 헤더 제외
+    if (el.style && el.style.height && !el.textContent.trim()) return false; // 여백
+    return el.textContent.trim().length > 0;                    // 구분선 등 빈 요소 제외
+  });
+}
+
+// 형광으로 칠한 조각 목록
+function getMarkItems() {
+  const preview = document.getElementById('preview');
+  return Array.from(preview.querySelectorAll('mark[data-hl]'));
+}
+
+// 현재 대상 모드에 맞는 항목 목록
+function getPickItems() {
+  return document.getElementById('pickSource').value === 'mark'
+    ? getMarkItems() : getQuotableBlocks();
+}
+
+// 항목에서 화자 이름 찾기 (형광 조각이면 상위 블록에서)
+function itemSpeaker(el) {
+  const info = itemSpeakerInfo(el);
+  return info ? info.name : '';
+}
+
+// 항목이 속한 발화 블록의 화자 정보 {name, color}
+// 미리보기 구조가 preview > 종이 컨테이너 > 발화 블록 이므로
+// 컨테이너가 아니라 그 자식(발화 블록) 단위에서 멈춰야 한다.
+function itemSpeakerInfo(el) {
+  const container = document.getElementById('preview').firstElementChild;
+  if (!container) return null;
+  let node = el;
+  while (node && node.parentElement && node.parentElement !== container) node = node.parentElement;
+  if (!node || !node.querySelector) return null;
+  const nameEl = node.querySelector('span[style*="font-weight:700"]');
+  if (!nameEl) return null;
+  const m = (nameEl.getAttribute('style') || '').match(/color:\s*([^;]+)/);
+  return { name: nameEl.textContent.trim(), color: m ? m[1].trim() : null };
+}
+
+// 형광 조각의 실제 표시 텍스트 (양옆 따옴표까지 포함)
+function markDisplayText(mk) {
+  let text = mk.textContent.trim();
+  const prev = mk.previousSibling, next = mk.nextSibling;
+  const openQ = prev && prev.nodeType === 3 ? (prev.textContent.match(/[\u201C"'\u2018]\s*$/) || [''])[0].trim() : '';
+  const closeQ = next && next.nodeType === 3 ? (next.textContent.match(/^\s*[\u201D"'\u2019]/) || [''])[0].trim() : '';
+  return openQ + text + closeQ;
+}
+
+function renderPickList() {
+  const items = getPickItems();
+  pickedIdx = new Set();
+  const body = document.getElementById('pickBody');
+  body.innerHTML = '';
+  if (!items.length) {
+    body.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-faint);font-size:13px;">
+      ${document.getElementById('pickSource').value === 'mark'
+        ? '형광펜으로 칠한 부분이 없어요' : '발췌할 내용이 없어요'}</div>`;
+    updatePickCount();
+    return;
+  }
+  items.forEach((b, i) => {
+    const item = document.createElement('div');
+    item.className = 'pick-item';
+    const who = itemSpeaker(b);
+    const text = b.tagName === 'MARK' ? markDisplayText(b) : blockPlainText(b);
+    item.innerHTML = (who ? `<div class="pick-who">${escapeHTML(who)}</div>` : '') +
+                     escapeHTML(text.length > 160 ? text.slice(0, 160) + '…' : text);
+    item.addEventListener('click', () => {
+      if (pickedIdx.has(i)) { pickedIdx.delete(i); item.classList.remove('on'); }
+      else { pickedIdx.add(i); item.classList.add('on'); }
+      updatePickCount();
+    });
+    body.appendChild(item);
+  });
+  updatePickCount();
+}
+
+function openQuotePicker() {
+  if (!hasContent()) { showToast('먼저 로그를 입력해주세요'); return; }
+  renderPickList();
+  document.getElementById('pickModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeQuotePicker() {
+  document.getElementById('pickModal').hidden = true;
+  document.body.style.overflow = '';
+}
+
+function pickAll(on) {
+  const items = getPickItems();
+  pickedIdx = on ? new Set(items.map((_, i) => i)) : new Set();
+  document.querySelectorAll('#pickBody .pick-item').forEach((el, i) => {
+    el.classList.toggle('on', pickedIdx.has(i));
+  });
+  updatePickCount();
+}
+
+function updatePickCount() {
+  document.getElementById('pickCount').textContent = `${pickedIdx.size}개 선택됨`;
+}
+
+// 블록에서 화자 이름을 뺀 본문 텍스트만 추출
+function blockPlainText(b) {
+  const clone = b.cloneNode(true);
+  const head = clone.querySelector('div[style*="display:flex"]');
+  if (head) head.remove();
+  return clone.textContent.replace(/\s+/g, ' ').trim();
+}
+
+// 선택된 블록들을 카드로 만든다
+// 복제한 요소의 인라인 font-size / margin 을 배율만큼 조정
+function scaleTree(el, f) {
+  if (f === 1) return;
+  const walk = node => {
+    if (node.nodeType !== 1) return;
+    const st = node.getAttribute('style');
+    if (st) {
+      node.setAttribute('style', st.replace(/(font-size|margin|margin-top|margin-bottom|padding|padding-left|gap|height|width)\s*:\s*([\d.]+)px/g,
+        (m, prop, v) => `${prop}:${(parseFloat(v) * f).toFixed(2)}px`));
+    }
+    Array.from(node.children).forEach(walk);
+  };
+  walk(el);
+}
+
+// 선택 항목을 "미리보기에 보이는 그대로" 카드용 조각으로 만든다
+// (화자 이름·점·컬러바·색·기울임이 변환기와 동일하게 유지됨)
+function makeQuotePiece(item) {
+  const container = document.getElementById('preview').firstElementChild;
+  // 항목이 속한 발화 블록 찾기
+  let block = item;
+  while (block && block.parentElement && block.parentElement !== container) block = block.parentElement;
+
+  if (item.tagName !== 'MARK') {
+    return block ? block.cloneNode(true) : item.cloneNode(true);
+  }
+
+  // 형광 조각: 블록 껍데기 + 화자 헤더는 그대로 두고 본문만 형광 부분으로 교체
+  const shell = block ? block.cloneNode(false) : document.createElement('div');
+  const header = block ? block.querySelector('div[style*="display:flex"]') : null;
+  if (header) shell.appendChild(header.cloneNode(true));
+
+  // 형광이 들어있던 문단의 스타일을 물려받아 텍스트 정렬·색을 유지
+  let para = item.parentElement;
+  while (para && para !== block && !(para.getAttribute && /line-height/.test(para.getAttribute('style') || ''))) {
+    para = para.parentElement;
+  }
+  const line = (para && para !== block) ? para.cloneNode(false) : document.createElement('div');
+  // 양옆 따옴표까지 포함해 표시
+  const mk = item.cloneNode(true);
+  mk.style.background = 'transparent'; // 카드에선 형광 배경 없이 본문처럼
+  const prev = item.previousSibling, next = item.nextSibling;
+  const oq = prev && prev.nodeType === 3 ? (prev.textContent.match(/[\u201C"'\u2018]\s*$/) || [''])[0].trim() : '';
+  const cq = next && next.nodeType === 3 ? (next.textContent.match(/^\s*[\u201D"'\u2019]/) || [''])[0].trim() : '';
+  if (oq) line.appendChild(document.createTextNode(oq));
+  line.appendChild(mk);
+  if (cq) line.appendChild(document.createTextNode(cq));
+  shell.appendChild(line);
+  return shell;
+}
+
+function buildQuoteCards() {
+  const items = getPickItems();
+  const chosen = items.filter((_, i) => pickedIdx.has(i));
+  if (!chosen.length) return null;
+
+  const cfg = getConfig();
+  const ratio = parseFloat(document.getElementById('cardRatio').value) || 1;
+  const align = document.getElementById('cardAlign').value;
+  const userScale = parseFloat(document.getElementById('cardScale').value) || 1;
+  const gapScale = parseFloat(document.getElementById('cardGap').value) || 1;
+  const merge = document.getElementById('cardMerge').checked;
+  const W = 720;
+  const H = Math.round(W * ratio);
+  const pad = Math.round(W * 0.09);
+  const inner = W - pad * 2;
+
+  const holder = document.createElement('div');
+  holder.style.cssText = 'position:fixed;left:-99999px;top:0;';
+  document.body.appendChild(holder);
+
+  // 미리보기 종이의 서체·색을 그대로 물려받되, 카드 폭에 맞춰 확대
+  const container = document.getElementById('preview').firstElementChild;
+  const previewInner = container ? Math.max(1, container.clientWidth - 56) : 620;
+  // 카드 폭에 맞춘 기본 배율 (너무 작아지지 않도록 하한을 둔다)
+  const baseFit = Math.max(0.9, inner / previewInner);
+
+  const avail = H - pad * 2; // 내용이 들어갈 수 있는 높이
+  function newCard() {
+    const card = document.createElement('div');
+    card.style.cssText = `
+      width:${W}px;height:${H}px;box-sizing:border-box;
+      background:${cfg.pageColor};color:${cfg.textColor};
+      font-family:${cfg.font};padding:${pad}px;position:relative;
+      display:flex;flex-direction:column;
+      justify-content:center;
+      text-align:${align === 'center' ? 'center' : (align === 'justify' ? 'justify' : 'left')};
+      ${align === 'justify' ? 'word-break:keep-all;' : ''}`;
+    // 내용 높이를 정확히 재기 위해 안쪽에 래퍼를 둔다
+    const box = document.createElement('div');
+    box.style.cssText = 'width:100%;';
+    card.appendChild(box);
+    holder.appendChild(card);
+    card._box = box;
+    return card;
+  }
+
+  // 분량에 따른 기본 크기 보정 (짧으면 크게, 길면 작게)
+  const totalLen = chosen.reduce((n, it) =>
+    n + (it.tagName === 'MARK' ? it.textContent : it.textContent).trim().length, 0);
+  const lenFactor = totalLen < 60 ? 1.25 : totalLen < 140 ? 1.1 : totalLen < 280 ? 0.98 : totalLen < 500 ? 0.88 : 0.8;
+  const factor = baseFit * lenFactor * userScale;
+
+  const pieces = chosen.map(it => {
+    const el = makeQuotePiece(it);
+    el.style.maxWidth = 'none';
+    el.style.width = '100%';
+    el.style.boxSizing = 'border-box';
+    // 컬러바가 있는 블록과 없는 블록(나레이션 등)의 왼쪽 시작점을 맞춘다.
+    // 컬러바는 그대로 두되, 없는 블록에도 같은 크기의 들여쓰기를 준다.
+    const hasBar = !!(el.style.borderLeft && el.style.borderLeft !== 'none');
+    if (!hasBar) el.style.paddingLeft = '18px';
+    scaleTree(el, factor);
+    // 발췌 조각 사이 간격 (블록 자체의 아래 여백을 조절)
+    el.style.marginBottom = Math.round(cfg.blockGap * factor * gapScale) + 'px';
+    return el;
+  });
+
+  // === 낱장 모드: 항목 하나당 카드 한 장 ===
+  if (!merge) {
+    const cards = pieces.map(el => {
+      const card = newCard();
+      card._box.appendChild(el);
+      // 내용이 꽉 차면 위 정렬, 짧으면 세로 가운데
+      if (card._box.offsetHeight > avail) card.style.justifyContent = 'flex-start';
+      return card;
+    });
+    return { holder, cards, W, H };
+  }
+
+  // === 합치기 모드: 넘칠 때만 다음 장으로 ===
+  const cards = [];
+  let card = null;
+  function startCard() { card = newCard(); cards.push(card); }
+  function fits() { return card._box.offsetHeight <= avail; }
+  startCard();
+
+  pieces.forEach(el => {
+    card._box.appendChild(el);
+    if (!fits() && card._box.children.length > 1) {
+      card._box.removeChild(el);
+      startCard();
+      card._box.appendChild(el);
+    }
+  });
+
+  // 내용이 카드를 꽉 채운 장만 위 정렬 (짧은 장은 세로 가운데 유지)
+  cards.forEach(c => {
+    if (c._box.offsetHeight > avail) c.style.justifyContent = 'flex-start';
+  });
+
+  return { holder, cards, W, H };
+}
+
+async function saveQuoteCards() {
+  const built = buildQuoteCards();
+  if (!built) { showToast('먼저 발췌할 부분을 골라주세요'); return; }
+  const cfg = getConfig();
+  const { holder, cards, W } = built;
+  const scale = Math.min(4, 1440 / W);
+  const fname = (cfg.meta.title || 'quote').replace(/[^\w가-힣\-]/g,'_');
+
+  try {
+    for (let i = 0; i < cards.length; i++) {
+      showToast(`${i + 1} / ${cards.length} 카드 저장 중...`);
+      const canvas = await html2canvas(cards[i], {
+        backgroundColor: cfg.pageColor, scale, useCORS: true, logging: false
+      });
+      await new Promise(resolve => {
+        canvas.toBlob(blob => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${fname}_card${i + 1}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+          }
+          resolve();
+        }, 'image/png');
+      });
+      if (i < cards.length - 1) await new Promise(r => setTimeout(r, 700));
+    }
+    showToast(`발췌 카드 ${cards.length}장이 저장되었습니다`);
+  } catch(e) {
+    console.error(e);
+    showToast('카드 저장 실패');
+  } finally {
+    document.body.removeChild(holder);
+  }
+}
+
+function savePickedCards() { closeQuotePicker(); saveQuoteCards(); }
+function previewPickedCards() { openQuotePreview(); }
+
 async function savePagedImages() {
   const cfg = getConfig();
   const built = buildPages();
@@ -1787,6 +2347,170 @@ async function savePagedImages() {
 
 // 규격 기준 예상 페이지 수를 계산해 표시
 // 자동 변환이 켜져 있으면 수동 변환 버튼은 불필요하므로 숨김
+// === 형광펜 ===
+let hlMode = false;
+
+function toggleHighlightMode() {
+  hlMode = !hlMode;
+  document.getElementById('hlBtn').classList.toggle('on', hlMode);
+  document.querySelector('.preview-area').classList.toggle('hl-mode', hlMode);
+  showToast(hlMode
+    ? '형광펜 모드 — 미리보기에서 드래그하면 칠해집니다 (칠한 곳 다시 드래그하면 해제)'
+    : '형광펜 모드를 껐습니다');
+}
+
+// 미리보기에서 드래그한 텍스트를 원본에서 찾아 == == 마커를 넣거나 뺀다
+function applyHighlightFromSelection() {
+  if (!hlMode) return;
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return;
+  const preview = document.getElementById('preview');
+  if (!preview.contains(sel.anchorNode) || !preview.contains(sel.focusNode)) return;
+
+  const raw = sel.toString();
+  if (!raw.trim()) return;
+
+  const ta = document.getElementById('input');
+  let src = ta.value;
+
+  // 화자 이름 목록 (드래그에 딸려온 이름 헤더는 건너뛰기 위해)
+  const names = new Set();
+  characters.forEach(c => {
+    if (c.name) names.add(c.name.trim());
+    if (c.tag) names.add(c.tag.trim());
+  });
+
+  // 드래그 범위를 줄 단위로 쪼갠다.
+  // 여러 발화/나레이션에 걸쳐도 각 줄마다 따로 마커를 심으면 짝이 안 깨진다.
+  const segs = raw.split(/\n+/)
+    .map(t => t.trim())
+    .filter(t => t && !names.has(t));
+  if (!segs.length) return;
+
+  // 이미 전부 형광이면 해제
+  const strip = t => t.replace(/^[\u201C\u201D"'\u2018\u2019]+|[\u201C\u201D"'\u2018\u2019]+$/g, '').trim();
+  const isOn = t => src.includes('==' + t + '==') || src.includes('==' + strip(t) + '==');
+  const allOn = segs.every(isOn);
+  if (allOn) {
+    segs.forEach(t => {
+      if (src.includes('==' + t + '==')) src = src.replace('==' + t + '==', t);
+      else { const st = strip(t); src = src.replace('==' + st + '==', st); }
+    });
+    ta.value = src;
+    sel.removeAllRanges();
+    scheduleRender();
+    showToast('형광펜을 지웠습니다');
+    return;
+  }
+
+  // 원본을 앞에서부터 훑으며 각 조각을 순서대로 찾아 마커를 심는다
+  let cursor = 0, done = 0, missed = 0;
+  segs.forEach(t => {
+    if (isOn(t)) { done++; return; } // 이미 칠해진 조각은 그대로
+
+    // 미리보기 텍스트와 원본이 다를 수 있어(소설식 따옴표 자동 추가 등)
+    // 후보를 순서대로 시도한다
+    const cands = [t];
+    const stripped = t.replace(/^[\u201C\u201D"'\u2018\u2019]+|[\u201C\u201D"'\u2018\u2019]+$/g, '').trim();
+    if (stripped && stripped !== t) cands.push(stripped);
+
+    let idx = -1, hit = '';
+    for (const c of cands) {
+      const at = src.indexOf(c, cursor);
+      if (at !== -1) { idx = at; hit = c; break; }
+    }
+    if (idx === -1) {
+      // 공백 차이를 흡수하는 느슨한 검색
+      for (const c of cands) {
+        const pattern = c.split(/\s+/)
+          .map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+');
+        const m = new RegExp(pattern).exec(src.slice(cursor));
+        if (m) { idx = cursor + m.index; hit = m[0]; break; }
+      }
+    }
+    if (idx === -1) { missed++; return; }
+
+    const actual = src.substr(idx, hit.length);
+    src = src.slice(0, idx) + '==' + actual + '==' + src.slice(idx + actual.length);
+    cursor = idx + actual.length + 4; // 심은 마커 뒤부터 이어서 검색
+    done++;
+  });
+
+  if (!done) { showToast('원본에서 해당 부분을 찾지 못했어요'); return; }
+
+  ta.value = src;
+  sel.removeAllRanges();
+  scheduleRender();
+  showToast(missed ? `일부만 칠했습니다 (${done}곳)` : '형광펜으로 칠했습니다');
+}
+
+// === 셀렉트 직접 입력 ===
+// "직접 입력…"을 고르면 숫자 입력칸이 나타나고, 그 값이 실제 설정값이 된다.
+const CUSTOM_FIELDS = ['fontSize','bodyPadding','lineHeight','blockGap'];
+
+// 셀렉트의 실효값 (직접 입력 중이면 입력칸 값)
+function selValue(id) {
+  const sel = document.getElementById(id);
+  if (sel.value !== 'custom') return parseFloat(sel.value);
+  const inp = document.getElementById(id + 'Custom');
+  const min = parseFloat(sel.dataset.min), max = parseFloat(sel.dataset.max);
+  let v = parseFloat(inp.value);
+  if (isNaN(v)) v = parseFloat(sel.options[0].value);
+  return Math.min(max, Math.max(min, v));
+}
+
+function syncCustomField(id, focus) {
+  const sel = document.getElementById(id);
+  const row = document.getElementById(id + 'Row');
+  const inp = document.getElementById(id + 'Custom');
+  const on = sel.value === 'custom';
+  // 직접 입력이면 셀렉트를 감추고 그 자리에 입력칸을 넣는다 (높이 유지 → 정렬 안 깨짐)
+  sel.hidden = on;
+  row.hidden = !on;
+  if (on) {
+    if (!inp.value) {
+      // 직전에 고른 값으로 채워두면 조절하기 편함
+      const prev = sel.dataset.last || sel.options[0].value;
+      inp.value = parseFloat(prev);
+    }
+    if (focus) inp.focus();
+  }
+}
+
+// 직접 입력에서 목록 선택으로 되돌리기
+function exitCustom(id) {
+  const sel = document.getElementById(id);
+  sel.value = sel.dataset.last || sel.options[0].value;
+  syncCustomField(id, false);
+  scheduleRender();
+}
+
+function initCustomFields() {
+  CUSTOM_FIELDS.forEach(id => {
+    const sel = document.getElementById(id);
+    const inp = document.getElementById(id + 'Custom');
+    sel.addEventListener('change', () => {
+      // 마지막으로 고른 목록 값을 기억해뒀다가 되돌릴 때 사용
+      if (sel.value !== 'custom') sel.dataset.last = sel.value;
+      syncCustomField(id, true);
+      scheduleRender();
+    });
+    inp.addEventListener('input', scheduleRender);
+    if (sel.value !== 'custom') sel.dataset.last = sel.value;
+    syncCustomField(id, false);
+  });
+}
+
+// 저장 모드에 따라 관련 없는 옵션은 감춰 화면을 단순하게
+function updateSaveOptsVisibility() {
+  const mode = document.getElementById('imgFormat').value; // none | pages
+  document.getElementById('breakField').style.display = mode === 'pages' ? '' : 'none';
+  // 통짜 모드에선 부가 옵션 줄 전체를 숨김 (결과가 미리보기와 동일하므로 확인 불필요)
+  document.getElementById('pageExtra').classList.toggle('off', mode === 'none');
+  document.querySelector('.cover-check').style.display = mode === 'pages' ? '' : 'none';
+  document.getElementById('previewBtn').style.display = mode === 'pages' ? '' : 'none';
+}
+
 function updateConvertBtn() {
   document.getElementById('convertBtn').style.display =
     optAutoRender.checked ? 'none' : '';
@@ -1858,9 +2582,45 @@ function openPagePreview() {
   document.getElementById('pageModal').hidden = false;
 }
 
+// 발췌 카드 미리보기
+function openQuotePreview() {
+  const built = buildQuoteCards();
+  if (!built) { showToast('먼저 형광펜으로 발췌할 부분을 칠해주세요'); return; }
+  const { holder, cards, W, H } = built;
+
+  const body = document.getElementById('pageModalBody');
+  body.innerHTML = '';
+  const avail = Math.min(window.innerWidth - 40, 640) - 36;
+  const s = Math.min(1, avail / W);
+
+  cards.forEach((c, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'page-wrap';
+    wrap.style.width = Math.round(W * s) + 'px';
+    wrap.style.height = Math.round(H * s) + 'px';
+    c.style.transform = `scale(${s})`;
+    c.style.transformOrigin = 'top left';
+    wrap.appendChild(c);
+    body.appendChild(wrap);
+
+    const label = document.createElement('div');
+    label.className = 'page-label';
+    label.textContent = `${i + 1} / ${cards.length}`;
+    body.appendChild(label);
+  });
+
+  document.body.removeChild(holder);
+  document.getElementById('pageModalTitle').textContent = `발췌 카드 · 총 ${cards.length}장`;
+  document.getElementById('pageModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
 function closePagePreview() {
   document.getElementById('pageModal').hidden = true;
   document.getElementById('pageModalBody').innerHTML = '';
+  // 발췌 창이 아직 열려 있으면 스크롤 잠금을 유지한다
+  if (document.getElementById('pickModal').hidden) document.body.style.overflow = '';
+  else document.body.style.overflow = 'hidden';
 }
 
 // 미리보기에서 바로 저장 (모달 닫고 현재 규격으로 저장 시작)
@@ -1952,13 +2712,19 @@ function saveState() {
       },
       design: {
         font: fontBody.value, fontSize: fontSize.value,
-        lineHeight: lineHeight.value, blockGap: blockGap.value,
+        lineHeight: lineHeight.value, blockGap: blockGap.value, bodyPadding: bodyPadding.value,
+        custom: {
+          fontSize: fontSizeCustom.value, lineHeight: lineHeightCustom.value,
+          blockGap: blockGapCustom.value, bodyPadding: bodyPaddingCustom.value
+        },
         textAlign: optJustify.checked, indent: optIndent.checked,
         imgFormat: imgFormat.value,
         cover: optCover.checked,
         pageBreakUnit: pageBreakUnit.value,
+        cardRatio: cardRatio.value, cardAlign: cardAlign.value, cardScale: cardScale.value, cardGap: cardGap.value, cardMerge: cardMerge.checked,
         pageColor: colorPage.value, narrationColor: colorNarration.value,
-        textColor: colorText.value, actionColor: colorAction.value
+        textColor: colorText.value, actionColor: colorAction.value,
+        highlightColor: colorHighlight.value
       }
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -2002,6 +2768,13 @@ function loadState() {
         if (s.design.fontSize) fontSize.value = s.design.fontSize;
         if (s.design.lineHeight !== undefined) lineHeight.value = s.design.lineHeight;
         if (s.design.blockGap !== undefined) blockGap.value = s.design.blockGap;
+        if (s.design.bodyPadding !== undefined) bodyPadding.value = s.design.bodyPadding;
+        if (s.design.custom) {
+          if (s.design.custom.fontSize) fontSizeCustom.value = s.design.custom.fontSize;
+          if (s.design.custom.lineHeight) lineHeightCustom.value = s.design.custom.lineHeight;
+          if (s.design.custom.blockGap) blockGapCustom.value = s.design.custom.blockGap;
+          if (s.design.custom.bodyPadding) bodyPaddingCustom.value = s.design.custom.bodyPadding;
+        }
         if (s.design.textAlign !== undefined) {
           const v = s.design.textAlign;
           // 호환: 옛 셀렉트값 'justify'/'left' 또는 boolean
@@ -2018,10 +2791,16 @@ function loadState() {
         }
         if (s.design.cover !== undefined) optCover.checked = s.design.cover;
         if (s.design.pageBreakUnit !== undefined) pageBreakUnit.value = s.design.pageBreakUnit;
+        if (s.design.cardRatio !== undefined) cardRatio.value = s.design.cardRatio;
+        if (s.design.cardAlign !== undefined) cardAlign.value = s.design.cardAlign;
+        if (s.design.cardScale !== undefined) cardScale.value = s.design.cardScale;
+        if (s.design.cardGap !== undefined) cardGap.value = s.design.cardGap;
+        if (s.design.cardMerge !== undefined) cardMerge.checked = s.design.cardMerge;
         if (s.design.pageColor) colorPage.value = s.design.pageColor;
         if (s.design.narrationColor) colorNarration.value = s.design.narrationColor;
         if (s.design.textColor) colorText.value = s.design.textColor;
         if (s.design.actionColor) colorAction.value = s.design.actionColor;
+        if (s.design.highlightColor) colorHighlight.value = s.design.highlightColor;
       }
     }
   } catch(e){}
@@ -2049,6 +2828,7 @@ function updateColorLabels() {
   colorTextLabel.textContent = colorText.value;
   colorActionLabel.textContent = colorAction.value;
   colorNarrationLabel.textContent = colorNarration.value;
+  colorHighlightLabel.textContent = colorHighlight.value;
 }
 
 // 색의 밝기 (0~255). 어두운 배경인지 판단용
@@ -2093,6 +2873,7 @@ function resetColors() {
   colorText.value = '#2a2724';
   colorAction.value = '#9a9489';
   colorNarration.value = '#6e6960';
+  colorHighlight.value = '#ffd600';
   updateColorLabels();
   scheduleRender();
   showToast('색상이 초기화되었습니다');
@@ -2122,14 +2903,25 @@ document.getElementById('tagN').addEventListener('input', renderQuickInsert);
 // 배경색을 바꾸면 글자색 자동 제안 (그 후 사용자가 개별 조정 가능)
 document.getElementById('colorPage').addEventListener('input', () => { autoAdjustTextColors(); scheduleRender(); });
 // 규격 변경 시 예상 장수 즉시 갱신 (미리보기 재변환은 불필요하므로 별도 처리)
-document.getElementById('imgFormat').addEventListener('change', () => { updatePageCount(); saveState(); });
+document.getElementById('imgFormat').addEventListener('change', () => { updateSaveOptsVisibility(); updatePageCount(); saveState(); });
 document.getElementById('optCover').addEventListener('change', () => { updatePageCount(); saveState(); });
+// 형광펜: 미리보기에서 드래그를 마치면 적용
+document.getElementById('preview').addEventListener('mouseup', () => setTimeout(applyHighlightFromSelection, 10));
+document.getElementById('preview').addEventListener('touchend', () => setTimeout(applyHighlightFromSelection, 10));
 document.getElementById('pageBreakUnit').addEventListener('change', () => { updatePageCount(); saveState(); });
+document.getElementById('cardRatio').addEventListener('change', saveState);
+document.getElementById('cardAlign').addEventListener('change', saveState);
+document.getElementById('cardScale').addEventListener('change', saveState);
+document.getElementById('cardGap').addEventListener('change', saveState);
+document.getElementById('cardMerge').addEventListener('change', saveState);
 // 소설 모드 토글 시 무력화 옵션 흐리게 갱신
 document.getElementById('optNovelUnified').addEventListener('change', updateUnifiedLock);
 // ESC 키로 페이지 미리보기 닫기
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && !document.getElementById('pageModal').hidden) closePagePreview();
+  if (e.key === 'Escape') {
+    if (!document.getElementById('pageModal').hidden) closePagePreview();
+    else if (!document.getElementById('pickModal').hidden) closeQuotePicker();
+  }
 });
 // 모달 배경 클릭으로 닫기
 document.getElementById('pageModal').addEventListener('click', e => {
@@ -2137,7 +2929,7 @@ document.getElementById('pageModal').addEventListener('click', e => {
 });
 // 본문 색을 바꾸면 행동지문·나레이션을 어울리는 톤으로 자동 파생
 document.getElementById('colorText').addEventListener('input', () => { deriveSubColors(); scheduleRender(); });
-['tagN','fontBody','fontSize','lineHeight','blockGap','colorAction','colorNarration',
+['tagN','fontBody','colorAction','colorNarration','colorHighlight',
  'logTitle','logChapter','logDate','logPlace',
  'optMergeSpeaker','optShowName','optShowDot','optShowBar','optItalic','optNovelMode','optParenAction','optKeepBreaks','optJustify','optIndent','optMarkdown','optNovelUnified'].forEach(id => {
   const el = document.getElementById(id);
@@ -2151,8 +2943,10 @@ optAutoSave.addEventListener('change', () => {
 });
 optAutoRender.addEventListener('change', () => { updateConvertBtn(); saveState(); });
 
+initCustomFields();
 updateUnifiedLock();
 updateConvertBtn();
+updateSaveOptsVisibility();
 convert();
 </script>
 </body>
