@@ -1494,11 +1494,12 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
   const showBar = cfg.opts.showBar;
   const showName = cfg.opts.showName && showHeader;
 
-  let outerStyle = `margin:0 0 ${cfg.blockGap}px;font-family:${cfg.font};font-size:${cfg.fontSize}px;`;
+  // 모든 블록의 본문 시작점을 맞추기 위해 좌측 패딩은 항상 동일하게 둔다
+  let outerStyle = `margin:0 0 ${cfg.blockGap}px;font-family:${cfg.font};font-size:${cfg.fontSize}px;box-sizing:border-box;`;
   if (showBar) {
-    outerStyle += `padding:2px 0 4px 18px;border-left:1.5px solid ${hexToRgba(speaker.color, 0.4)};`;
+    outerStyle += `padding:2px 0 4px 18px;border-left:2px solid ${hexToRgba(speaker.color, 0.45)};`;
   } else {
-    outerStyle += `padding:2px 0 4px 0;`;
+    outerStyle += `padding:2px 0 4px 18px;`;
   }
 
   let html = `<div style="${outerStyle}">`;
@@ -1570,8 +1571,8 @@ function renderNarration(lines, cfg) {
   }).join('');
 
   // 컬러바를 쓰는 발화와 좌측 정렬을 맞추기 위해, 컬러바 옵션이 켜져 있으면 동일한 좌측 패딩을 줌
-  const leftPad = cfg.opts.showBar ? 'padding-left:18px;' : '';
-  return `<div style="margin:${cfg.blockGap * 0.8}px 0;${leftPad}font-family:${cfg.font};">${inner}</div>`;
+  // 발화 블록과 좌측 시작점을 동일하게 맞춘다 (컬러바 옵션과 무관)
+  return `<div style="margin:${cfg.blockGap * 0.8}px 0;padding-left:18px;box-sizing:border-box;font-family:${cfg.font};">${inner}</div>`;
 }
 
 function renderSeparator(big, cfg) {
@@ -1691,7 +1692,7 @@ function buildOutputHTML(cfg, forExport) {
   });
 
   const breakStyle = cfg.textAlign === 'justify' ? 'word-break:keep-all;' : '';
-  const html = `<div style="max-width:680px;margin:0 auto;padding:40px ${cfg.bodyPadding}px 44px;background:${cfg.pageColor};color:${cfg.textColor};font-family:${cfg.font};line-height:${cfg.lineHeight};text-align:${cfg.textAlign};${breakStyle}border-radius:12px;">${inner}</div>`;
+  const html = `<div style="max-width:680px;margin:0 auto;padding:40px ${cfg.bodyPadding + 18}px 44px ${cfg.bodyPadding}px;background:${cfg.pageColor};color:${cfg.textColor};font-family:${cfg.font};line-height:${cfg.lineHeight};text-align:${cfg.textAlign};${breakStyle}border-radius:12px;">${inner}</div>`;
   return { html, blockCount, raw };
 }
 
@@ -1871,7 +1872,7 @@ function buildPages() {
     // 페이지 여백: 본문 여백 설정을 따르되 인쇄물답게 조금 더 여유 있게
     const bp = selValue('bodyPadding') || 28;
     const side = Math.round(bp * 2);
-    pageEl.style.padding = `58px ${side}px 64px`;
+    pageEl.style.padding = `58px ${side + 18}px 64px ${side}px`;
     holder.appendChild(pageEl);
     pages.push(pageEl);
   }
@@ -2239,15 +2240,15 @@ function buildQuoteCards() {
     el.style.maxWidth = 'none';
     el.style.width = '100%';
     el.style.boxSizing = 'border-box';
-    // 가운데 정렬은 좌우가 대칭이어야 하므로 컬러바와 좌측 패딩을 없앤다.
-    // 왼쪽/양쪽 정렬에서는 컬러바를 살리고, 없는 블록에도 같은 들여쓰기를 줘 시작점을 맞춘다.
-    const hasBar = !!(el.style.borderLeft && el.style.borderLeft !== 'none');
+    // 모든 블록이 동일한 좌측 패딩을 가지므로, 가운데 정렬일 때만
+    // 컬러바와 패딩을 없애 좌우를 완전히 대칭으로 만든다.
     if (align === 'center') {
       el.style.borderLeft = 'none';
       el.style.paddingLeft = '0';
       el.style.paddingRight = '0';
-    } else if (!hasBar) {
-      el.style.paddingLeft = '18px';
+    } else {
+      // 왼쪽·양쪽 정렬: 블록 패딩만큼 오른쪽에도 여백을 줘 좌우를 맞춘다
+      el.style.paddingRight = '18px';
     }
     scaleTree(el, factor);
     // 발췌 조각 사이 간격 (블록 자체의 아래 여백을 조절)
