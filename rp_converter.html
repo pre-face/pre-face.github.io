@@ -384,7 +384,24 @@
     border: 1px solid var(--border); border-radius: 7px;
     background: var(--bg); color: var(--text-soft); font-family: inherit;
   }
+  .preview-wrap { position: relative; }
   .preview-area.hl-mode { cursor: text; }
+  .hl-apply {
+    position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%);
+    z-index: 20; padding: 9px 18px 9px 14px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--text); border: none; color: var(--panel);
+    font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    letter-spacing: 0.3px;
+  }
+  .hl-apply:hover { opacity: 0.9; }
+  .hl-apply-mark {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 17px; height: 17px; border-radius: 50%;
+    background: #ffd600; color: #3a3320; font-size: 11px; flex-shrink: 0;
+  }
+  .hl-apply[hidden] { display: none; }
   .preview-area.hl-mode .preview ::selection { background: rgba(255,214,0,0.55); }
 
   .export-actions { margin-top: 14px; }
@@ -848,8 +865,13 @@
           <button id="quoteBtn" class="hl-btn quote" onclick="openQuotePicker()">발췌</button>
         </div>
       </div>
-      <div class="preview-area">
-        <div id="preview" class="preview"></div>
+      <div class="preview-wrap">
+        <div class="preview-area">
+          <div id="preview" class="preview"></div>
+        </div>
+        <button id="hlApply" class="hl-apply" onclick="applyHlFromButton()" hidden>
+          <span class="hl-apply-mark">✓</span> 형광
+        </button>
       </div>
       <div class="export-actions">
         <button class="act primary-export" onclick="copyHTML()">HTML 복사</button>
@@ -2217,10 +2239,16 @@ function buildQuoteCards() {
     el.style.maxWidth = 'none';
     el.style.width = '100%';
     el.style.boxSizing = 'border-box';
-    // 컬러바가 있는 블록과 없는 블록(나레이션 등)의 왼쪽 시작점을 맞춘다.
-    // 컬러바는 그대로 두되, 없는 블록에도 같은 크기의 들여쓰기를 준다.
+    // 가운데 정렬은 좌우가 대칭이어야 하므로 컬러바와 좌측 패딩을 없앤다.
+    // 왼쪽/양쪽 정렬에서는 컬러바를 살리고, 없는 블록에도 같은 들여쓰기를 줘 시작점을 맞춘다.
     const hasBar = !!(el.style.borderLeft && el.style.borderLeft !== 'none');
-    if (!hasBar) el.style.paddingLeft = '18px';
+    if (align === 'center') {
+      el.style.borderLeft = 'none';
+      el.style.paddingLeft = '0';
+      el.style.paddingRight = '0';
+    } else if (!hasBar) {
+      el.style.paddingLeft = '18px';
+    }
     scaleTree(el, factor);
     // 발췌 조각 사이 간격 (블록 자체의 아래 여백을 조절)
     el.style.marginBottom = Math.round(cfg.blockGap * factor * gapScale) + 'px';
@@ -2400,20 +2428,54 @@ function toggleHighlightMode() {
   hlMode = !hlMode;
   document.getElementById('hlBtn').classList.toggle('on', hlMode);
   document.querySelector('.preview-area').classList.toggle('hl-mode', hlMode);
+  if (!hlMode) { document.getElementById('hlApply').hidden = true; lastHlText = ''; }
   showToast(hlMode
-    ? '형광펜 모드 — 미리보기에서 드래그하면 칠해집니다 (칠한 곳 다시 드래그하면 해제)'
+    ? '형광펜 모드 — 칠할 부분을 선택한 뒤 ✓ 버튼을 누르세요'
     : '형광펜 모드를 껐습니다');
+}
+
+// 선택 상태에 따라 "형광 적용" 버튼을 보이거나 숨긴다
+let lastHlText = '';
+function updateHlApplyBtn() {
+  const btn = document.getElementById('hlApply');
+  if (!btn) return;
+  if (!hlMode) { btn.hidden = true; return; }
+  const sel = window.getSelection();
+  const preview = document.getElementById('preview');
+  const ok = sel && !sel.isCollapsed && sel.toString().trim() &&
+             preview.contains(sel.anchorNode) && preview.contains(sel.focusNode);
+  if (ok) {
+    // 모바일에선 버튼을 누르는 사이 선택이 풀리므로 내용을 보관해둔다
+    lastHlText = sel.toString();
+    btn.hidden = false;
+  }
+  // 선택이 풀렸더라도 보관된 내용이 있으면 버튼을 그대로 둔다.
+  // (버튼을 탭하는 순간 선택이 먼저 해제되어 버튼이 사라지는 문제 방지)
+}
+
+// 버튼을 눌러 선택 범위에 형광을 적용
+let hlApplying = false;
+function applyHlFromButton() {
+  // touchend와 click이 연달아 들어와도 한 번만 적용
+  if (hlApplying) return;
+  hlApplying = true;
+  setTimeout(() => { hlApplying = false; }, 400);
+
+  applyHighlightFromSelection();
+  lastHlText = '';
+  document.getElementById('hlApply').hidden = true;
 }
 
 // 미리보기에서 드래그한 텍스트를 원본에서 찾아 == == 마커를 넣거나 뺀다
 function applyHighlightFromSelection() {
   if (!hlMode) return;
   const sel = window.getSelection();
-  if (!sel || sel.isCollapsed) return;
   const preview = document.getElementById('preview');
-  if (!preview.contains(sel.anchorNode) || !preview.contains(sel.focusNode)) return;
+  const live = sel && !sel.isCollapsed && sel.toString().trim() &&
+               preview.contains(sel.anchorNode) && preview.contains(sel.focusNode);
+  if (!live && !lastHlText.trim()) return;
 
-  const raw = sel.toString();
+  const raw = sel.toString().trim() ? sel.toString() : lastHlText;
   if (!raw.trim()) return;
 
   const ta = document.getElementById('input');
@@ -2954,8 +3016,26 @@ document.getElementById('colorPage').addEventListener('input', () => { autoAdjus
 document.getElementById('imgFormat').addEventListener('change', () => { updateSaveOptsVisibility(); updatePageCount(); saveState(); });
 document.getElementById('optCover').addEventListener('change', () => { updatePageCount(); saveState(); });
 // 형광펜: 미리보기에서 드래그를 마치면 적용
-document.getElementById('preview').addEventListener('mouseup', () => setTimeout(applyHighlightFromSelection, 10));
-document.getElementById('preview').addEventListener('touchend', () => setTimeout(applyHighlightFromSelection, 10));
+// 형광펜: 선택이 생기면 "적용" 버튼을 띄운다.
+// 모바일은 길게 눌러 선택한 뒤 손잡이로 범위를 조정하므로 touchend 시점에는
+// 선택이 확정되지 않는다. 그래서 선택 변화를 지켜보다가 버튼으로 확정받는다.
+let hlBtnTimer = null;
+document.addEventListener('selectionchange', () => {
+  if (!hlMode) return;
+  clearTimeout(hlBtnTimer);
+  hlBtnTimer = setTimeout(updateHlApplyBtn, 250);
+});
+// 데스크톱에서는 드래그를 놓는 즉시 버튼이 뜨도록 보조
+document.getElementById('preview').addEventListener('mouseup', () => {
+  if (hlMode) setTimeout(updateHlApplyBtn, 20);
+});
+// 데스크톱에서만 선택 해제를 막는다 (모바일은 클릭까지 막혀서 제외)
+document.getElementById('hlApply').addEventListener('mousedown', e => e.preventDefault());
+// 모바일 보조: 터치로 떼는 순간 바로 적용 (클릭이 씹히는 경우 대비)
+document.getElementById('hlApply').addEventListener('touchend', e => {
+  e.preventDefault();
+  applyHlFromButton();
+}, { passive: false });
 document.getElementById('pageBreakUnit').addEventListener('change', () => { updatePageCount(); saveState(); });
 document.getElementById('cardRatio').addEventListener('change', saveState);
 document.getElementById('cardAlign').addEventListener('change', saveState);
