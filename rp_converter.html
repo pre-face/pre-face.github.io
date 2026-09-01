@@ -364,17 +364,19 @@
 
   /* 발췌 모달 안 카드 설정 */
   .pick-settings {
-    display: flex; gap: 10px; padding: 12px 18px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 8px 12px; padding: 12px 18px;
     border-bottom: 1px solid var(--border);
   }
-  .pick-set-field { display: flex; align-items: center; gap: 6px; flex: 1; }
+  .pick-set-field { display: flex; align-items: center; gap: 6px; min-width: 0; }
   .pick-set-field label {
-    font-size: 11px; color: var(--text-faint); font-weight: 700; flex-shrink: 0;
+    font-size: 11px; color: var(--text-faint); font-weight: 700;
+    flex-shrink: 0; width: 30px;
   }
   .merge-check {
     display: inline-flex !important; align-items: center; gap: 5px;
     cursor: pointer; white-space: nowrap; color: var(--text-soft) !important;
-    font-size: 11.5px !important;
+    font-size: 11.5px !important; width: auto !important;
   }
   .merge-check input[type="checkbox"] { accent-color: var(--text); }
   .pick-set-field select {
@@ -914,7 +916,7 @@
         <label for="pickSource">대상</label>
         <select id="pickSource" onchange="renderPickList()">
           <option value="block" selected>발화 블록</option>
-          <option value="mark">형광 친 부분</option>
+          <option value="mark">형광펜</option>
         </select>
       </div>
       <div class="pick-set-field">
@@ -968,7 +970,8 @@
     <div class="pick-foot">
       <span id="pickCount">0개 선택됨</span>
       <div style="display:flex;gap:8px;">
-        <button class="page-modal-close" onclick="previewPickedCards()">카드 미리보기</button>
+        <button class="page-modal-close" onclick="previewPickedCards()">미리보기</button>
+        <button class="page-modal-close" onclick="copyPickedCards()">복사</button>
         <button class="page-modal-save" onclick="savePickedCards()">카드 저장</button>
       </div>
     </div>
@@ -980,6 +983,7 @@
     <div class="page-modal-head">
       <span id="pageModalTitle"></span>
       <div style="display:flex;gap:8px;">
+        <button class="page-modal-close" id="previewCopyBtn" onclick="copyFromPreview()">복사</button>
         <button class="page-modal-save" onclick="saveFromPreview()">이대로 저장</button>
         <button class="page-modal-close" onclick="closePagePreview()">닫기 ✕</button>
       </div>
@@ -1681,6 +1685,7 @@ function convert() {
   }
   updateStats(raw, blockCount);
   updatePageCount();
+  pickedIdx = new Set(); // 내용이 바뀌면 발췌 선택은 초기화
   saveState();
 }
 
@@ -2040,9 +2045,10 @@ function markDisplayText(mk) {
   return openQ + text + closeQ;
 }
 
-function renderPickList() {
+function renderPickList(keepSelection) {
   const items = getPickItems();
-  pickedIdx = new Set();
+  // 대상을 바꾸면 목록이 달라지므로 선택을 비우고, 창을 다시 열 때는 선택을 유지한다
+  if (!keepSelection) pickedIdx = new Set();
   const body = document.getElementById('pickBody');
   body.innerHTML = '';
   if (!items.length) {
@@ -2054,7 +2060,7 @@ function renderPickList() {
   }
   items.forEach((b, i) => {
     const item = document.createElement('div');
-    item.className = 'pick-item';
+    item.className = 'pick-item' + (pickedIdx.has(i) ? ' on' : '');
     const who = itemSpeaker(b);
     const text = b.tagName === 'MARK' ? markDisplayText(b) : blockPlainText(b);
     item.innerHTML = (who ? `<div class="pick-who">${escapeHTML(who)}</div>` : '') +
@@ -2071,7 +2077,7 @@ function renderPickList() {
 
 function openQuotePicker() {
   if (!hasContent()) { showToast('먼저 로그를 입력해주세요'); return; }
-  renderPickList();
+  renderPickList(true);
   document.getElementById('pickModal').hidden = false;
   document.body.style.overflow = 'hidden';
 }
@@ -2298,6 +2304,46 @@ async function saveQuoteCards() {
 }
 
 function savePickedCards() { closeQuotePicker(); saveQuoteCards(); }
+
+// 발췌 카드를 클립보드로 복사 (클립보드는 한 장만 담기므로 첫 장 기준)
+async function copyQuoteCards() {
+  if (!navigator.clipboard || !window.ClipboardItem) {
+    showToast('이 브라우저는 이미지 복사를 지원하지 않아요');
+    return;
+  }
+  const built = buildQuoteCards();
+  if (!built) { showToast('먼저 발췌할 부분을 골라주세요'); return; }
+  const cfg = getConfig();
+  const { holder, cards, W } = built;
+  const scale = Math.min(4, 1440 / W);
+
+  showToast('카드를 만드는 중...');
+  try {
+    const canvas = await html2canvas(cards[0], {
+      backgroundColor: cfg.pageColor, scale, useCORS: true, logging: false
+    });
+    await new Promise((resolve, reject) => {
+      canvas.toBlob(async blob => {
+        if (!blob) { reject(); return; }
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+          showToast(cards.length > 1
+            ? `첫 번째 카드를 복사했습니다 (전체 ${cards.length}장은 저장을 이용하세요)`
+            : '카드가 클립보드에 복사되었습니다');
+          resolve();
+        } catch (e) { reject(e); }
+      }, 'image/png');
+    });
+  } catch(e) {
+    console.error(e);
+    showToast('카드 복사 실패');
+  } finally {
+    document.body.removeChild(holder);
+  }
+}
+
+function copyPickedCards() { copyQuoteCards(); }
+function copyFromPreview() { copyQuoteCards(); }
 function previewPickedCards() { openQuotePreview(); }
 
 async function savePagedImages() {
@@ -2578,6 +2624,7 @@ function openPagePreview() {
   });
 
   document.body.removeChild(holder); // 페이지들은 모달로 옮겨졌으므로 빈 holder 제거
+  document.getElementById('previewCopyBtn').style.display = 'none';
   document.getElementById('pageModalTitle').textContent = `페이지 미리보기 · 총 ${pages.length}장`;
   document.getElementById('pageModal').hidden = false;
 }
@@ -2610,6 +2657,7 @@ function openQuotePreview() {
   });
 
   document.body.removeChild(holder);
+  document.getElementById('previewCopyBtn').style.display = '';
   document.getElementById('pageModalTitle').textContent = `발췌 카드 · 총 ${cards.length}장`;
   document.getElementById('pageModal').hidden = false;
   document.body.style.overflow = 'hidden';
