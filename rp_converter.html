@@ -303,6 +303,49 @@
     transition: all 0.15s;
   }
   .preset-btn:hover { border-color: var(--text-soft); color: var(--text); }
+  .bg-row {
+    display: flex; align-items: center; gap: 7px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .bg-controls {
+    margin-top: 10px; padding: 10px 12px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .bg-controls[hidden] { display: none; }
+  .bg-slider { display: flex; align-items: center; gap: 10px; }
+  .bg-extra select {
+    flex: 1; min-width: 0; padding: 6px 8px; font-size: 11.5px;
+    border: 1px solid var(--border); border-radius: 7px;
+    background: var(--panel); color: var(--text-soft); font-family: inherit;
+  }
+  .bg-gray {
+    display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+    font-size: 11.5px; color: var(--text-soft); cursor: pointer; font-weight: 500;
+  }
+  .bg-gray input[type="checkbox"] { accent-color: var(--text); }
+  .bg-slider-label {
+    font-size: 11px; color: var(--text-faint); font-weight: 700;
+    flex-shrink: 0; letter-spacing: 0.3px; width: 52px;
+  }
+  .bg-slider input[type="range"] {
+    flex: 1; min-width: 0; accent-color: var(--text);
+    height: 20px; cursor: pointer;
+  }
+  .bg-slider-val {
+    font-size: 11px; color: var(--text-soft); font-weight: 700;
+    flex-shrink: 0; width: 40px; text-align: right;
+    font-family: ui-monospace, monospace;
+    white-space: nowrap; overflow: hidden;
+  }
+  .bg-pick {
+    padding: 5px 12px; border-radius: 999px; cursor: pointer;
+    font-size: 11.5px; border: 1px solid var(--border);
+    background: var(--panel); color: var(--text-soft); font-weight: 500;
+    transition: all 0.15s;
+  }
+  .bg-pick:hover { border-color: var(--text-soft); color: var(--text); }
+  .bg-pick.on { border-color: var(--text); color: var(--text); font-weight: 700; }
+  .bg-row button[hidden] { display: none; }
 
   /* 옵션 그룹 라벨/구분선 */
   .opt-group-label {
@@ -483,6 +526,28 @@
     border-radius: 4px;
   }
   /* 발췌 선택 모달 */
+  .pick-bg { padding: 0 18px 10px; border-bottom: 1px solid var(--border); }
+  .pick-bg[hidden] { display: none; }
+  .pick-bg > summary {
+    font-size: 11.5px; color: var(--text-faint); font-weight: 700;
+    cursor: pointer; padding: 8px 0; list-style: none; user-select: none;
+  }
+  .pick-bg > summary::before { content: '▸ '; }
+  .pick-bg[open] > summary::before { content: '▾ '; }
+  .pick-bg > summary:hover { color: var(--text-soft); }
+  .pick-bg .bg-controls { margin-top: 0; padding: 8px 10px; }
+  .pick-bg .bg-row { margin-top: 0; }
+  .preview-bg-tools {
+    padding: 10px 18px; border-bottom: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .preview-bg-tools[hidden] { display: none; }
+  .bg-hint {
+    font-size: 10.5px; color: var(--text-faint); text-align: center;
+    letter-spacing: 0.2px;
+  }
+  .page-wrap.draggable { cursor: grab; }
+  .page-wrap.draggable:active { cursor: grabbing; }
   .pick-body { align-items: stretch; gap: 8px; }
   .pick-item {
     border: 1px solid var(--border); border-radius: 10px;
@@ -573,6 +638,18 @@
     .color-cell label { font-size: 11.5px; }
     .color-cell .color-label { font-size: 10.5px; }
     .color-cell input[type="color"] { height: 42px; }
+
+    /* 배경 이미지 줄: 버튼을 가로로 꽉 차게, 슬라이더는 넉넉하게 */
+    .bg-row { gap: 6px; }
+    .bg-row .bg-pick, .bg-row .preset-btn {
+      flex: 1 1 auto; min-width: calc(50% - 3px);
+      text-align: center; padding: 10px 8px; font-size: 12.5px;
+      border-radius: 8px;
+    }
+    .bg-controls { padding: 12px; gap: 10px; }
+    .bg-slider { gap: 8px; }
+    .bg-slider-label { width: 46px; font-size: 10.5px; }
+    .bg-slider input[type="range"] { height: 26px; }
 
     /* 저장 옵션: 모바일에선 셀렉트를 세로로 */
     .save-selects { grid-template-columns: 1fr; }
@@ -760,7 +837,7 @@
           <span class="color-label" id="colorHighlightLabel">#ffd600</span>
         </div>
       </div>
-      <button class="preset-btn" style="margin-top: 10px;" onclick="resetColors()">색상 초기화</button>
+      <button class="preset-btn" style="margin-top: 12px;" onclick="resetColors()">색상 초기화</button>
     </details>
   </div>
 
@@ -967,6 +1044,10 @@
           <option value="1.2">120%</option>
           <option value="1.35">135%</option>
           <option value="1.5">150%</option>
+          <option value="1.75">175%</option>
+          <option value="2">200%</option>
+          <option value="2.5">250%</option>
+          <option value="3">300%</option>
         </select>
       </div>
       <div class="pick-set-field">
@@ -988,6 +1069,46 @@
         </select>
       </div>
     </div>
+    <details class="pick-bg" id="pickBgRow">
+      <summary>배경 이미지</summary>
+      <div class="bg-controls">
+        <div class="bg-row">
+          <label class="bg-pick">
+            <input type="file" id="bgImage" accept="image/*" hidden>
+            사진 고르기
+          </label>
+          <button class="preset-btn" id="bgClear" onclick="clearBgImage()" hidden>사진 지우기</button>
+        </div>
+        <div id="bgTools" hidden>
+          <div class="bg-slider">
+            <span class="bg-slider-label">투명도</span>
+            <input type="range" id="bgOpacity" min="0" max="90" step="5" value="40">
+            <span class="bg-slider-val" id="bgOpacityVal">40%</span>
+          </div>
+          <div class="bg-slider">
+            <span class="bg-slider-label">가로</span>
+            <input type="range" id="cardBgX" min="0" max="100" step="1" value="50">
+            <span class="bg-slider-val" id="cardBgXVal">50%</span>
+          </div>
+          <div class="bg-slider">
+            <span class="bg-slider-label">세로</span>
+            <input type="range" id="cardBgY" min="0" max="100" step="1" value="50">
+            <span class="bg-slider-val" id="cardBgYVal">50%</span>
+          </div>
+          <div class="bg-slider">
+            <span class="bg-slider-label">확대</span>
+            <input type="range" id="cardBgZoom" min="100" max="300" step="5" value="100">
+            <span class="bg-slider-val" id="cardBgZoomVal">100%</span>
+          </div>
+          <div class="bg-slider">
+            <span class="bg-slider-label">흐리게</span>
+            <input type="range" id="bgBlur" min="0" max="20" step="1" value="0">
+            <span class="bg-slider-val" id="bgBlurVal">0px</span>
+          </div>
+          <label class="bg-gray"><input type="checkbox" id="bgGray"> 흑백</label>
+        </div>
+      </div>
+    </details>
     <div id="pickBody" class="page-modal-body pick-body"></div>
     <div class="pick-foot">
       <span id="pickCount">0개 선택됨</span>
@@ -1009,6 +1130,24 @@
         <button class="page-modal-save" onclick="saveFromPreview()">이대로 저장</button>
         <button class="page-modal-close" onclick="closePagePreview()">닫기 ✕</button>
       </div>
+    </div>
+    <div id="previewBgTools" class="preview-bg-tools" hidden>
+      <div class="bg-slider">
+        <span class="bg-slider-label">투명도</span>
+        <input type="range" id="pvOpacity" min="0" max="90" step="5" value="40">
+        <span class="bg-slider-val" id="pvOpacityVal">40%</span>
+      </div>
+      <div class="bg-slider">
+        <span class="bg-slider-label">확대</span>
+        <input type="range" id="pvZoom" min="100" max="300" step="5" value="100">
+        <span class="bg-slider-val" id="pvZoomVal">100%</span>
+      </div>
+      <div class="bg-slider">
+        <span class="bg-slider-label">흐리게</span>
+        <input type="range" id="pvBlur" min="0" max="20" step="1" value="0">
+        <span class="bg-slider-val" id="pvBlurVal">0px</span>
+      </div>
+      <div class="bg-hint">카드를 끌어서 사진 위치를 옮길 수 있어요</div>
     </div>
     <div id="pageModalBody" class="page-modal-body"></div>
   </div>
@@ -2183,6 +2322,13 @@ function makeQuotePiece(item) {
   return shell;
 }
 
+// 카드 안의 이미지가 다 로드될 때까지 기다린다 (캡처 전 안전장치)
+function waitForImages(root) {
+  const imgs = Array.from(root.querySelectorAll('img'));
+  return Promise.all(imgs.map(im => im.complete ? Promise.resolve()
+    : new Promise(res => { im.onload = im.onerror = res; })));
+}
+
 function buildQuoteCards() {
   const items = getPickItems();
   const chosen = items.filter((_, i) => pickedIdx.has(i));
@@ -2213,16 +2359,40 @@ function buildQuoteCards() {
   function newCard() {
     const card = document.createElement('div');
     card.style.cssText = `
-      width:${W}px;height:${H}px;box-sizing:border-box;
-      background:${cfg.pageColor};color:${cfg.textColor};
+      width:${W}px;height:${H}px;box-sizing:border-box;overflow:hidden;
+      background-color:${cfg.pageColor};color:${cfg.textColor};
       font-family:${cfg.font};padding:${pad}px;position:relative;
       display:flex;flex-direction:column;
       justify-content:center;
       text-align:${align === 'center' ? 'center' : (align === 'justify' ? 'justify' : 'left')};
       ${align === 'justify' ? 'word-break:keep-all;' : ''}`;
+    // 배경 이미지 레이어 (흐리게·흑백은 배경에만 적용)
+    if (bgImageData) {
+      // 사진은 img로 깔고 object-fit + transform 으로 확대한다.
+      // (background-size 퍼센트는 카드 비율에 맞춰 늘어나 비율이 깨짐)
+      const bgWrap = document.createElement('div');
+      bgWrap.style.cssText = 'position:absolute;inset:0;overflow:hidden;pointer-events:none;';
+
+      const img = document.createElement('img');
+      img.setAttribute('data-bg-layer', '1');
+      img.src = bgImageData;
+      img.style.cssText = `position:absolute;inset:0;width:100%;height:100%;` +
+        `object-fit:cover;object-position:${bgState.x}% ${bgState.y}%;` +
+        `transform:scale(${bgState.zoom / 100});transform-origin:${bgState.x}% ${bgState.y}%;` +
+        bgFilter(cfg);
+      bgWrap.appendChild(img);
+
+      // 종이색 베일 (투명도)
+      if (bgState.opacity > 0) {
+        const veil = document.createElement('div');
+        veil.style.cssText = `position:absolute;inset:0;background:${hexToRgba(cfg.pageColor, bgState.opacity / 100)};`;
+        bgWrap.appendChild(veil);
+      }
+      card.appendChild(bgWrap);
+    }
     // 내용 높이를 정확히 재기 위해 안쪽에 래퍼를 둔다
     const box = document.createElement('div');
-    box.style.cssText = 'width:100%;';
+    box.style.cssText = 'width:100%;position:relative;';
     card.appendChild(box);
     holder.appendChild(card);
     card._box = box;
@@ -2295,6 +2465,7 @@ function buildQuoteCards() {
 async function saveQuoteCards() {
   const built = buildQuoteCards();
   if (!built) { showToast('먼저 발췌할 부분을 골라주세요'); return; }
+  await waitForImages(built.holder);
   const cfg = getConfig();
   const { holder, cards, W } = built;
   const scale = Math.min(4, 1440 / W);
@@ -2304,7 +2475,7 @@ async function saveQuoteCards() {
     for (let i = 0; i < cards.length; i++) {
       showToast(`${i + 1} / ${cards.length} 카드 저장 중...`);
       const canvas = await html2canvas(cards[i], {
-        backgroundColor: cfg.pageColor, scale, useCORS: true, logging: false
+        backgroundColor: bgImageData ? null : cfg.pageColor, scale, useCORS: true, logging: false
       });
       await new Promise(resolve => {
         canvas.toBlob(blob => {
@@ -2342,6 +2513,7 @@ async function copyQuoteCards() {
   }
   const built = buildQuoteCards();
   if (!built) { showToast('먼저 발췌할 부분을 골라주세요'); return; }
+  await waitForImages(built.holder);
   const cfg = getConfig();
   const { holder, cards, W } = built;
   const scale = Math.min(4, 1440 / W);
@@ -2349,7 +2521,7 @@ async function copyQuoteCards() {
   showToast('카드를 만드는 중...');
   try {
     const canvas = await html2canvas(cards[0], {
-      backgroundColor: cfg.pageColor, scale, useCORS: true, logging: false
+      backgroundColor: bgImageData ? null : cfg.pageColor, scale, useCORS: true, logging: false
     });
     await new Promise((resolve, reject) => {
       canvas.toBlob(async blob => {
@@ -2391,7 +2563,7 @@ async function savePagedImages() {
     for (let i = 0; i < pages.length; i++) {
       showToast(`${i + 1} / ${pages.length} 페이지 저장 중...`);
       const canvas = await html2canvas(pages[i], {
-        backgroundColor: cfg.pageColor, scale, useCORS: true, logging: false
+        backgroundColor: bgImageData ? null : cfg.pageColor, scale, useCORS: true, logging: false
       });
       await new Promise(resolve => {
         canvas.toBlob(blob => {
@@ -2688,6 +2860,8 @@ function openPagePreview() {
 
   document.body.removeChild(holder); // 페이지들은 모달로 옮겨졌으므로 빈 holder 제거
   document.getElementById('previewCopyBtn').style.display = 'none';
+  // 페이지 미리보기에서는 카드 배경 조절 도구를 쓰지 않는다
+  document.getElementById('previewBgTools').hidden = true;
   document.getElementById('pageModalTitle').textContent = `페이지 미리보기 · 총 ${pages.length}장`;
   document.getElementById('pageModal').hidden = false;
 }
@@ -2695,7 +2869,7 @@ function openPagePreview() {
 // 발췌 카드 미리보기
 function openQuotePreview() {
   const built = buildQuoteCards();
-  if (!built) { showToast('먼저 형광펜으로 발췌할 부분을 칠해주세요'); return; }
+  if (!built) { showToast('먼저 발췌할 부분을 골라주세요'); return; }
   const { holder, cards, W, H } = built;
 
   const body = document.getElementById('pageModalBody');
@@ -2712,6 +2886,7 @@ function openQuotePreview() {
     c.style.transformOrigin = 'top left';
     wrap.appendChild(c);
     body.appendChild(wrap);
+    attachBgDrag(wrap);
 
     const label = document.createElement('div');
     label.className = 'page-label';
@@ -2721,10 +2896,69 @@ function openQuotePreview() {
 
   document.body.removeChild(holder);
   document.getElementById('previewCopyBtn').style.display = '';
+  // 배경 이미지가 있으면 조절 도구를 함께 띄운다
+  document.getElementById('previewBgTools').hidden = !bgImageData;
+  syncBgInputs();
   document.getElementById('pageModalTitle').textContent = `발췌 카드 · 총 ${cards.length}장`;
   document.getElementById('pageModal').hidden = false;
   document.body.style.overflow = 'hidden';
 }
+
+// 슬라이더/드래그로 값이 바뀌면 카드를 다시 그린다 (스크롤 위치 유지)
+function refreshQuotePreview() {
+  const body = document.getElementById('pageModalBody');
+  const keep = body.scrollTop;
+  openQuotePreview(true);
+  body.scrollTop = keep;
+}
+
+// 카드를 끌어서 배경 사진 위치를 옮긴다
+function attachBgDrag(wrap) {
+  if (!bgImageData) return;
+  wrap.classList.add('draggable');
+
+  const start = e => {
+    const p = e.touches ? e.touches[0] : e;
+    bgDrag = {
+      wrap,
+      sx: p.clientX, sy: p.clientY,
+      ox: bgState.x, oy: bgState.y
+    };
+    if (e.cancelable) e.preventDefault();
+  };
+  wrap.addEventListener('mousedown', start);
+  wrap.addEventListener('touchstart', start, { passive: false });
+  wrap.addEventListener('touchmove', bgDragMove, { passive: false });
+  wrap.addEventListener('touchend', bgDragEnd);
+}
+
+// 드래그 상태는 한 곳에서만 관리하고, window 리스너는 최초 1회만 등록한다
+let bgDrag = null;
+function bgDragMove(e) {
+  if (!bgDrag) return;
+  const p = e.touches ? e.touches[0] : e;
+  const { wrap, sx, sy, ox, oy } = bgDrag;
+  const z = Math.max(1, bgState.zoom / 100);
+  const dx = (p.clientX - sx) / (wrap.offsetWidth * z) * -100;
+  const dy = (p.clientY - sy) / (wrap.offsetHeight * z) * -100;
+  // 소수점이 길게 남아 표시가 깨지지 않도록 정수로 맞춘다
+  bgState.x = Math.round(Math.min(100, Math.max(0, ox + dx)));
+  bgState.y = Math.round(Math.min(100, Math.max(0, oy + dy)));
+  // 끌 때는 재생성 없이 이미지 위치만 갱신 (부드럽게)
+  document.querySelectorAll('#pageModalBody [data-bg-layer]').forEach(el => {
+    el.style.objectPosition = `${bgState.x}% ${bgState.y}%`;
+    el.style.transformOrigin = `${bgState.x}% ${bgState.y}%`;
+  });
+  if (e.cancelable) e.preventDefault();
+}
+function bgDragEnd() {
+  if (!bgDrag) return;
+  bgDrag = null;
+  syncBgInputs();
+  saveState();
+}
+window.addEventListener('mousemove', bgDragMove);
+window.addEventListener('mouseup', bgDragEnd);
 
 function closePagePreview() {
   document.getElementById('pageModal').hidden = true;
@@ -2833,6 +3067,7 @@ function saveState() {
         cover: optCover.checked,
         pageBreakUnit: pageBreakUnit.value,
         cardRatio: cardRatio.value, cardAlign: cardAlign.value, cardScale: cardScale.value, cardGap: cardGap.value, cardMerge: cardMerge.checked,
+        bgState: { ...bgState },
         pageColor: colorPage.value, narrationColor: colorNarration.value,
         textColor: colorText.value, actionColor: colorAction.value,
         highlightColor: colorHighlight.value
@@ -2906,6 +3141,7 @@ function loadState() {
         if (s.design.cardAlign !== undefined) cardAlign.value = s.design.cardAlign;
         if (s.design.cardScale !== undefined) cardScale.value = s.design.cardScale;
         if (s.design.cardGap !== undefined) cardGap.value = s.design.cardGap;
+        if (s.design.bgState) Object.assign(bgState, s.design.bgState);
         if (s.design.cardMerge !== undefined) cardMerge.checked = s.design.cardMerge;
         if (s.design.pageColor) colorPage.value = s.design.pageColor;
         if (s.design.narrationColor) colorNarration.value = s.design.narrationColor;
@@ -2978,6 +3214,62 @@ function autoAdjustTextColors() {
   deriveSubColors();
 }
 
+// === 배경 이미지 ===
+let bgImageData = null; // data URL
+// 배경 조절 값 (발췌 창 / 미리보기 창이 공유)
+const bgState = { opacity: 40, x: 50, y: 50, zoom: 100, blur: 0, gray: false };
+
+// 양쪽 UI를 현재 값으로 맞춘다
+function syncBgInputs() {
+  const set = (id, v, unit) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const n = Math.round(Number(v) || 0);
+    el.value = n;
+    const lab = document.getElementById(id + 'Val');
+    if (lab) lab.textContent = n + (unit || '%');
+  };
+  set('bgOpacity', bgState.opacity); set('pvOpacity', bgState.opacity);
+  set('cardBgX', bgState.x); set('cardBgY', bgState.y);
+  set('cardBgZoom', bgState.zoom); set('pvZoom', bgState.zoom);
+  set('bgBlur', bgState.blur, 'px'); set('pvBlur', bgState.blur, 'px');
+  const g = document.getElementById('bgGray');
+  if (g) g.checked = bgState.gray;
+}
+
+function updateBgUI() {
+  const on = !!bgImageData;
+  const pick = document.querySelector('.bg-pick');
+  if (pick) pick.classList.toggle('on', on);
+  document.getElementById('bgTools').hidden = !on;
+  document.getElementById('bgClear').hidden = !on;
+  syncBgInputs();
+}
+
+function clearBgImage() {
+  bgImageData = null;
+  document.getElementById('bgImage').value = '';
+  updateBgUI();
+  // 미리보기가 열려 있으면 카드도 즉시 갱신
+  if (!document.getElementById('pageModal').hidden) refreshQuotePreview();
+  showToast('배경 이미지를 지웠습니다');
+}
+
+// 배경이 적용된 페이지 스타일 조각을 만든다
+// 종이색을 지정한 농도로 덮어 글자가 묻히지 않게 한다
+// 배경 레이어에만 적용할 필터 (흐리게 / 흑백)
+function bgFilter(cfg) {
+  const f = [];
+  if (bgState.blur > 0) f.push(`blur(${bgState.blur}px)`);
+  if (bgState.gray) f.push('grayscale(1)');
+  if (!f.length) return '';
+  const scale = bgState.blur > 0 ? `transform:scale(${1 + bgState.blur / 100});` : '';
+  return `filter:${f.join(' ')};${scale}`;
+}
+
+// 카드 전용 배경 (비율이 달라 잘림이 생기므로 위치·확대를 따로 잡는다)
+
+
 // 색상 4종을 기본값으로 되돌리기
 function resetColors() {
   colorPage.value = '#fdfcf8';
@@ -3015,6 +3307,35 @@ document.getElementById('tagN').addEventListener('input', renderQuickInsert);
 document.getElementById('colorPage').addEventListener('input', () => { autoAdjustTextColors(); scheduleRender(); });
 // 규격 변경 시 예상 장수 즉시 갱신 (미리보기 재변환은 불필요하므로 별도 처리)
 document.getElementById('imgFormat').addEventListener('change', () => { updateSaveOptsVisibility(); updatePageCount(); saveState(); });
+// 배경 이미지 선택
+document.getElementById('bgImage').addEventListener('change', e => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    bgImageData = r.result;
+    updateBgUI();
+    if (!document.getElementById('pageModal').hidden) refreshQuotePreview();
+    showToast('배경 이미지를 적용했습니다');
+  };
+  r.readAsDataURL(f);
+});
+// 배경 조절: 두 창의 슬라이더가 같은 값을 공유하고, 미리보기가 열려 있으면 즉시 다시 그린다
+function onBgChange(key, val) {
+  bgState[key] = val;
+  syncBgInputs();
+  saveState();
+  if (!document.getElementById('pageModal').hidden) refreshQuotePreview();
+}
+[['bgOpacity','opacity'],['pvOpacity','opacity'],
+ ['cardBgX','x'],['cardBgY','y'],
+ ['cardBgZoom','zoom'],['pvZoom','zoom'],
+ ['bgBlur','blur'],['pvBlur','blur']].forEach(([id, key]) => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', () => onBgChange(key, parseFloat(el.value)));
+});
+const grayEl = document.getElementById('bgGray');
+if (grayEl) grayEl.addEventListener('change', () => onBgChange('gray', grayEl.checked));
 document.getElementById('optCover').addEventListener('change', () => { updatePageCount(); saveState(); });
 // 형광펜: 미리보기에서 드래그를 마치면 적용
 // 형광펜: 선택이 생기면 "적용" 버튼을 띄운다.
@@ -3038,11 +3359,13 @@ document.getElementById('hlApply').addEventListener('touchend', e => {
   applyHlFromButton();
 }, { passive: false });
 document.getElementById('pageBreakUnit').addEventListener('change', () => { updatePageCount(); saveState(); });
-document.getElementById('cardRatio').addEventListener('change', saveState);
-document.getElementById('cardAlign').addEventListener('change', saveState);
-document.getElementById('cardScale').addEventListener('change', saveState);
-document.getElementById('cardGap').addEventListener('change', saveState);
-document.getElementById('cardMerge').addEventListener('change', saveState);
+// 카드 설정을 바꾸면 저장하고, 미리보기가 열려 있으면 즉시 다시 그린다
+['cardRatio','cardAlign','cardScale','cardGap','cardMerge'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    saveState();
+    if (!document.getElementById('pageModal').hidden) refreshQuotePreview();
+  });
+});
 // 소설 모드 토글 시 무력화 옵션 흐리게 갱신
 document.getElementById('optNovelUnified').addEventListener('change', updateUnifiedLock);
 // ESC 키로 페이지 미리보기 닫기
@@ -3073,6 +3396,7 @@ optAutoSave.addEventListener('change', () => {
 optAutoRender.addEventListener('change', () => { updateConvertBtn(); saveState(); });
 
 initCustomFields();
+updateBgUI();
 updateUnifiedLock();
 updateConvertBtn();
 updateSaveOptsVisibility();
