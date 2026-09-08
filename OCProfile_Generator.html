@@ -6,9 +6,7 @@
     <title>Win98 OC Profile Generator - 레트로 자캐 프로필 생성기</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- NeoDunggeunmo 폰트 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/NeoDunggeunmo.woff">
-    <!-- html2canvas 라이브러리 -->
+    <!-- html2canvas 라이브러리 (폴백 전용) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -17,7 +15,7 @@
             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/NeoDunggeunmo.woff') format('woff');
             font-weight: normal;
             font-style: normal;
-            font-display: swap;
+            font-display: block;
         }
 
         :root {
@@ -252,6 +250,16 @@
             align-items: center;
             justify-content: center;
             z-index: 100000;
+        }
+
+        /* 캡처 전용 오프스크린 스테이지 */
+        #capture-host {
+            position: fixed;
+            left: -99999px;
+            top: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: transparent;
         }
     </style>
 </head>
@@ -518,7 +526,7 @@
         <div class="flex items-center gap-1 flex-1">
             <div class="win98-raised px-2 py-0.5 text-[11px] font-bold flex items-center gap-1 border-t-black border-l-black border-b-white border-r-white">
                 <img src="https://win98icons.alexmeub.com/icons/png/gears-0.png" width="14" alt="">
-                <span>OC_Profile_Builder v3.6</span>
+                <span>OC_Profile_Builder v3.7</span>
             </div>
         </div>
         <div class="win98-sunken-gray px-2 py-0.5 text-[11px] flex items-center gap-2">
@@ -560,6 +568,7 @@
 
     <script>
         const STORAGE_KEY = 'win98_oc_draft_v3';
+        const OC_FONT_URL = 'https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/NeoDunggeunmo.woff';
 
         // 홍길동 더미 샘플 데이터
         const SAMPLE_DATA = {
@@ -887,7 +896,7 @@
                     : `<span>♬ ${escapeHtml(songTitle)}${artistPart}</span>`;
 
                 themeSongHtml = `                <div class="oc-media-player">
-                    <div class="oc-media-play-btn"><svg width="7" height="8" viewBox="0 0 7 8"><polygon points="1,1 6,4 1,7" fill="#000080"/></svg></div>
+                    <div class="oc-media-play-btn"><svg width="7" height="8" viewBox="0 0 7 8" xmlns="http://www.w3.org/2000/svg"><polygon points="1,1 6,4 1,7" fill="#000080"/></svg></div>
                     <div class="oc-media-track">${songContent}</div>
                 </div>\n`;
             }
@@ -918,9 +927,13 @@
             // 3) 대표 대사
             let quoteHtml = '';
             if (quoteText) {
+                let quoteClean = quoteText.trim();
+                if ((quoteClean.startsWith('"') && quoteClean.endsWith('"')) ||
+                    (quoteClean.startsWith('“') && quoteClean.endsWith('”'))) {
+                    quoteClean = quoteClean.substring(1, quoteClean.length - 1).trim();
+                }
                 quoteHtml = `                <div class="oc-quote-box">
-                    <span class="oc-quote-mark">“</span>
-                    <div class="oc-quote-text">${escapeHtml(quoteText)}</div>
+                    <span class="oc-quote-mark">“</span><span class="oc-quote-text">${escapeHtml(quoteClean)}”</span>
                 </div>\n`;
             }
 
@@ -936,8 +949,8 @@
                 const v = row.querySelector('.spec-val')?.value.trim() || '';
                 if (k || v) {
                     specsHtml += `                    <div class="oc-spec-row">
-                        <div class="oc-spec-k">${escapeHtml(k)}:</div>
-                        <div class="oc-spec-v">${escapeHtml(v)}</div>
+                        <span class="oc-spec-k">${escapeHtml(k)}:</span>
+                        <span class="oc-spec-v">${escapeHtml(v)}</span>
                     </div>\n`;
                 }
             });
@@ -1032,7 +1045,6 @@
 .oc-titlebar-ctrls {
     display: flex;
     align-items: center;
-    gap: 2px;
     flex-shrink: 0;
     margin-left: 6px;
 }
@@ -1047,12 +1059,16 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    margin-left: 2px;
     padding: 0;
+}
+.oc-win-ctrl svg {
+    display: block;
+    pointer-events: none;
 }
 .oc-profile-body {
     display: flex;
     flex-direction: row;
-    gap: 12px;
     align-items: stretch;
     width: 100%;
     box-sizing: border-box;
@@ -1066,6 +1082,7 @@
     border: 2px solid;
     border-color: #808080 #ffffff #ffffff #808080;
     padding: 6px;
+    margin-right: 12px;
     text-align: center;
     display: flex;
     align-items: center;
@@ -1080,12 +1097,11 @@
 }
 .oc-info-col {
     flex: 1 1 56%;
-    width: 56%;
+    width: calc(56% - 12px);
     min-width: 0;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 8px;
 }
 .oc-media-player {
     width: 100%;
@@ -1095,10 +1111,10 @@
     padding: 3px 6px;
     display: flex;
     align-items: center;
-    gap: 6px;
     font-size: 11px;
     box-sizing: border-box;
     min-height: 24px;
+    margin-bottom: 8px;
 }
 .oc-media-play-btn {
     width: 16px;
@@ -1111,6 +1127,7 @@
     justify-content: center;
     flex-shrink: 0;
     padding: 0;
+    margin-right: 6px;
 }
 .oc-media-track {
     flex: 1;
@@ -1122,25 +1139,26 @@
 }
 .oc-media-link {
     color: #000080;
-    text-decoration: underline;
+    text-decoration: none;
 }
 .oc-media-link:hover {
-    color: #1084d0;
+    text-decoration: underline;
 }
 .oc-song-artist {
     color: #555555;
     font-size: 10px;
+    margin-left: 3px;
 }
 .oc-head-box {
     width: 100%;
     display: flex;
-    gap: 10px;
     background: #c0c0c0;
     border: 2px solid;
     border-color: #808080 #ffffff #ffffff #808080;
     padding: 6px;
     align-items: center;
     box-sizing: border-box;
+    margin-bottom: 8px;
 }
 .oc-head-img {
     width: 76px;
@@ -1149,6 +1167,7 @@
     flex-shrink: 0;
     background: #ffffff;
     overflow: hidden;
+    margin-right: 10px;
 }
 .oc-head-img img {
     width: 100% !important;
@@ -1178,38 +1197,41 @@
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 6px;
     background: #e4e4e4;
     border: 1px solid #808080;
     padding: 3px 6px;
     font-size: 10px;
     box-sizing: border-box;
-    min-height: 26px;
+    min-height: 24px;
+    margin-bottom: 8px;
 }
 .oc-palette-label {
     font-weight: bold;
     color: #404040;
+    margin-right: 8px;
+    flex-shrink: 0;
 }
 .oc-chips-row {
     display: flex;
-    gap: 5px;
     flex-wrap: wrap;
     align-items: center;
 }
 .oc-color-chip {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
     background: #ffffff;
     border: 1px solid #808080;
-    padding: 1px 4px;
+    padding: 2px 5px;
+    margin-right: 6px;
     box-sizing: border-box;
+    line-height: 1;
 }
 .oc-color-swatch {
-    width: 11px;
-    height: 11px;
+    width: 10px;
+    height: 10px;
     border: 1px solid #000000;
     display: inline-block;
+    margin-right: 5px;
     flex-shrink: 0;
 }
 .oc-color-hex {
@@ -1224,18 +1246,16 @@
     border: 1px solid #c0b080;
     border-left: 3px solid #000080;
     padding: 5px 8px;
-    display: flex;
-    gap: 6px;
-    align-items: flex-start;
     box-sizing: border-box;
     line-height: 1.4;
+    margin-bottom: 8px;
 }
 .oc-quote-mark {
     color: #000080;
-    font-size: 14px;
-    line-height: 1;
-    flex-shrink: 0;
-    margin-top: 1px;
+    font-size: 13px;
+    font-weight: bold;
+    margin-right: 4px;
+    display: inline;
 }
 .oc-quote-text {
     font-size: 11px;
@@ -1243,6 +1263,7 @@
     font-style: italic;
     line-height: 1.4;
     word-break: break-word;
+    display: inline;
 }
 .oc-spec-well {
     width: 100%;
@@ -1251,7 +1272,7 @@
     border-color: #808080 #ffffff #ffffff #808080;
     padding: 8px 10px;
     font-size: 12px;
-    line-height: 1.4;
+    line-height: 1.45;
     flex: 1;
     box-sizing: border-box;
 }
@@ -1265,33 +1286,36 @@
     line-height: 1.3;
 }
 .oc-spec-list {
-    display: table;
     width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
 }
 .oc-spec-row {
-    display: table-row;
+    display: flex;
+    align-items: flex-start;
+    padding: 3px 0;
+    border-bottom: 1px dotted #d8d8d8;
+    line-height: 1.45;
+    box-sizing: border-box;
 }
 .oc-spec-k {
-    display: table-cell;
     width: 76px;
-    vertical-align: top;
+    min-width: 76px;
+    max-width: 76px;
+    flex-shrink: 0;
     font-weight: bold;
     color: #000000;
-    padding: 3px 4px 3px 0;
-    border-bottom: 1px dotted #d8d8d8;
+    margin-right: 8px;
+    line-height: 1.45;
     white-space: nowrap;
-    line-height: 1.4;
 }
 .oc-spec-v {
-    display: table-cell;
-    vertical-align: top;
+    flex: 1 1 auto;
+    min-width: 0;
     color: #111111;
-    padding: 3px 0 3px 4px;
-    border-bottom: 1px dotted #d8d8d8;
+    line-height: 1.45;
     word-break: break-word;
-    line-height: 1.4;
 }
 .oc-memo-box {
     margin-top: 8px;
@@ -1311,6 +1335,7 @@
         width: 100% !important;
         max-width: 100% !important;
         max-height: 480px !important;
+        margin-right: 0 !important;
         margin-bottom: 8px !important;
     }
     .oc-info-col {
@@ -1325,9 +1350,9 @@
     <div class="oc-profile-titlebar">
         <div class="oc-titlebar-text">${escapeHtml(titleBar)}</div>
         <div class="oc-titlebar-ctrls">
-            <span class="oc-win-ctrl" title="최소화"><svg width="6" height="2" viewBox="0 0 6 2"><rect width="6" height="2" fill="#000"/></svg></span>
-            <span class="oc-win-ctrl" title="최대화"><svg width="8" height="7" viewBox="0 0 8 7" fill="none"><rect x="0.5" y="0.5" width="7" height="6" stroke="#000"/><rect x="0.5" y="0.5" width="7" height="1.5" fill="#000"/></svg></span>
-            <span class="oc-win-ctrl" title="닫기"><svg width="8" height="7" viewBox="0 0 8 7"><path d="M1 1 L7 6 M7 1 L1 6" stroke="#000" stroke-width="1.2"/></svg></span>
+            <span class="oc-win-ctrl" title="최소화"><svg width="6" height="2" viewBox="0 0 6 2" xmlns="http://www.w3.org/2000/svg"><rect width="6" height="2" fill="#000"/></svg></span>
+            <span class="oc-win-ctrl" title="최대화"><svg width="8" height="7" viewBox="0 0 8 7" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="7" height="6" stroke="#000"/><rect x="0.5" y="0.5" width="7" height="1.5" fill="#000"/></svg></span>
+            <span class="oc-win-ctrl" title="닫기"><svg width="8" height="7" viewBox="0 0 8 7" xmlns="http://www.w3.org/2000/svg"><path d="M1 1 L7 6 M7 1 L1 6" stroke="#000" stroke-width="1.2"/></svg></span>
         </div>
     </div>
     <div class="oc-profile-body">
@@ -1379,20 +1404,204 @@ ${specsHtml}                </div>
             if (statusEl) statusEl.innerText = '준비 완료. [미리보기 반영]을 누르세요';
         }
 
-        async function prepareImagesForCapture(container) {
-            const imgs = Array.from(container.querySelectorAll('img'));
-            const restoreList = [];
+        /* =========================================================
+           [캡처 엔진 v2] SVG foreignObject 기반
+           - 브라우저가 직접 레이아웃/렌더링하므로 텍스트가 밀리지 않음
+           - 폰트는 base64로 SVG 안에 심어서 픽셀 폰트 그대로 출력
+           - 외부 이미지는 전부 data URI로 인라인 (CORS/tainted 방지)
+           ========================================================= */
 
+        let _fontCssCache = null;
+
+        function arrayBufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            const chunk = 0x8000;
+            let binary = '';
+            for (let i = 0; i < bytes.length; i += chunk) {
+                binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+            }
+            return btoa(binary);
+        }
+
+        // 픽셀 폰트를 base64로 임베드한 @font-face 규칙 생성
+        async function getEmbeddedFontCss() {
+            if (_fontCssCache !== null) return _fontCssCache;
+            try {
+                const res = await fetch(OC_FONT_URL, { mode: 'cors', cache: 'force-cache' });
+                if (!res.ok) throw new Error('font fetch failed');
+                const buf = await res.arrayBuffer();
+                const b64 = arrayBufferToBase64(buf);
+                _fontCssCache = `@font-face{font-family:'NeoDunggeunmo';src:url(data:font/woff;base64,${b64}) format('woff');font-weight:normal;font-style:normal;}`;
+            } catch (e) {
+                _fontCssCache = '';
+            }
+            return _fontCssCache;
+        }
+
+        function blobToDataUrl(blob) {
+            return new Promise((resolve, reject) => {
+                const fr = new FileReader();
+                fr.onload = () => resolve(fr.result);
+                fr.onerror = () => reject(new Error('read fail'));
+                fr.readAsDataURL(blob);
+            });
+        }
+
+        // 외부 이미지 → data URI 변환 (실패 시 원본 유지)
+        async function inlineImageSrc(src) {
+            if (!src) return src;
+            if (src.startsWith('data:')) return src;
+
+            const candidates = [
+                'https://images.weserv.nl/?url=' + encodeURIComponent(src),
+                src
+            ];
+
+            for (const url of candidates) {
+                try {
+                    const res = await fetch(url, { mode: 'cors' });
+                    if (!res.ok) continue;
+                    const blob = await res.blob();
+                    if (!blob || blob.size === 0) continue;
+                    return await blobToDataUrl(blob);
+                } catch (e) { /* 다음 후보 시도 */ }
+            }
+            return src;
+        }
+
+        function xmlEscapeCss(text) {
+            return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // 현재 미리보기 상태 그대로 오프스크린에 재구성 후 SVG로 래스터화
+        async function buildProfileCanvasBySvg(scale = 2) {
+            const isMobile = document.getElementById('preview-stage')?.classList.contains('view-mobile');
+            const liveTarget = document.querySelector('#rendered-output .oc-profile-container');
+            let width = isMobile ? 360 : Math.round(liveTarget ? liveTarget.getBoundingClientRect().width : 740);
+            if (!width || width < 200) width = 740;
+
+            const htmlCode = generateOutputHTML();
+
+            const host = document.createElement('div');
+            host.id = 'capture-host';
+            host.style.width = width + 'px';
+            host.innerHTML = htmlCode;
+            document.body.appendChild(host);
+
+            try {
+                const container = host.querySelector('.oc-profile-container');
+                if (!container) throw new Error('container missing');
+
+                // 캡처용 레이아웃 고정
+                container.style.setProperty('margin', '0', 'important');
+                container.style.setProperty('max-width', 'none', 'important');
+                container.style.setProperty('width', width + 'px', 'important');
+
+                // 모바일 뷰는 미디어쿼리가 뷰포트 기준이라 강제 적용
+                let modeCss = '';
+                if (isMobile) {
+                    modeCss = `
+.oc-profile-body{flex-direction:column !important;}
+.oc-body-col{flex:none !important;width:100% !important;max-width:100% !important;max-height:440px !important;margin-bottom:8px !important;}
+.oc-info-col{flex:none !important;width:100% !important;max-width:100% !important;}`;
+                    const mstyle = document.createElement('style');
+                    mstyle.textContent = modeCss;
+                    host.insertBefore(mstyle, host.firstChild);
+                }
+
+                // 이미지 인라인화
+                const imgs = Array.from(host.querySelectorAll('img'));
+                await Promise.all(imgs.map(async (im) => {
+                    const inlined = await inlineImageSrc(im.getAttribute('src'));
+                    if (inlined) im.setAttribute('src', inlined);
+                }));
+
+                // 이미지 로딩 완료 대기
+                await Promise.all(imgs.map(im => {
+                    if (im.complete && im.naturalHeight !== 0) return Promise.resolve();
+                    return new Promise(resolve => {
+                        im.onload = () => resolve();
+                        im.onerror = () => resolve();
+                        setTimeout(resolve, 5000);
+                    });
+                }));
+
+                // 폰트 로딩 완료 대기 후 레이아웃 확정
+                if (document.fonts && document.fonts.ready) await document.fonts.ready;
+                await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+                const height = Math.ceil(container.getBoundingClientRect().height);
+                if (!height) throw new Error('zero height');
+
+                const fontCss = await getEmbeddedFontCss();
+                const pageStyle = host.querySelector('style:not([data-mode])');
+                const baseCss = Array.from(host.querySelectorAll('style')).map(s => s.textContent).join('\n');
+
+                const serializer = new XMLSerializer();
+                const bodyXml = serializer.serializeToString(container);
+
+                const cssBundle = [
+                    fontCss,
+                    baseCss,
+                    modeCss,
+                    `.oc-profile-container{margin:0 !important;max-width:none !important;width:${width}px !important;}`
+                ].join('\n');
+
+                const svgStr =
+'<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '">' +
+'<foreignObject x="0" y="0" width="' + width + '" height="' + height + '">' +
+'<div xmlns="http://www.w3.org/1999/xhtml" style="width:' + width + 'px;">' +
+'<style type="text/css">' + xmlEscapeCss(cssBundle) + '</style>' +
+bodyXml +
+'</div></foreignObject></svg>';
+
+                const img = await loadSvgImage(svgStr);
+
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.round(width * scale);
+                canvas.height = Math.round(height * scale);
+                const ctx = canvas.getContext('2d');
+                ctx.setTransform(scale, 0, 0, scale, 0, 0);
+                ctx.drawImage(img, 0, 0, width, height);
+
+                return canvas;
+            } finally {
+                host.remove();
+            }
+        }
+
+        // Blob URL 우선, 실패 시 data URI 폴백
+        function loadSvgImage(svgStr) {
+            const tryLoad = (url, revoke) => new Promise((resolve, reject) => {
+                const i = new Image();
+                i.onload = () => { if (revoke) URL.revokeObjectURL(url); resolve(i); };
+                i.onerror = () => { if (revoke) URL.revokeObjectURL(url); reject(new Error('svg load fail')); };
+                i.src = url;
+            });
+
+            const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+            const blobUrl = URL.createObjectURL(blob);
+
+            return tryLoad(blobUrl, true).catch(() => {
+                const dataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
+                return tryLoad(dataUrl, false);
+            });
+        }
+
+        // 구 방식 (SVG 실패 시에만 사용)
+        async function legacyHtml2canvasCapture(target) {
+            if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+            const imgs = Array.from(target.querySelectorAll('img'));
+            const restoreList = [];
             for (const img of imgs) {
                 const originalSrc = img.getAttribute('src') || '';
                 if ((originalSrc.startsWith('http://') || originalSrc.startsWith('https://')) && !originalSrc.includes('images.weserv.nl')) {
-                    const proxyUrl = 'https://images.weserv.nl/?url=' + encodeURIComponent(originalSrc);
                     restoreList.push({ img, originalSrc });
                     img.crossOrigin = 'anonymous';
-                    img.src = proxyUrl;
+                    img.src = 'https://images.weserv.nl/?url=' + encodeURIComponent(originalSrc);
                 }
             }
-
             await Promise.all(imgs.map(img => {
                 if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
                 return new Promise(resolve => {
@@ -1402,142 +1611,78 @@ ${specsHtml}                </div>
                 });
             }));
 
-            return () => {
+            try {
+                return await html2canvas(target, {
+                    backgroundColor: null,
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: false,
+                    logging: false
+                });
+            } finally {
                 restoreList.forEach(({ img, originalSrc }) => {
                     img.removeAttribute('crossOrigin');
                     img.src = originalSrc;
                 });
-            };
+            }
         }
 
         async function captureProfileCanvas(target) {
-            // 1. 모든 폰트가 완전히 로딩될 때까지 대기 (텍스트 찌그러짐 방지)
             if (document.fonts && document.fonts.ready) {
                 await document.fonts.ready;
             }
 
-            // 2. 외부 이미지 CORS 프록시 로드 및 대기
-            const restoreImages = await prepareImagesForCapture(target);
+            const imgs = Array.from(target.querySelectorAll('img'));
+            const restoreList = [];
+            for (const img of imgs) {
+                const originalSrc = img.getAttribute('src') || '';
+                if ((originalSrc.startsWith('http://') || originalSrc.startsWith('https://')) && !originalSrc.includes('images.weserv.nl')) {
+                    restoreList.push({ img, originalSrc });
+                    img.crossOrigin = 'anonymous';
+                    img.src = 'https://images.weserv.nl/?url=' + encodeURIComponent(originalSrc);
+                }
+            }
+
+            await Promise.all(imgs.map(img => {
+                if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
+                return new Promise(resolve => {
+                    img.onload = () => resolve();
+                    img.onerror = () => resolve();
+                    setTimeout(resolve, 3000);
+                });
+            }));
 
             try {
-                const canvas = await html2canvas(target, {
+                return await html2canvas(target, {
                     backgroundColor: null,
                     scale: 2,
                     useCORS: true,
                     allowTaint: false,
                     logging: false,
-                    scrollX: 0,
-                    scrollY: 0,
-                    windowWidth: document.documentElement.clientWidth,
-                    windowHeight: document.documentElement.clientHeight,
                     onclone: (clonedDoc) => {
-                        // [보정 1] 전신 이미지 비율 고정 (넙데데 현상 완벽 제거)
-                        const col = clonedDoc.querySelector('.oc-body-col');
-                        const bodyImg = clonedDoc.querySelector('.oc-body-col img');
-                        if (col && bodyImg && bodyImg.naturalWidth && bodyImg.naturalHeight) {
-                            const maxW = col.clientWidth > 0 ? (col.clientWidth - 14) : 290;
-                            const maxH = 520;
-                            const nRatio = bodyImg.naturalWidth / bodyImg.naturalHeight;
-                            let targetW, targetH;
-
-                            if (nRatio > (maxW / maxH)) {
-                                targetW = maxW;
-                                targetH = maxW / nRatio;
-                            } else {
-                                targetH = maxH;
-                                targetW = maxH * nRatio;
-                            }
-
-                            bodyImg.style.setProperty('width', Math.round(targetW) + 'px', 'important');
-                            bodyImg.style.setProperty('height', Math.round(targetH) + 'px', 'important');
-                            bodyImg.style.setProperty('max-width', 'none', 'important');
-                            bodyImg.style.setProperty('max-height', 'none', 'important');
-                            bodyImg.style.setProperty('min-width', '0', 'important');
-                            bodyImg.style.setProperty('min-height', '0', 'important');
-                            bodyImg.style.setProperty('object-fit', 'fill', 'important');
-                            bodyImg.style.setProperty('margin', '0 auto', 'important');
+                        const container = clonedDoc.querySelector('.oc-profile-container');
+                        if (container) {
+                            container.style.margin = '0';
+                            container.style.boxSizing = 'border-box';
                         }
-                        // [보정 3] Tailwind Preflight 간섭 제거 및 텍스트 칼정렬 보정
-                        const fixStyle = clonedDoc.createElement('style');
-                        fixStyle.innerHTML = `
-                            .oc-profile-container, .oc-profile-container * {
-                                -webkit-font-smoothing: antialiased !important;
-                                text-rendering: geometricPrecision !important;
-                                box-sizing: border-box !important;
-                            }
-                            .oc-profile-titlebar {
-                                min-height: 24px !important;
-                                padding: 3px 6px !important;
-                            }
-                            .oc-titlebar-text {
-                                overflow: visible !important;
-                                line-height: 1.3 !important;
-                                padding: 1px 0 !important;
-                            }
-                            .oc-media-player {
-                                min-height: 24px !important;
-                                padding: 3px 6px !important;
-                            }
-                            .oc-media-track {
-                                overflow: visible !important;
-                                line-height: 1.3 !important;
-                            }
-                            .oc-char-name {
-                                line-height: 1.3 !important;
-                                margin-bottom: 4px !important;
-                            }
-                            .oc-char-sub {
-                                line-height: 1.45 !important;
-                            }
-                            .oc-color-chip {
-                                padding: 1px 4px !important;
-                            }
-                            .oc-color-hex {
-                                line-height: 12px !important;
-                            }
-                            .oc-quote-box {
-                                padding: 5px 8px !important;
-                                line-height: 1.4 !important;
-                            }
-                            .oc-quote-text {
-                                line-height: 1.4 !important;
-                            }
-                            .oc-spec-heading {
-                                padding-bottom: 5px !important;
-                                margin-bottom: 7px !important;
-                                line-height: 1.3 !important;
-                            }
-                            .oc-spec-table {
-                                display: table !important;
-                                width: 100% !important;
-                                table-layout: fixed !important;
-                            }
-                            .oc-spec-row {
-                                display: table-row !important;
-                            }
-                            .oc-spec-k {
-                                display: table-cell !important;
-                                width: 76px !important;
-                                vertical-align: top !important;
-                                padding: 3px 4px 3px 0 !important;
-                                line-height: 1.4 !important;
-                            }
-                            .oc-spec-v {
-                                display: table-cell !important;
-                                vertical-align: top !important;
-                                padding: 3px 0 3px 4px !important;
-                                line-height: 1.4 !important;
-                            }
-                            .oc-memo-box {
-                                line-height: 1.5 !important;
-                            }
-                        `;
-                        clonedDoc.head.appendChild(fixStyle);
+                        clonedDoc.querySelectorAll('.oc-media-link').forEach(el => {
+                            el.style.textDecoration = 'none';
+                        });
+                        clonedDoc.querySelectorAll('.oc-spec-row').forEach(row => {
+                            row.style.display = 'flex';
+                            row.style.alignItems = 'flex-start';
+                        });
+                        clonedDoc.querySelectorAll('.oc-spec-k, .oc-spec-v').forEach(el => {
+                            el.style.lineHeight = '1.45';
+                            el.style.margin = '0';
+                        });
                     }
                 });
-                return canvas;
             } finally {
-                if (restoreImages) restoreImages();
+                restoreList.forEach(({ img, originalSrc }) => {
+                    img.removeAttribute('crossOrigin');
+                    img.src = originalSrc;
+                });
             }
         }
 
@@ -1549,7 +1694,7 @@ ${specsHtml}                </div>
                 return;
             }
 
-            showToast("PNG 이미지 생성 중 (비율/텍스트 보정)...");
+            showToast("PNG 이미지 생성 중...");
             try {
                 const canvas = await captureProfileCanvas(target);
                 const link = document.createElement('a');
@@ -1559,6 +1704,7 @@ ${specsHtml}                </div>
                 link.click();
                 showToast("PNG 이미지가 다운로드되었습니다!");
             } catch (err) {
+                console.error(err);
                 showToast("PNG 캡처 중 오류가 발생했습니다.");
             }
         }
@@ -1576,7 +1722,7 @@ ${specsHtml}                </div>
                 return;
             }
 
-            showToast("이미지 캡처 중 (비율/텍스트 보정)...");
+            showToast("이미지 캡처 중...");
             try {
                 const canvas = await captureProfileCanvas(target);
                 canvas.toBlob(blob => {
@@ -1592,6 +1738,7 @@ ${specsHtml}                </div>
                     });
                 }, 'image/png');
             } catch (err) {
+                console.error(err);
                 showToast("이미지 캡처 중 오류가 발생했습니다.");
             }
         }
@@ -1731,6 +1878,8 @@ ${specsHtml}                </div>
             if (!restored) {
                 loadSampleData();
             }
+            // 폰트 미리 캐싱 (첫 캡처 지연 방지)
+            getEmbeddedFontCss();
         };
     </script>
 </body>
