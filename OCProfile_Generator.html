@@ -887,7 +887,7 @@
                     : `<span>♬ ${escapeHtml(songTitle)}${artistPart}</span>`;
 
                 themeSongHtml = `                <div class="oc-media-player">
-                    <div class="oc-media-play-btn">▶</div>
+                    <div class="oc-media-play-btn"><svg width="7" height="8" viewBox="0 0 7 8"><polygon points="1,1 6,4 1,7" fill="#000080"/></svg></div>
                     <div class="oc-media-track">${songContent}</div>
                 </div>\n`;
             }
@@ -904,7 +904,8 @@
             let paletteHtml = '';
             if (colorChips.length > 0) {
                 const chipsHtml = colorChips.map(c => `
-                    <div class="oc-color-chip" style="background:${c};" title="${c}">
+                    <div class="oc-color-chip" title="${c}">
+                        <span class="oc-color-swatch" style="background:${c};"></span>
                         <span class="oc-color-hex">${c}</span>
                     </div>`).join('');
                 
@@ -918,7 +919,7 @@
             let quoteHtml = '';
             if (quoteText) {
                 quoteHtml = `                <div class="oc-quote-box">
-                    <span class="oc-quote-mark">❝</span>
+                    <span class="oc-quote-mark">“</span>
                     <div class="oc-quote-text">${escapeHtml(quoteText)}</div>
                 </div>\n`;
             }
@@ -934,7 +935,10 @@
                 const k = row.querySelector('.spec-key')?.value.trim() || '';
                 const v = row.querySelector('.spec-val')?.value.trim() || '';
                 if (k || v) {
-                    specsHtml += `                    <li><b>${escapeHtml(k)}:</b> <span>${escapeHtml(v)}</span></li>\n`;
+                    specsHtml += `                    <div class="oc-spec-row">
+                        <div class="oc-spec-k">${escapeHtml(k)}:</div>
+                        <div class="oc-spec-v">${escapeHtml(v)}</div>
+                    </div>\n`;
                 }
             });
 
@@ -1013,7 +1017,8 @@
     align-items: center;
     margin-bottom: 8px;
     user-select: none;
-    line-height: 18px;
+    min-height: 24px;
+    box-sizing: border-box;
 }
 .oc-titlebar-text {
     overflow: hidden;
@@ -1021,7 +1026,8 @@
     white-space: nowrap;
     min-width: 0;
     flex: 1;
-    line-height: 18px;
+    line-height: 1.3;
+    padding: 1px 0;
 }
 .oc-titlebar-ctrls {
     display: flex;
@@ -1089,10 +1095,10 @@
     padding: 3px 6px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     font-size: 11px;
     box-sizing: border-box;
-    line-height: 18px;
+    min-height: 24px;
 }
 .oc-media-play-btn {
     width: 16px;
@@ -1100,13 +1106,11 @@
     background: #c0c0c0;
     border: 1px solid;
     border-color: #ffffff #555555 #555555 #ffffff;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 8px;
-    color: #000080;
     flex-shrink: 0;
-    line-height: 1;
+    padding: 0;
 }
 .oc-media-track {
     flex: 1;
@@ -1114,7 +1118,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 18px;
+    line-height: 1.3;
 }
 .oc-media-link {
     color: #000080;
@@ -1180,7 +1184,7 @@
     padding: 3px 6px;
     font-size: 10px;
     box-sizing: border-box;
-    line-height: 16px;
+    min-height: 26px;
 }
 .oc-palette-label {
     font-weight: bold;
@@ -1188,23 +1192,31 @@
 }
 .oc-chips-row {
     display: flex;
-    gap: 4px;
+    gap: 5px;
     flex-wrap: wrap;
+    align-items: center;
 }
 .oc-color-chip {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 4px;
+    background: #ffffff;
+    border: 1px solid #808080;
     padding: 1px 4px;
+    box-sizing: border-box;
+}
+.oc-color-swatch {
+    width: 11px;
+    height: 11px;
     border: 1px solid #000000;
-    font-size: 9px;
-    font-family: monospace;
-    line-height: 1.2;
+    display: inline-block;
+    flex-shrink: 0;
 }
 .oc-color-hex {
-    background: rgba(255, 255, 255, 0.85);
-    padding: 0 2px;
+    font-size: 10px;
     color: #000000;
+    line-height: 1;
+    font-family: monospace, 'NeoDunggeunmo';
 }
 .oc-quote-box {
     width: 100%;
@@ -1214,7 +1226,7 @@
     padding: 5px 8px;
     display: flex;
     gap: 6px;
-    align-items: center;
+    align-items: flex-start;
     box-sizing: border-box;
     line-height: 1.4;
 }
@@ -1222,6 +1234,8 @@
     color: #000080;
     font-size: 14px;
     line-height: 1;
+    flex-shrink: 0;
+    margin-top: 1px;
 }
 .oc-quote-text {
     font-size: 11px;
@@ -1237,38 +1251,47 @@
     border-color: #808080 #ffffff #ffffff #808080;
     padding: 8px 10px;
     font-size: 12px;
-    line-height: 1.6;
+    line-height: 1.4;
     flex: 1;
     box-sizing: border-box;
 }
 .oc-spec-heading {
-    font-weight: normal;
+    font-weight: bold;
     color: #000080;
     font-size: 11px;
     border-bottom: 1px dashed #808080;
-    padding-bottom: 3px;
-    margin-bottom: 6px;
-    line-height: 18px;
+    padding-bottom: 5px;
+    margin-bottom: 7px;
+    line-height: 1.3;
 }
-.oc-spec-well ul {
-    list-style: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
+.oc-spec-list {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
 }
-.oc-spec-well li {
-    margin-bottom: 5px;
-    border-bottom: 1px dotted #d8d8d8;
-    padding-bottom: 3px;
-    display: flex;
-    align-items: baseline;
-    line-height: 1.5;
-    word-break: break-word;
+.oc-spec-row {
+    display: table-row;
 }
-.oc-spec-well b {
+.oc-spec-k {
+    display: table-cell;
+    width: 76px;
+    vertical-align: top;
+    font-weight: bold;
     color: #000000;
-    font-weight: normal;
-    min-width: 75px;
-    flex-shrink: 0;
+    padding: 3px 4px 3px 0;
+    border-bottom: 1px dotted #d8d8d8;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+.oc-spec-v {
+    display: table-cell;
+    vertical-align: top;
+    color: #111111;
+    padding: 3px 0 3px 4px;
+    border-bottom: 1px dotted #d8d8d8;
+    word-break: break-word;
+    line-height: 1.4;
 }
 .oc-memo-box {
     margin-top: 8px;
@@ -1324,8 +1347,8 @@ ${themeSongHtml}            <div class="oc-head-box">
             </div>
 
 ${paletteHtml}${quoteHtml}            <div class="oc-spec-well">
-${specTitleHtml}                <ul>
-${specsHtml}                </ul>
+${specTitleHtml}                <div class="oc-spec-list">
+${specsHtml}                </div>
                 ${memoHtml ? `<div class="oc-memo-box">${memoHtml}</div>` : ''}
             </div>
         </div>
@@ -1433,79 +1456,80 @@ ${specsHtml}                </ul>
                             bodyImg.style.setProperty('min-height', '0', 'important');
                             bodyImg.style.setProperty('object-fit', 'fill', 'important');
                             bodyImg.style.setProperty('margin', '0 auto', 'important');
-                            bodyImg.style.setProperty('display', 'block', 'important');
                         }
-
-                        // [보정 2] 두상 이미지 정사각 1:1 크롭 보정 (찌그러짐 방지)
-                        const headBox = clonedDoc.querySelector('.oc-head-img');
-                        const headImg = clonedDoc.querySelector('.oc-head-img img');
-                        if (headBox && headImg && headImg.naturalWidth && headImg.naturalHeight) {
-                            try {
-                                const cvs = document.createElement('canvas');
-                                cvs.width = 152;
-                                cvs.height = 152;
-                                const ctx = cvs.getContext('2d');
-                                const s = Math.max(152 / headImg.naturalWidth, 152 / headImg.naturalHeight);
-                                const dx = (152 - headImg.naturalWidth * s) / 2;
-                                const dy = (152 - headImg.naturalHeight * s) / 2;
-                                ctx.drawImage(headImg, dx, dy, headImg.naturalWidth * s, headImg.naturalHeight * s);
-                                headImg.src = cvs.toDataURL('image/png');
-                                headImg.style.setProperty('width', '76px', 'important');
-                                headImg.style.setProperty('height', '76px', 'important');
-                                headImg.style.setProperty('object-fit', 'fill', 'important');
-                            } catch (e) {}
-                        }
-
-                        // [보정 3] Tailwind Preflight로 인한 텍스트 처짐/밀림 및 폰트 찌그러짐 강제 재정렬
+                        // [보정 3] Tailwind Preflight 간섭 제거 및 텍스트 칼정렬 보정
                         const fixStyle = clonedDoc.createElement('style');
                         fixStyle.innerHTML = `
                             .oc-profile-container, .oc-profile-container * {
                                 -webkit-font-smoothing: antialiased !important;
                                 text-rendering: geometricPrecision !important;
+                                box-sizing: border-box !important;
                             }
                             .oc-profile-titlebar {
-                                line-height: 18px !important;
-                                height: 22px !important;
-                                padding-top: 2px !important;
-                                padding-bottom: 2px !important;
+                                min-height: 24px !important;
+                                padding: 3px 6px !important;
                             }
                             .oc-titlebar-text {
-                                line-height: 18px !important;
+                                overflow: visible !important;
+                                line-height: 1.3 !important;
+                                padding: 1px 0 !important;
                             }
                             .oc-media-player {
-                                line-height: 18px !important;
+                                min-height: 24px !important;
                                 padding: 3px 6px !important;
                             }
                             .oc-media-track {
-                                line-height: 18px !important;
+                                overflow: visible !important;
+                                line-height: 1.3 !important;
                             }
                             .oc-char-name {
-                                line-height: 20px !important;
+                                line-height: 1.3 !important;
+                                margin-bottom: 4px !important;
                             }
                             .oc-char-sub {
-                                line-height: 16px !important;
+                                line-height: 1.45 !important;
+                            }
+                            .oc-color-chip {
+                                padding: 1px 4px !important;
+                            }
+                            .oc-color-hex {
+                                line-height: 12px !important;
                             }
                             .oc-quote-box {
-                                line-height: 18px !important;
+                                padding: 5px 8px !important;
+                                line-height: 1.4 !important;
                             }
                             .oc-quote-text {
-                                line-height: 18px !important;
+                                line-height: 1.4 !important;
                             }
-                            .oc-spec-well li {
-                                line-height: 20px !important;
-                                margin-bottom: 5px !important;
-                                padding-bottom: 3px !important;
-                                display: flex !important;
-                                align-items: baseline !important;
+                            .oc-spec-heading {
+                                padding-bottom: 5px !important;
+                                margin-bottom: 7px !important;
+                                line-height: 1.3 !important;
                             }
-                            .oc-spec-well b {
-                                line-height: 20px !important;
+                            .oc-spec-table {
+                                display: table !important;
+                                width: 100% !important;
+                                table-layout: fixed !important;
                             }
-                            .oc-spec-well span {
-                                line-height: 20px !important;
+                            .oc-spec-row {
+                                display: table-row !important;
+                            }
+                            .oc-spec-k {
+                                display: table-cell !important;
+                                width: 76px !important;
+                                vertical-align: top !important;
+                                padding: 3px 4px 3px 0 !important;
+                                line-height: 1.4 !important;
+                            }
+                            .oc-spec-v {
+                                display: table-cell !important;
+                                vertical-align: top !important;
+                                padding: 3px 0 3px 4px !important;
+                                line-height: 1.4 !important;
                             }
                             .oc-memo-box {
-                                line-height: 18px !important;
+                                line-height: 1.5 !important;
                             }
                         `;
                         clonedDoc.head.appendChild(fixStyle);
