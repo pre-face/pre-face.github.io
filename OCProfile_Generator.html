@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win98 OC Profile Generator</title>
+    <title>Win98 OC Profile Generator - 레트로 자캐 프로필 생성기</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- NeoDunggeunmo 폰트 -->
@@ -195,11 +195,10 @@
            미리보기 뷰포트 분리 (PC 가로 2단 vs 모바일 세로 1단)
            ======================================================= */
         
-        /* 1) PC 모드: 우측 창 너비에 상관없이 무조건 가로 2단 좌우 분할 유지 */
         #preview-stage.view-pc {
             width: 100%;
             max-width: 720px;
-            min-width: 620px; /* 찌그러짐 방지 */
+            min-width: 620px;
         }
         #preview-stage.view-pc .oc-profile-body {
             display: flex !important;
@@ -218,7 +217,6 @@
             min-width: 0 !important;
         }
 
-        /* 2) 모바일 모드: 360px 폭으로 상단 전신 + 하단 정보 세로 정렬 */
         #preview-stage.view-mobile {
             width: 360px !important;
             max-width: 360px !important;
@@ -526,7 +524,7 @@
         <div class="flex items-center gap-1 flex-1">
             <div class="win98-raised px-2 py-0.5 text-[11px] font-bold flex items-center gap-1 border-t-black border-l-black border-b-white border-r-white">
                 <img src="https://win98icons.alexmeub.com/icons/png/gears-0.png" width="14" alt="">
-                <span>OC_Profile_Builder v3.4</span>
+                <span>OC_Profile_Builder v3.5</span>
             </div>
         </div>
         <div class="win98-sunken-gray px-2 py-0.5 text-[11px] flex items-center gap-2">
@@ -577,7 +575,7 @@
             bodyBg: "transparent",
             bodyFit: "contain",
             charName: "홍길동 (Hong Gil-dong)",
-            charSub: "소속: 활빈당 의적단\n상태: 동에 번쩍 서에 번쩍 / 활동 중\n식별: NO-007",
+            charSub: "소속: 활빈당 의적단\n상태: 동에 번쩍 서에 번쩍 / 활동 중",
             quote: "\"아버지를 아버지라 부르지 못하고, 형을 형이라 부르지 못하니…….\"",
             songTitle: "바람이 분다 (Wind of Legend)",
             songArtist: "Joseon Beats",
@@ -646,7 +644,6 @@
             return row;
         }
 
-        // 바로 아래 항목 삽입
         function insertSpecBelow(btn) {
             const currentRow = btn.closest('.spec-row');
             const newRow = addSpecRow('', '', currentRow);
@@ -654,7 +651,6 @@
             if (keyInput) keyInput.focus();
         }
 
-        // 행 삭제
         function removeSpecRow(btn) {
             const row = btn.closest('.spec-row');
             if (row) {
@@ -663,7 +659,6 @@
             }
         }
 
-        // 행 순서 위/아래 이동
         function moveSpecRow(btn, direction) {
             const row = btn.closest('.spec-row');
             const container = document.getElementById('spec-rows-container');
@@ -677,7 +672,6 @@
             handleInput();
         }
 
-        // 드래그 앤 드롭 초기화
         let draggedRow = null;
         function initRowDrag(row) {
             const handle = row.querySelector('.drag-handle');
@@ -720,7 +714,6 @@
             });
         }
 
-        // 컬러 팔레트 연동
         function syncColorInput(index) {
             const col = document.getElementById(`cfg-color-${index}`)?.value || '';
             const hexInput = document.getElementById(`cfg-color-${index}-hex`);
@@ -746,7 +739,6 @@
             showToast("상징색 팔레트를 비웠습니다.");
         }
 
-        // 입력 처리
         function handleInput() {
             saveDraftToStorage();
             const isLive = document.getElementById('chk-live-render')?.checked;
@@ -770,7 +762,6 @@
             showToast("미리보기를 반영했습니다!");
         }
 
-        // 로컬 자동 임시저장
         function saveDraftToStorage() {
             try {
                 const draft = {
@@ -809,7 +800,6 @@
             } catch (e) {}
         }
 
-        // 임시저장 복원
         function loadDraftFromStorage() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
@@ -824,7 +814,6 @@
             }
         }
 
-        // 파일 업로드 (Base64 리사이징)
         function handleFileUpload(event, targetInputId) {
             const file = event.target.files[0];
             if (!file) return;
@@ -875,7 +864,7 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // 티스토리 삽입용 최종 HTML 코드 생성기 (PC/모바일 분리 및 이미지 넘침 방지)
+        // 캡처 시 검은 사각형 및 텍스트 찌그러짐을 방지하는 완성형 HTML 코드 생성
         function generateOutputHTML() {
             const titleBar = document.getElementById('cfg-title')?.value.trim() || 'PROFILE_VIEWER.EXE';
             const fullbodyImg = document.getElementById('cfg-fullbody-img')?.value.trim() || 'https://images.placeholders.dev/?width=320&height=640&text=FULLBODY&theme=classic';
@@ -910,7 +899,7 @@
                 </div>\n`;
             }
 
-            // 2) 상징색 팔레트 (비어있으면 미표시)
+            // 2) 상징색 팔레트
             const colorChips = [];
             for (let i = 1; i <= 4; i++) {
                 const hex = document.getElementById(`cfg-color-${i}-hex`)?.value.trim();
@@ -932,7 +921,7 @@
                 </div>\n`;
             }
 
-            // 3) 대표 대사 (비어있으면 미표시)
+            // 3) 대표 대사
             let quoteHtml = '';
             if (quoteText) {
                 quoteHtml = `                <div class="oc-quote-box">
@@ -969,7 +958,6 @@
     background-position: 0 0, 0 8px, 8px -8px, -8px 0px;`;
             }
 
-            // 전신 이미지 피팅 모드 (박스 밖 삐져나옴 방지)
             let bodyImgCss = '';
             let bodyColExtra = '';
             if (fitMode === 'contain') {
@@ -1053,10 +1041,6 @@
     border: 1px solid;
     border-color: #ffffff #555555 #555555 #ffffff;
     color: #000000;
-    font-size: 9px;
-    line-height: 12px;
-    font-family: Arial, sans-serif;
-    font-weight: bold;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1068,6 +1052,8 @@
     flex-direction: row;
     gap: 12px;
     align-items: stretch;
+    width: 100%;
+    box-sizing: border-box;
 }
 .oc-body-col {
     flex: 0 0 44%;
@@ -1077,7 +1063,6 @@
     box-sizing: border-box;
     border: 2px solid;
     border-color: #808080 #ffffff #ffffff #808080;
-    box-shadow: inset 1px 1px 0 #000000;
     padding: 6px;
     text-align: center;
     display: flex;
@@ -1101,10 +1086,10 @@
     gap: 8px;
 }
 .oc-media-player {
+    width: 100%;
     background: #d8d8d8;
     border: 2px solid;
     border-color: #808080 #ffffff #ffffff #808080;
-    box-shadow: inset 1px 1px 0 #000000;
     padding: 4px 6px;
     display: flex;
     align-items: center;
@@ -1144,12 +1129,12 @@
     font-size: 10px;
 }
 .oc-head-box {
+    width: 100%;
     display: flex;
     gap: 10px;
     background: #c0c0c0;
     border: 2px solid;
     border-color: #808080 #ffffff #ffffff #808080;
-    box-shadow: inset 1px 1px 0 #000000;
     padding: 6px;
     align-items: center;
     box-sizing: border-box;
@@ -1186,6 +1171,7 @@
     word-break: break-word;
 }
 .oc-palette-wrap {
+    width: 100%;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -1219,6 +1205,7 @@
     color: #000000;
 }
 .oc-quote-box {
+    width: 100%;
     background: #ffffec;
     border: 1px solid #c0b080;
     border-left: 3px solid #000080;
@@ -1241,10 +1228,10 @@
     word-break: break-word;
 }
 .oc-spec-well {
+    width: 100%;
     background: #ffffff;
     border: 2px solid;
     border-color: #808080 #ffffff #ffffff #808080;
-    box-shadow: inset 1px 1px 0 #000000;
     padding: 8px 10px;
     font-size: 12px;
     line-height: 1.65;
@@ -1309,9 +1296,9 @@
     <div class="oc-profile-titlebar">
         <div class="oc-titlebar-text">${escapeHtml(titleBar)}</div>
         <div class="oc-titlebar-ctrls">
-            <span class="oc-win-ctrl" title="최소화">_</span>
-            <span class="oc-win-ctrl" title="최대화">□</span>
-            <span class="oc-win-ctrl" title="닫기">✕</span>
+            <span class="oc-win-ctrl" title="최소화"><svg width="6" height="2" viewBox="0 0 6 2"><rect width="6" height="2" fill="#000"/></svg></span>
+            <span class="oc-win-ctrl" title="최대화"><svg width="8" height="7" viewBox="0 0 8 7" fill="none"><rect x="0.5" y="0.5" width="7" height="6" stroke="#000"/><rect x="0.5" y="0.5" width="7" height="1.5" fill="#000"/></svg></span>
+            <span class="oc-win-ctrl" title="닫기"><svg width="8" height="7" viewBox="0 0 8 7"><path d="M1 1 L7 6 M7 1 L1 6" stroke="#000" stroke-width="1.2"/></svg></span>
         </div>
     </div>
     <div class="oc-profile-body">
@@ -1363,34 +1350,76 @@ ${specsHtml}                </ul>
             if (statusEl) statusEl.innerText = '준비 완료. [미리보기 반영]을 누르세요';
         }
 
+        // 외부 이미지 CORS 차단 우회 및 로드 대기 처리기
+        async function prepareImagesForCapture(container) {
+            const imgs = Array.from(container.querySelectorAll('img'));
+            const restoreList = [];
+
+            for (const img of imgs) {
+                const originalSrc = img.getAttribute('src') || '';
+                // 외부 웹 이미지(http/https)이고 로컬 데이터가 아닐 때 프록시 경유
+                if ((originalSrc.startsWith('http://') || originalSrc.startsWith('https://')) && !originalSrc.includes('images.weserv.nl')) {
+                    const proxyUrl = 'https://images.weserv.nl/?url=' + encodeURIComponent(originalSrc);
+                    restoreList.push({ img, originalSrc });
+                    img.crossOrigin = 'anonymous';
+                    img.src = proxyUrl;
+                }
+            }
+
+            // 모든 이미지가 온전히 다운로드될 때까지 대기
+            await Promise.all(imgs.map(img => {
+                if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
+                return new Promise(resolve => {
+                    img.onload = () => resolve();
+                    img.onerror = () => resolve();
+                    setTimeout(resolve, 3500); // 3.5초 타임아웃
+                });
+            }));
+
+            // 복원 핸들러 반환
+            return () => {
+                restoreList.forEach(({ img, originalSrc }) => {
+                    img.removeAttribute('crossOrigin');
+                    img.src = originalSrc;
+                });
+            };
+        }
+
         // 고화질 투명 PNG 이미지 저장
-        function downloadPreviewAsPng() {
+        async function downloadPreviewAsPng() {
             const target = document.querySelector('#rendered-output .oc-profile-container');
             if (!target) {
                 showToast("렌더링된 프로필 창을 찾을 수 없습니다.");
                 return;
             }
 
-            showToast("PNG 이미지 생성 중...");
-            html2canvas(target, {
-                backgroundColor: null,
-                scale: 2,
-                useCORS: true,
-                logging: false
-            }).then(canvas => {
+            showToast("PNG 이미지 생성 중 (이미지 로딩 대기)...");
+            let restoreImages = null;
+            try {
+                restoreImages = await prepareImagesForCapture(target);
+                const canvas = await html2canvas(target, {
+                    backgroundColor: null,
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: false,
+                    logging: false
+                });
+
                 const link = document.createElement('a');
                 const charName = document.getElementById('cfg-char-name')?.value.trim() || 'oc_profile';
                 link.download = `${charName}_win98_profile.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
                 showToast("PNG 이미지가 다운로드되었습니다!");
-            }).catch(() => {
-                showToast("외부 이미지 보안(CORS)으로 인해 저장이 제한되었습니다.");
-            });
+            } catch (err) {
+                showToast("PNG 캡처 중 오류가 발생했습니다.");
+            } finally {
+                if (restoreImages) restoreImages();
+            }
         }
 
         // 클립보드에 이미지 복사
-        function copyPreviewImageToClipboard() {
+        async function copyPreviewImageToClipboard() {
             const target = document.querySelector('#rendered-output .oc-profile-container');
             if (!target) {
                 showToast("렌더링된 프로필 창을 찾을 수 없습니다.");
@@ -1402,13 +1431,18 @@ ${specsHtml}                </ul>
                 return;
             }
 
-            showToast("이미지 캡처 중...");
-            html2canvas(target, {
-                backgroundColor: null,
-                scale: 2,
-                useCORS: true,
-                logging: false
-            }).then(canvas => {
+            showToast("이미지 캡처 중 (이미지 로딩 대기)...");
+            let restoreImages = null;
+            try {
+                restoreImages = await prepareImagesForCapture(target);
+                const canvas = await html2canvas(target, {
+                    backgroundColor: null,
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: false,
+                    logging: false
+                });
+
                 canvas.toBlob(blob => {
                     if (!blob) {
                         showToast("이미지 변환에 실패했습니다.");
@@ -1418,12 +1452,14 @@ ${specsHtml}                </ul>
                     navigator.clipboard.write([item]).then(() => {
                         showToast("이미지가 클립보드에 복사되었습니다! (Ctrl+V)");
                     }).catch(() => {
-                        showToast("클립보드 권한이 필요합니다.");
+                        showToast("클립보드 복사 권한이 거부되었습니다.");
                     });
                 }, 'image/png');
-            }).catch(() => {
-                showToast("외부 이미지 보안(CORS)으로 복사가 제한되었습니다.");
-            });
+            } catch (err) {
+                showToast("이미지 캡처 중 오류가 발생했습니다.");
+            } finally {
+                if (restoreImages) restoreImages();
+            }
         }
 
         // 코드 복사 전 Base64 검사
@@ -1522,14 +1558,12 @@ ${specsHtml}                </ul>
             executeRender();
         }
 
-        // 샘플 로드 (홍길동 더미 데이터)
         function loadSampleData() {
             fillFormWithData(SAMPLE_DATA);
             saveDraftToStorage();
             showToast("홍길동 더미 샘플 데이터를 불러왔습니다.");
         }
 
-        // 전체 비우기
         function resetForm() {
             const emptyData = {
                 title: "PROFILE_VIEWER.EXE",
