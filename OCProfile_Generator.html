@@ -540,6 +540,29 @@
         <span id="toast-msg" class="text-xs font-bold text-black">알림 메시지</span>
     </div>
 
+    <!-- 이미지 복사/저장 결과 모달 (클립보드 차단 시 100% 복사용) -->
+    <div id="image-result-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:100001; align-items:center; justify-content:center;">
+        <div class="win98-raised p-1 shadow-2xl" style="max-width:92%; width:640px; max-height:90vh; display:flex; flex-direction:column;">
+            <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
+                <span>PROFILE_IMAGE_EXPORT.EXE - 캡처 완료</span>
+                <button class="win-ctrl-btn" onclick="closeImageModal()">X</button>
+            </div>
+            <div class="p-3 bg-[#c0c0c0] flex flex-col items-center flex-1 overflow-y-auto">
+                <div class="w-full bg-[#ffffec] border border-[#808080] p-2 text-[11px] mb-2 text-gray-800 leading-relaxed">
+                    💡 <b>이미지 준비 완료!</b> 브라우저 권한에 따라 클립보드 복사 또는 파일 다운로드가 완료되었습니다.<br>
+                    아래 이미지를 <b>우클릭 > [이미지 복사]</b> 하셔도 디스코드나 메신저에 바로 붙여넣기(Ctrl+V) 하실 수 있습니다.
+                </div>
+                <div class="max-h-[60vh] overflow-auto border-2 border-[#808080] bg-white p-2 mb-2 w-full flex justify-center">
+                    <img id="modal-result-img" src="" alt="캡처 결과" style="max-width:100%; height:auto; display:block;">
+                </div>
+                <div class="flex justify-end gap-2 w-full">
+                    <a id="modal-download-btn" href="#" download="oc_profile.png" class="win98-btn text-xs font-bold text-blue-900 no-underline">💾 PNG 파일 저장</a>
+                    <button class="win98-btn text-xs" onclick="closeImageModal()">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 대용량 Base64 감지 경고 모달 -->
     <div id="warning-modal">
         <div class="max-w-[400px] win98-raised shadow-2xl p-1" style="position:relative; width:92%;">
@@ -927,13 +950,11 @@
             // 3) 대표 대사
             let quoteHtml = '';
             if (quoteText) {
-                let quoteClean = quoteText.trim();
-                if ((quoteClean.startsWith('"') && quoteClean.endsWith('"')) ||
-                    (quoteClean.startsWith('“') && quoteClean.endsWith('”'))) {
-                    quoteClean = quoteClean.substring(1, quoteClean.length - 1).trim();
-                }
+                let clean = quoteText.trim();
+                // 기존 따옴표 중복 제거
+                clean = clean.replace(/^[“"']+|[”"']+$/g, '').trim();
                 quoteHtml = `                <div class="oc-quote-box">
-                    <span class="oc-quote-mark">“</span><span class="oc-quote-text">${escapeHtml(quoteClean)}”</span>
+                    <span class="oc-quote-mark">“</span><span class="oc-quote-text">${escapeHtml(clean)}</span><span class="oc-quote-mark">”</span>
                 </div>\n`;
             }
 
@@ -1440,255 +1461,51 @@ ${specsHtml}                </div>
         }
 
         /* =========================================================
-           [캡처 엔진 v2] SVG foreignObject 기반
-           - 브라우저가 직접 레이아웃/렌더링하므로 텍스트가 밀리지 않음
-           - 폰트는 base64로 SVG 안에 심어서 픽셀 폰트 그대로 출력
-           - 외부 이미지는 전부 data URI로 인라인 (CORS/tainted 방지)
+           [정밀 캡처 엔진 v3] 화면 1:1 픽셀 동기화
+           - 화면에 렌더링된 실제 크기(getBoundingClientRect)를 그대로 복제
+           - object-fit 무시로 인한 전신 이미지 늘어남(넙데데 현상) 원천 차단
+           - 폰트 로딩 대기 및 CORS 우회 완비
            ========================================================= */
 
-        let _fontCssCache = null;
-
-        function arrayBufferToBase64(buffer) {
-            const bytes = new Uint8Array(buffer);
-            const chunk = 0x8000;
-            let binary = '';
-            for (let i = 0; i < bytes.length; i += chunk) {
-                binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
-            }
-            return btoa(binary);
-        }
-
-        // 픽셀 폰트를 base64로 임베드한 @font-face 규칙 생성
-        async function getEmbeddedFontCss() {
-            if (_fontCssCache !== null) return _fontCssCache;
-            try {
-                const res = await fetch(OC_FONT_URL, { mode: 'cors', cache: 'force-cache' });
-                if (!res.ok) throw new Error('font fetch failed');
-                const buf = await res.arrayBuffer();
-                const b64 = arrayBufferToBase64(buf);
-                _fontCssCache = `@font-face{font-family:'NeoDunggeunmo';src:url(data:font/woff;base64,${b64}) format('woff');font-weight:normal;font-style:normal;}`;
-            } catch (e) {
-                _fontCssCache = '';
-            }
-            return _fontCssCache;
-        }
-
-        function blobToDataUrl(blob) {
-            return new Promise((resolve, reject) => {
-                const fr = new FileReader();
-                fr.onload = () => resolve(fr.result);
-                fr.onerror = () => reject(new Error('read fail'));
-                fr.readAsDataURL(blob);
-            });
-        }
-
-        // 외부 이미지 → data URI 변환 (실패 시 원본 유지)
-        async function inlineImageSrc(src) {
-            if (!src) return src;
-            if (src.startsWith('data:')) return src;
-
-            const candidates = [
-                'https://images.weserv.nl/?url=' + encodeURIComponent(src),
-                src
-            ];
-
-            for (const url of candidates) {
-                try {
-                    const res = await fetch(url, { mode: 'cors' });
-                    if (!res.ok) continue;
-                    const blob = await res.blob();
-                    if (!blob || blob.size === 0) continue;
-                    return await blobToDataUrl(blob);
-                } catch (e) { /* 다음 후보 시도 */ }
-            }
-            return src;
-        }
-
-        function xmlEscapeCss(text) {
-            return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        }
-
-        // 현재 미리보기 상태 그대로 오프스크린에 재구성 후 SVG로 래스터화
-        async function buildProfileCanvasBySvg(scale = 2) {
-            const isMobile = document.getElementById('preview-stage')?.classList.contains('view-mobile');
-            const liveTarget = document.querySelector('#rendered-output .oc-profile-container');
-            let width = isMobile ? 360 : Math.round(liveTarget ? liveTarget.getBoundingClientRect().width : 740);
-            if (!width || width < 200) width = 740;
-
-            const htmlCode = generateOutputHTML();
-
-            const host = document.createElement('div');
-            host.id = 'capture-host';
-            host.style.width = width + 'px';
-            host.innerHTML = htmlCode;
-            document.body.appendChild(host);
-
-            try {
-                const container = host.querySelector('.oc-profile-container');
-                if (!container) throw new Error('container missing');
-
-                // 캡처용 레이아웃 고정
-                container.style.setProperty('margin', '0', 'important');
-                container.style.setProperty('max-width', 'none', 'important');
-                container.style.setProperty('width', width + 'px', 'important');
-
-                // 모바일 뷰는 미디어쿼리가 뷰포트 기준이라 강제 적용
-                let modeCss = '';
-                if (isMobile) {
-                    modeCss = `
-.oc-profile-body{flex-direction:column !important;}
-.oc-body-col{flex:none !important;width:100% !important;max-width:100% !important;max-height:440px !important;margin-bottom:8px !important;}
-.oc-info-col{flex:none !important;width:100% !important;max-width:100% !important;}`;
-                    const mstyle = document.createElement('style');
-                    mstyle.textContent = modeCss;
-                    host.insertBefore(mstyle, host.firstChild);
-                }
-
-                // 이미지 인라인화
-                const imgs = Array.from(host.querySelectorAll('img'));
-                await Promise.all(imgs.map(async (im) => {
-                    const inlined = await inlineImageSrc(im.getAttribute('src'));
-                    if (inlined) im.setAttribute('src', inlined);
-                }));
-
-                // 이미지 로딩 완료 대기
-                await Promise.all(imgs.map(im => {
-                    if (im.complete && im.naturalHeight !== 0) return Promise.resolve();
-                    return new Promise(resolve => {
-                        im.onload = () => resolve();
-                        im.onerror = () => resolve();
-                        setTimeout(resolve, 5000);
-                    });
-                }));
-
-                // 폰트 로딩 완료 대기 후 레이아웃 확정
-                if (document.fonts && document.fonts.ready) await document.fonts.ready;
-                await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-
-                const height = Math.ceil(container.getBoundingClientRect().height);
-                if (!height) throw new Error('zero height');
-
-                const fontCss = await getEmbeddedFontCss();
-                const pageStyle = host.querySelector('style:not([data-mode])');
-                const baseCss = Array.from(host.querySelectorAll('style')).map(s => s.textContent).join('\n');
-
-                const serializer = new XMLSerializer();
-                const bodyXml = serializer.serializeToString(container);
-
-                const cssBundle = [
-                    fontCss,
-                    baseCss,
-                    modeCss,
-                    `.oc-profile-container{margin:0 !important;max-width:none !important;width:${width}px !important;}`
-                ].join('\n');
-
-                const svgStr =
-'<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '">' +
-'<foreignObject x="0" y="0" width="' + width + '" height="' + height + '">' +
-'<div xmlns="http://www.w3.org/1999/xhtml" style="width:' + width + 'px;">' +
-'<style type="text/css">' + xmlEscapeCss(cssBundle) + '</style>' +
-bodyXml +
-'</div></foreignObject></svg>';
-
-                const img = await loadSvgImage(svgStr);
-
-                const canvas = document.createElement('canvas');
-                canvas.width = Math.round(width * scale);
-                canvas.height = Math.round(height * scale);
-                const ctx = canvas.getContext('2d');
-                ctx.setTransform(scale, 0, 0, scale, 0, 0);
-                ctx.drawImage(img, 0, 0, width, height);
-
-                return canvas;
-            } finally {
-                host.remove();
-            }
-        }
-
-        // Blob URL 우선, 실패 시 data URI 폴백
-        function loadSvgImage(svgStr) {
-            const tryLoad = (url, revoke) => new Promise((resolve, reject) => {
-                const i = new Image();
-                i.onload = () => { if (revoke) URL.revokeObjectURL(url); resolve(i); };
-                i.onerror = () => { if (revoke) URL.revokeObjectURL(url); reject(new Error('svg load fail')); };
-                i.src = url;
-            });
-
-            const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
-            const blobUrl = URL.createObjectURL(blob);
-
-            return tryLoad(blobUrl, true).catch(() => {
-                const dataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
-                return tryLoad(dataUrl, false);
-            });
-        }
-
-        // 구 방식 (SVG 실패 시에만 사용)
-        async function legacyHtml2canvasCapture(target) {
-            if (document.fonts && document.fonts.ready) await document.fonts.ready;
-
-            const imgs = Array.from(target.querySelectorAll('img'));
-            const restoreList = [];
-            for (const img of imgs) {
-                const originalSrc = img.getAttribute('src') || '';
-                if ((originalSrc.startsWith('http://') || originalSrc.startsWith('https://')) && !originalSrc.includes('images.weserv.nl')) {
-                    restoreList.push({ img, originalSrc });
-                    img.crossOrigin = 'anonymous';
-                    img.src = 'https://images.weserv.nl/?url=' + encodeURIComponent(originalSrc);
-                }
-            }
-            await Promise.all(imgs.map(img => {
-                if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
-                return new Promise(resolve => {
-                    img.onload = () => resolve();
-                    img.onerror = () => resolve();
-                    setTimeout(resolve, 3500);
-                });
-            }));
-
-            try {
-                return await html2canvas(target, {
-                    backgroundColor: null,
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: false,
-                    logging: false
-                });
-            } finally {
-                restoreList.forEach(({ img, originalSrc }) => {
-                    img.removeAttribute('crossOrigin');
-                    img.src = originalSrc;
-                });
-            }
-        }
-
-        async function captureProfileCanvas(target) {
+        async function captureCanvasFast() {
             if (document.fonts && document.fonts.ready) {
                 await document.fonts.ready;
             }
 
-            const imgs = Array.from(target.querySelectorAll('img'));
+            const liveTarget = document.querySelector('#rendered-output .oc-profile-container');
+            if (!liveTarget) throw new Error('타깃 없음');
+
+            // 실제 화면에서 렌더링 중인 이미지들의 가로세로 픽셀을 그대로 캡처 인스턴스에 고정
+            const liveBodyImg = document.querySelector('#rendered-output .oc-body-col img');
+            const bodyRect = liveBodyImg ? liveBodyImg.getBoundingClientRect() : null;
+
+            const liveHeadImg = document.querySelector('#rendered-output .oc-head-img img');
+            const headRect = liveHeadImg ? liveHeadImg.getBoundingClientRect() : null;
+
+            // 외부 이미지 CORS 프록시 우회
+            const imgs = Array.from(liveTarget.querySelectorAll('img'));
             const restoreList = [];
             for (const img of imgs) {
-                const originalSrc = img.getAttribute('src') || '';
-                if ((originalSrc.startsWith('http://') || originalSrc.startsWith('https://')) && !originalSrc.includes('images.weserv.nl')) {
-                    restoreList.push({ img, originalSrc });
+                const src = img.getAttribute('src') || '';
+                if ((src.startsWith('http://') || src.startsWith('https://')) && !src.includes('images.weserv.nl')) {
+                    restoreList.push({ img, src });
                     img.crossOrigin = 'anonymous';
-                    img.src = 'https://images.weserv.nl/?url=' + encodeURIComponent(originalSrc);
+                    img.src = 'https://images.weserv.nl/?url=' + encodeURIComponent(src);
                 }
             }
 
+            // 이미지 로딩 대기
             await Promise.all(imgs.map(img => {
                 if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
                 return new Promise(resolve => {
                     img.onload = () => resolve();
                     img.onerror = () => resolve();
-                    setTimeout(resolve, 3000);
+                    setTimeout(resolve, 2500);
                 });
             }));
 
             try {
-                return await html2canvas(target, {
+                return await html2canvas(liveTarget, {
                     backgroundColor: null,
                     scale: 2,
                     useCORS: true,
@@ -1698,96 +1515,114 @@ bodyXml +
                         const container = clonedDoc.querySelector('.oc-profile-container');
                         if (container) {
                             container.style.margin = '0';
-                            container.style.boxSizing = 'border-box';
                         }
+
+                        // 넙데데 현상 해결: 실제 화면의 렌더링 가로/세로 폭을 그대로 강제 부여
+                        const cloneBodyImg = clonedDoc.querySelector('.oc-body-col img');
+                        if (cloneBodyImg && bodyRect && bodyRect.width > 0) {
+                            cloneBodyImg.style.width = Math.round(bodyRect.width) + 'px';
+                            cloneBodyImg.style.height = Math.round(bodyRect.height) + 'px';
+                            cloneBodyImg.style.maxWidth = 'none';
+                            cloneBodyImg.style.maxHeight = 'none';
+                            cloneBodyImg.style.objectFit = 'contain';
+                            cloneBodyImg.style.margin = '0 auto';
+                        }
+
+                        const cloneHeadImg = clonedDoc.querySelector('.oc-head-img img');
+                        if (cloneHeadImg && headRect && headRect.width > 0) {
+                            cloneHeadImg.style.width = Math.round(headRect.width) + 'px';
+                            cloneHeadImg.style.height = Math.round(headRect.height) + 'px';
+                        }
+
+                        // 텍스트 정렬 보정
                         clonedDoc.querySelectorAll('.oc-media-link').forEach(el => {
                             el.style.textDecoration = 'none';
-                        });
-                        clonedDoc.querySelectorAll('.oc-spec-row').forEach(row => {
-                            row.style.display = 'flex';
-                            row.style.alignItems = 'flex-start';
-                        });
-                        clonedDoc.querySelectorAll('.oc-spec-k, .oc-spec-v').forEach(el => {
-                            el.style.lineHeight = '1.45';
-                            el.style.margin = '0';
                         });
                     }
                 });
             } finally {
-                restoreList.forEach(({ img, originalSrc }) => {
+                restoreList.forEach(({ img, src }) => {
                     img.removeAttribute('crossOrigin');
-                    img.src = originalSrc;
+                    img.src = src;
                 });
             }
         }
 
         // 고화질 투명 PNG 이미지 저장
         async function downloadPreviewAsPng() {
-            showToast("실제 화면 그대로 고화질 캡처 중...");
+            showToast("실제 화면 그대로 PNG 캡처 중...");
             try {
-                let canvas;
-                try {
-                    // 1순위: 브라우저 네이티브 SVG 렌더러 (화면과 100% 동일)
-                    canvas = await buildProfileCanvasBySvg(2);
-                } catch (svgErr) {
-                    console.warn('SVG 네이티브 캡처 실패, 폴백 시도:', svgErr);
-                    const target = document.querySelector('#rendered-output .oc-profile-container');
-                    canvas = await legacyHtml2canvasCapture(target);
-                }
+                const canvas = await captureCanvasFast();
+                if (!canvas) throw new Error('canvas 생성 실패');
 
-                if (!canvas) throw new Error('canvas generate failed');
-
-                const link = document.createElement('a');
                 const charName = document.getElementById('cfg-char-name')?.value.trim() || 'oc_profile';
+                const link = document.createElement('a');
                 link.download = `${charName}_win98_profile.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
-                showToast("화면 그대로 PNG가 저장되었습니다!");
+                showToast("PNG 저장이 완료되었습니다!");
             } catch (err) {
                 console.error(err);
-                showToast("PNG 캡처 중 오류가 발생했습니다.");
+                showToast("저장 중 오류가 발생했습니다.");
             }
         }
 
-        // 클립보드에 이미지 복사
+        // 클립보드에 이미지 복사 (실패 시 100% 안전 모달 오픈)
         async function copyPreviewImageToClipboard() {
-            if (!navigator.clipboard || !window.ClipboardItem) {
-                showToast("현재 브라우저는 이미지 클립보드 복사를 지원하지 않습니다.");
-                return;
-            }
-
-            showToast("실제 화면 그대로 캡처 중...");
+            showToast("화면 그대로 이미지 캡처 중...");
             try {
-                let canvas;
-                try {
-                    // 1순위: 브라우저 네이티브 SVG 렌더러 (화면과 100% 동일)
-                    canvas = await buildProfileCanvasBySvg(2);
-                } catch (svgErr) {
-                    console.warn('SVG 네이티브 캡처 실패, 폴백 시도:', svgErr);
-                    const target = document.querySelector('#rendered-output .oc-profile-container');
-                    canvas = await legacyHtml2canvasCapture(target);
+                const canvas = await captureCanvasFast();
+                if (!canvas) throw new Error('canvas 생성 실패');
+
+                const dataUrl = canvas.toDataURL('image/png');
+                const charName = document.getElementById('cfg-char-name')?.value.trim() || 'oc_profile';
+
+                // 모달 기본 세팅 (다운로드 백업용)
+                const modalImg = document.getElementById('modal-result-img');
+                const modalDownload = document.getElementById('modal-download-btn');
+                if (modalImg) modalImg.src = dataUrl;
+                if (modalDownload) {
+                    modalDownload.href = dataUrl;
+                    modalDownload.download = `${charName}_win98_profile.png`;
                 }
 
-                if (!canvas) throw new Error('canvas generate failed');
-
-                canvas.toBlob(blob => {
-                    if (!blob) {
-                        showToast("이미지 변환에 실패했습니다.");
-                        return;
-                    }
-                    const item = new ClipboardItem({ 'image/png': blob });
-                    navigator.clipboard.write([item]).then(() => {
-                        showToast("화면 그대로 복사되었습니다! (Ctrl+V)");
-                    }).catch(() => {
-                        showToast("클립보드 복사 권한이 거부되었습니다.");
-                    });
-                }, 'image/png');
+                // 1) Clipboard API 시도
+                if (navigator.clipboard && window.ClipboardItem) {
+                    canvas.toBlob(blob => {
+                        if (!blob) {
+                            openImageModal();
+                            return;
+                        }
+                        const item = new ClipboardItem({ 'image/png': blob });
+                        navigator.clipboard.write([item]).then(() => {
+                            showToast("화면 그대로 복사되었습니다! (Ctrl+V)");
+                        }).catch(e => {
+                            // 브라우저 iframe 권한 차단 시 안전 모달 열기
+                            console.warn('클립보드 API 권한 차단됨, 모달로 전환:', e);
+                            openImageModal();
+                        });
+                    }, 'image/png');
+                } else {
+                    openImageModal();
+                }
             } catch (err) {
                 console.error(err);
-                showToast("이미지 캡처 중 오류가 발생했습니다.");
+                showToast("이미지 처리 중 오류가 발생했습니다.");
             }
         }
 
+        function openImageModal() {
+            const modal = document.getElementById('image-result-modal');
+            if (modal) modal.style.display = 'flex';
+            showToast("이미지가 생성되었습니다. 우클릭 복사 또는 저장하세요!");
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('image-result-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // 코드 복사 기능 (Clipboard API + execCommand 2중 지원)
         function copyGeneratedCode() {
             const bodyImg = document.getElementById('cfg-fullbody-img')?.value || '';
             const headImg = document.getElementById('cfg-head-img')?.value || '';
@@ -1811,17 +1646,35 @@ bodyXml +
 
         function performActualCopy() {
             const textarea = document.getElementById('raw-code-output');
-            textarea.select();
-            textarea.setSelectionRange(0, 99999);
-            try {
-                const ok = document.execCommand('copy');
-                if (ok) {
+            if (!textarea) return;
+
+            const codeText = textarea.value;
+
+            // 1순위: 현대적 클립보드 API
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(codeText).then(() => {
                     showToast('HTML 코드가 복사되었습니다!');
-                } else {
-                    showToast('복사에 실패했습니다. 텍스트를 직접 복사해주세요.');
+                }).catch(() => {
+                    fallbackExecCommand();
+                });
+            } else {
+                fallbackExecCommand();
+            }
+
+            function fallbackExecCommand() {
+                textarea.focus();
+                textarea.select();
+                textarea.setSelectionRange(0, 99999);
+                try {
+                    const ok = document.execCommand('copy');
+                    if (ok) {
+                        showToast('HTML 코드가 복사되었습니다!');
+                    } else {
+                        showToast('복사 실패: 코드 영역을 직접 복사해주세요.');
+                    }
+                } catch (err) {
+                    showToast('복사 중 오류가 발생했습니다.');
                 }
-            } catch (err) {
-                showToast('복사 중 오류가 발생했습니다.');
             }
         }
 
