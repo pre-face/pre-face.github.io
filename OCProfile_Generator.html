@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- NeoDunggeunmo 폰트 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/NeoDunggeunmo.woff">
-    <!-- html2canvas 라이브러리 (고화질 PNG 캡처 다운로드/복사용) -->
+    <!-- html2canvas 라이브러리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -59,7 +59,6 @@
             background-color: #ffffff;
             border: 2px solid;
             border-color: var(--win-dark) var(--win-light) var(--win-light) var(--win-dark);
-            box-shadow: inset 1px 1px 0px #000000;
         }
 
         .win98-sunken-gray {
@@ -121,7 +120,6 @@
             background-color: #ffffff;
             border: 2px solid;
             border-color: var(--win-dark) var(--win-light) var(--win-light) var(--win-dark);
-            box-shadow: inset 1px 1px 0px #000000;
             font-family: 'NeoDunggeunmo', 'Malgun Gothic', sans-serif;
             font-size: 12px;
             padding: 3px 6px;
@@ -191,10 +189,7 @@
             animation: fadeInOut 2.4s ease-in-out;
         }
 
-        /* =======================================================
-           미리보기 뷰포트 분리 (PC 가로 2단 vs 모바일 세로 1단)
-           ======================================================= */
-        
+        /* 미리보기 뷰포트 분리 */
         #preview-stage.view-pc {
             width: 100%;
             max-width: 720px;
@@ -460,7 +455,6 @@
             </div>
         </section>
 
-        <!-- [우측 윈도우: 실시간 미리보기 & 생성 코드] -->
         <main class="flex-1 flex flex-col win98-raised overflow-hidden">
             <!-- 미리보기 타이틀바 -->
             <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
@@ -491,7 +485,7 @@
                 </div>
             </div>
 
-            <!-- 미리보기 본문 캔버스 (가로 스크롤 허용하여 PC 모드 2단 보존) -->
+            <!-- 미리보기 본문 캔버스 -->
             <div class="flex-1 p-4 overflow-x-auto overflow-y-auto bg-[#008080] flex justify-center items-start" id="preview-canvas-wrap">
                 <div id="preview-stage" class="view-pc transition-all duration-200">
                     <div id="rendered-output"></div>
@@ -524,7 +518,7 @@
         <div class="flex items-center gap-1 flex-1">
             <div class="win98-raised px-2 py-0.5 text-[11px] font-bold flex items-center gap-1 border-t-black border-l-black border-b-white border-r-white">
                 <img src="https://win98icons.alexmeub.com/icons/png/gears-0.png" width="14" alt="">
-                <span>OC_Profile_Builder v3.5</span>
+                <span>OC_Profile_Builder v3.6</span>
             </div>
         </div>
         <div class="win98-sunken-gray px-2 py-0.5 text-[11px] flex items-center gap-2">
@@ -864,7 +858,6 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // 캡처 시 검은 사각형 및 텍스트 찌그러짐을 방지하는 완성형 HTML 코드 생성
         function generateOutputHTML() {
             const titleBar = document.getElementById('cfg-title')?.value.trim() || 'PROFILE_VIEWER.EXE';
             const fullbodyImg = document.getElementById('cfg-fullbody-img')?.value.trim() || 'https://images.placeholders.dev/?width=320&height=640&text=FULLBODY&theme=classic';
@@ -1007,18 +1000,20 @@
     margin: 20px auto;
     box-sizing: border-box;
     text-align: left;
+    line-height: 1.4;
 }
 .oc-profile-titlebar {
     background: linear-gradient(to right, #000080, #1084d0);
     color: #ffffff;
     padding: 3px 6px;
     font-size: 11px;
-    font-weight: bold;
+    font-weight: normal;
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
     user-select: none;
+    line-height: 18px;
 }
 .oc-titlebar-text {
     overflow: hidden;
@@ -1026,6 +1021,7 @@
     white-space: nowrap;
     min-width: 0;
     flex: 1;
+    line-height: 18px;
 }
 .oc-titlebar-ctrls {
     display: flex;
@@ -1090,12 +1086,13 @@
     background: #d8d8d8;
     border: 2px solid;
     border-color: #808080 #ffffff #ffffff #808080;
-    padding: 4px 6px;
+    padding: 3px 6px;
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 11px;
     box-sizing: border-box;
+    line-height: 18px;
 }
 .oc-media-play-btn {
     width: 16px;
@@ -1109,6 +1106,7 @@
     font-size: 8px;
     color: #000080;
     flex-shrink: 0;
+    line-height: 1;
 }
 .oc-media-track {
     flex: 1;
@@ -1116,6 +1114,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    line-height: 18px;
 }
 .oc-media-link {
     color: #000080;
@@ -1162,12 +1161,13 @@
     font-weight: bold;
     color: #000080;
     margin: 0 0 4px 0;
+    line-height: 1.3;
     word-break: break-word;
 }
 .oc-char-sub {
     font-size: 11px;
     color: #333333;
-    line-height: 1.4;
+    line-height: 1.45;
     word-break: break-word;
 }
 .oc-palette-wrap {
@@ -1180,6 +1180,7 @@
     padding: 3px 6px;
     font-size: 10px;
     box-sizing: border-box;
+    line-height: 16px;
 }
 .oc-palette-label {
     font-weight: bold;
@@ -1198,6 +1199,7 @@
     border: 1px solid #000000;
     font-size: 9px;
     font-family: monospace;
+    line-height: 1.2;
 }
 .oc-color-hex {
     background: rgba(255, 255, 255, 0.85);
@@ -1212,8 +1214,9 @@
     padding: 5px 8px;
     display: flex;
     gap: 6px;
-    align-items: flex-start;
+    align-items: center;
     box-sizing: border-box;
+    line-height: 1.4;
 }
 .oc-quote-mark {
     color: #000080;
@@ -1234,17 +1237,18 @@
     border-color: #808080 #ffffff #ffffff #808080;
     padding: 8px 10px;
     font-size: 12px;
-    line-height: 1.65;
+    line-height: 1.6;
     flex: 1;
     box-sizing: border-box;
 }
 .oc-spec-heading {
-    font-weight: bold;
+    font-weight: normal;
     color: #000080;
     font-size: 11px;
     border-bottom: 1px dashed #808080;
     padding-bottom: 3px;
     margin-bottom: 6px;
+    line-height: 18px;
 }
 .oc-spec-well ul {
     list-style: none !important;
@@ -1252,15 +1256,17 @@
     margin: 0 !important;
 }
 .oc-spec-well li {
-    margin-bottom: 4px;
-    border-bottom: 1px dotted #e0e0e0;
-    padding-bottom: 2px;
+    margin-bottom: 5px;
+    border-bottom: 1px dotted #d8d8d8;
+    padding-bottom: 3px;
     display: flex;
+    align-items: baseline;
+    line-height: 1.5;
     word-break: break-word;
 }
 .oc-spec-well b {
     color: #000000;
-    font-weight: bold;
+    font-weight: normal;
     min-width: 75px;
     flex-shrink: 0;
 }
@@ -1350,14 +1356,12 @@ ${specsHtml}                </ul>
             if (statusEl) statusEl.innerText = '준비 완료. [미리보기 반영]을 누르세요';
         }
 
-        // 외부 이미지 CORS 차단 우회 및 로드 대기 처리기
         async function prepareImagesForCapture(container) {
             const imgs = Array.from(container.querySelectorAll('img'));
             const restoreList = [];
 
             for (const img of imgs) {
                 const originalSrc = img.getAttribute('src') || '';
-                // 외부 웹 이미지(http/https)이고 로컬 데이터가 아닐 때 프록시 경유
                 if ((originalSrc.startsWith('http://') || originalSrc.startsWith('https://')) && !originalSrc.includes('images.weserv.nl')) {
                     const proxyUrl = 'https://images.weserv.nl/?url=' + encodeURIComponent(originalSrc);
                     restoreList.push({ img, originalSrc });
@@ -1366,23 +1370,151 @@ ${specsHtml}                </ul>
                 }
             }
 
-            // 모든 이미지가 온전히 다운로드될 때까지 대기
             await Promise.all(imgs.map(img => {
                 if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
                 return new Promise(resolve => {
                     img.onload = () => resolve();
                     img.onerror = () => resolve();
-                    setTimeout(resolve, 3500); // 3.5초 타임아웃
+                    setTimeout(resolve, 3500);
                 });
             }));
 
-            // 복원 핸들러 반환
             return () => {
                 restoreList.forEach(({ img, originalSrc }) => {
                     img.removeAttribute('crossOrigin');
                     img.src = originalSrc;
                 });
             };
+        }
+
+        async function captureProfileCanvas(target) {
+            // 1. 모든 폰트가 완전히 로딩될 때까지 대기 (텍스트 찌그러짐 방지)
+            if (document.fonts && document.fonts.ready) {
+                await document.fonts.ready;
+            }
+
+            // 2. 외부 이미지 CORS 프록시 로드 및 대기
+            const restoreImages = await prepareImagesForCapture(target);
+
+            try {
+                const canvas = await html2canvas(target, {
+                    backgroundColor: null,
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: false,
+                    logging: false,
+                    scrollX: 0,
+                    scrollY: 0,
+                    windowWidth: document.documentElement.clientWidth,
+                    windowHeight: document.documentElement.clientHeight,
+                    onclone: (clonedDoc) => {
+                        // [보정 1] 전신 이미지 비율 고정 (넙데데 현상 완벽 제거)
+                        const col = clonedDoc.querySelector('.oc-body-col');
+                        const bodyImg = clonedDoc.querySelector('.oc-body-col img');
+                        if (col && bodyImg && bodyImg.naturalWidth && bodyImg.naturalHeight) {
+                            const maxW = col.clientWidth > 0 ? (col.clientWidth - 14) : 290;
+                            const maxH = 520;
+                            const nRatio = bodyImg.naturalWidth / bodyImg.naturalHeight;
+                            let targetW, targetH;
+
+                            if (nRatio > (maxW / maxH)) {
+                                targetW = maxW;
+                                targetH = maxW / nRatio;
+                            } else {
+                                targetH = maxH;
+                                targetW = maxH * nRatio;
+                            }
+
+                            bodyImg.style.setProperty('width', Math.round(targetW) + 'px', 'important');
+                            bodyImg.style.setProperty('height', Math.round(targetH) + 'px', 'important');
+                            bodyImg.style.setProperty('max-width', 'none', 'important');
+                            bodyImg.style.setProperty('max-height', 'none', 'important');
+                            bodyImg.style.setProperty('min-width', '0', 'important');
+                            bodyImg.style.setProperty('min-height', '0', 'important');
+                            bodyImg.style.setProperty('object-fit', 'fill', 'important');
+                            bodyImg.style.setProperty('margin', '0 auto', 'important');
+                            bodyImg.style.setProperty('display', 'block', 'important');
+                        }
+
+                        // [보정 2] 두상 이미지 정사각 1:1 크롭 보정 (찌그러짐 방지)
+                        const headBox = clonedDoc.querySelector('.oc-head-img');
+                        const headImg = clonedDoc.querySelector('.oc-head-img img');
+                        if (headBox && headImg && headImg.naturalWidth && headImg.naturalHeight) {
+                            try {
+                                const cvs = document.createElement('canvas');
+                                cvs.width = 152;
+                                cvs.height = 152;
+                                const ctx = cvs.getContext('2d');
+                                const s = Math.max(152 / headImg.naturalWidth, 152 / headImg.naturalHeight);
+                                const dx = (152 - headImg.naturalWidth * s) / 2;
+                                const dy = (152 - headImg.naturalHeight * s) / 2;
+                                ctx.drawImage(headImg, dx, dy, headImg.naturalWidth * s, headImg.naturalHeight * s);
+                                headImg.src = cvs.toDataURL('image/png');
+                                headImg.style.setProperty('width', '76px', 'important');
+                                headImg.style.setProperty('height', '76px', 'important');
+                                headImg.style.setProperty('object-fit', 'fill', 'important');
+                            } catch (e) {}
+                        }
+
+                        // [보정 3] Tailwind Preflight로 인한 텍스트 처짐/밀림 및 폰트 찌그러짐 강제 재정렬
+                        const fixStyle = clonedDoc.createElement('style');
+                        fixStyle.innerHTML = `
+                            .oc-profile-container, .oc-profile-container * {
+                                -webkit-font-smoothing: antialiased !important;
+                                text-rendering: geometricPrecision !important;
+                            }
+                            .oc-profile-titlebar {
+                                line-height: 18px !important;
+                                height: 22px !important;
+                                padding-top: 2px !important;
+                                padding-bottom: 2px !important;
+                            }
+                            .oc-titlebar-text {
+                                line-height: 18px !important;
+                            }
+                            .oc-media-player {
+                                line-height: 18px !important;
+                                padding: 3px 6px !important;
+                            }
+                            .oc-media-track {
+                                line-height: 18px !important;
+                            }
+                            .oc-char-name {
+                                line-height: 20px !important;
+                            }
+                            .oc-char-sub {
+                                line-height: 16px !important;
+                            }
+                            .oc-quote-box {
+                                line-height: 18px !important;
+                            }
+                            .oc-quote-text {
+                                line-height: 18px !important;
+                            }
+                            .oc-spec-well li {
+                                line-height: 20px !important;
+                                margin-bottom: 5px !important;
+                                padding-bottom: 3px !important;
+                                display: flex !important;
+                                align-items: baseline !important;
+                            }
+                            .oc-spec-well b {
+                                line-height: 20px !important;
+                            }
+                            .oc-spec-well span {
+                                line-height: 20px !important;
+                            }
+                            .oc-memo-box {
+                                line-height: 18px !important;
+                            }
+                        `;
+                        clonedDoc.head.appendChild(fixStyle);
+                    }
+                });
+                return canvas;
+            } finally {
+                if (restoreImages) restoreImages();
+            }
         }
 
         // 고화질 투명 PNG 이미지 저장
@@ -1393,18 +1525,9 @@ ${specsHtml}                </ul>
                 return;
             }
 
-            showToast("PNG 이미지 생성 중 (이미지 로딩 대기)...");
-            let restoreImages = null;
+            showToast("PNG 이미지 생성 중 (비율/텍스트 보정)...");
             try {
-                restoreImages = await prepareImagesForCapture(target);
-                const canvas = await html2canvas(target, {
-                    backgroundColor: null,
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: false,
-                    logging: false
-                });
-
+                const canvas = await captureProfileCanvas(target);
                 const link = document.createElement('a');
                 const charName = document.getElementById('cfg-char-name')?.value.trim() || 'oc_profile';
                 link.download = `${charName}_win98_profile.png`;
@@ -1413,8 +1536,6 @@ ${specsHtml}                </ul>
                 showToast("PNG 이미지가 다운로드되었습니다!");
             } catch (err) {
                 showToast("PNG 캡처 중 오류가 발생했습니다.");
-            } finally {
-                if (restoreImages) restoreImages();
             }
         }
 
@@ -1431,18 +1552,9 @@ ${specsHtml}                </ul>
                 return;
             }
 
-            showToast("이미지 캡처 중 (이미지 로딩 대기)...");
-            let restoreImages = null;
+            showToast("이미지 캡처 중 (비율/텍스트 보정)...");
             try {
-                restoreImages = await prepareImagesForCapture(target);
-                const canvas = await html2canvas(target, {
-                    backgroundColor: null,
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: false,
-                    logging: false
-                });
-
+                const canvas = await captureProfileCanvas(target);
                 canvas.toBlob(blob => {
                     if (!blob) {
                         showToast("이미지 변환에 실패했습니다.");
@@ -1457,12 +1569,9 @@ ${specsHtml}                </ul>
                 }, 'image/png');
             } catch (err) {
                 showToast("이미지 캡처 중 오류가 발생했습니다.");
-            } finally {
-                if (restoreImages) restoreImages();
             }
         }
 
-        // 코드 복사 전 Base64 검사
         function copyGeneratedCode() {
             const bodyImg = document.getElementById('cfg-fullbody-img')?.value || '';
             const headImg = document.getElementById('cfg-head-img')?.value || '';
