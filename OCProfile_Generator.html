@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Win98 OC Profile Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- NeoDunggeunmo Font -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/NeoDunggeunmo.woff">
+    
+    <style>
+        @font-face {
+            font-family: 'NeoDunggeunmo';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/NeoDunggeunmo.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --win-gray: #c0c0c0;
+            --win-dark: #808080;
+            --win-darker: #404040;
+            --win-light: #ffffff;
+            --win-blue: #000080;
+            --win-blue-light: #1084d0;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'NeoDunggeunmo', 'Malgun Gothic', sans-serif;
+            background-color: #008080;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 볼록한 Win98 외곽선 (Raised) */
+        .win98-raised {
+            background-color: var(--win-gray);
+            border: 2px solid;
+            border-color: var(--win-light) var(--win-dark) var(--win-dark) var(--win-light);
+            box-shadow: 1px 1px 0px #000000;
+        }
+
+        /* 오목한 Win98 내부 웰 (Sunken/Inset) */
+        .win98-sunken {
+            background-color: #ffffff;
+            border: 2px solid;
+            border-color: var(--win-dark) var(--win-light) var(--win-light) var(--win-dark);
+            box-shadow: inset 1px 1px 0px #000000;
+        }
+
+        .win98-sunken-gray {
+            background-color: var(--win-gray);
+            border: 2px solid;
+            border-color: var(--win-dark) var(--win-light) var(--win-light) var(--win-dark);
+        }
+
+        /* Win98 윈도우 버튼 */
+        .win98-btn {
+            background-color: var(--win-gray);
+            border: 2px solid;
+            border-color: var(--win-light) var(--win-dark) var(--win-dark) var(--win-light);
+            box-shadow: 1px 1px 0px #000000;
+            font-family: 'NeoDunggeunmo', sans-serif;
+            font-size: 12px;
+            padding: 4px 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .win98-btn:hover {
+            filter: brightness(1.05);
+        }
+
+        .win98-btn:active, .win98-btn.active {
+            border-color: var(--win-dark) var(--win-light) var(--win-light) var(--win-dark);
+            box-shadow: inset 1px 1px 0px #000000;
+            padding: 5px 9px 3px 11px;
+        }
+
+        /* 컨트롤 미니 버튼 */
+        .win-ctrl-btn {
+            width: 16px;
+            height: 14px;
+            background: var(--win-gray);
+            border: 1px solid;
+            border-color: #fff #555 #555 #fff;
+            font-size: 9px;
+            line-height: 1;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .win-ctrl-btn:active {
+            border-color: #555 #fff #fff #555;
+            padding: 1px 0 0 1px;
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            background-color: #ffffff;
+            border: 2px solid;
+            border-color: var(--win-dark) var(--win-light) var(--win-light) var(--win-dark);
+            box-shadow: inset 1px 1px 0px #000000;
+            font-family: 'NeoDunggeunmo', 'Malgun Gothic', sans-serif;
+            font-size: 12px;
+            padding: 3px 6px;
+            color: #000000;
+            user-select: text;
+            outline: none;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            background-color: #ffffee;
+        }
+
+        /* 스크롤바 레트로 커스텀 */
+        ::-webkit-scrollbar {
+            width: 14px;
+            height: 14px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #dfdfdf;
+            border-left: 1px solid #808080;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #fff #808080 #808080 #fff;
+            box-shadow: 1px 1px 0 #000;
+        }
+        ::-webkit-scrollbar-thumb:active {
+            border-color: #808080 #fff #fff #808080;
+        }
+
+        /* 토스트 알림창 */
+        #toast-box {
+            position: fixed;
+            bottom: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99999;
+            display: none;
+            animation: fadeInOut 2.5s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, 10px); }
+            15% { opacity: 1; transform: translate(-50%, 0); }
+            85% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, -10px); }
+        }
+
+        /* 경고 팝업 모달 */
+        #warning-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="flex-1 flex flex-col md:flex-row p-2 gap-2 overflow-hidden h-[calc(100vh-32px)]">
+        
+        <!-- [좌측 윈도우: 입력 에디터 창] -->
+        <section class="w-full md:w-[460px] flex-shrink-0 flex flex-col win98-raised overflow-hidden">
+            <!-- 에디터 타이틀바 -->
+            <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
+                <div class="flex items-center gap-1">
+                    <img src="https://win98icons.alexmeub.com/icons/png/write_wordpad-1.png" width="16" height="16" alt="Icon">
+                    <span>STATUS_BUILDER.EXE - 캐릭터 데이터 에디터</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button class="win-ctrl-btn" title="최소화">_</button>
+                    <button class="win-ctrl-btn" title="최대화">□</button>
+                    <button class="win-ctrl-btn" title="닫기" onclick="resetForm()">X</button>
+                </div>
+            </div>
+
+            <!-- 빠른 도구 모음 -->
+            <div class="p-1 bg-[#c0c0c0] border-b border-[#808080] flex flex-wrap items-center gap-1 text-xs">
+                <button type="button" class="win98-btn text-[11px] font-bold text-[#000080]" onclick="updatePreview(true)">
+                    <img src="https://win98icons.alexmeub.com/icons/png/gears-0.png" width="14" alt="">
+                    미리보기 반영
+                </button>
+                <label class="flex items-center gap-1 text-[11px] cursor-pointer ml-1 select-none" title="체크 시 입력할 때마다 실시간 갱신">
+                    <input type="checkbox" id="cfg-auto-update"> 실시간
+                </label>
+                <div class="h-4 w-[1px] bg-gray-400 mx-1"></div>
+                <button type="button" class="win98-btn text-[11px]" onclick="loadSampleData()">
+                    <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-2.png" width="14" alt="">
+                    샘플 로드
+                </button>
+                <button type="button" class="win98-btn text-[11px]" onclick="resetForm()">
+                    <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png" width="14" alt="">
+                    전체 비우기
+                </button>
+                <button type="button" class="win98-btn text-[11px] font-bold text-red-900 ml-auto" onclick="copyGeneratedCode()">
+                    <img src="https://win98icons.alexmeub.com/icons/png/copy-0.png" width="14" alt="">
+                    코드 복사
+                </button>
+            </div>
+
+            <!-- 폼 입력 영역 (스크롤) -->
+            <div class="flex-1 p-2 overflow-y-auto space-y-3 bg-[#c0c0c0]">
+                
+                <!-- 1. 창 헤더 설정 -->
+                <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
+                    <legend class="px-1 text-[11px] font-bold text-[#000080]">윈도우 창 헤더</legend>
+                    <div class="grid grid-cols-2 gap-2 mt-1">
+                        <div>
+                            <label class="block text-[11px] mb-0.5">타이틀바 문구:</label>
+                            <input type="text" id="cfg-title" class="w-full" placeholder="예: STATUS_VIEWER.EXE" value="" oninput="updatePreview()">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] mb-0.5">식별 번호/ID:</label>
+                            <input type="text" id="cfg-id" class="w-full" placeholder="예: ID: #0001" value="" oninput="updatePreview()">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- 2. 이미지 및 전신 최적화 설정 -->
+                <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
+                    <legend class="px-1 text-[11px] font-bold text-[#000080]">이미지 및 전신 최적화</legend>
+
+                    <!-- 전신 이미지 -->
+                    <div class="mb-2">
+                        <div class="flex items-center justify-between mb-0.5">
+                            <label class="text-[11px] font-bold">전신(Fullbody) 이미지 URL:</label>
+                            <label class="text-[10px] text-blue-800 underline cursor-pointer" title="컴퓨터의 사진을 선택해 미리보기 확인">
+                                로컬 파일 선택 (미리보기)
+                                <input type="file" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'cfg-fullbody-img')">
+                            </label>
+                        </div>
+                        <input type="text" id="cfg-fullbody-img" class="w-full" placeholder="예시: https://blog.kakaocdn.net/dn/... (또는 외부 이미지 주소)" 
+                               value="" oninput="updatePreview()">
+                    </div>
+
+                    <!-- 전신 뷰어 배경 및 피팅 선택 -->
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <div>
+                            <label class="block text-[11px] mb-0.5">전신 박스 배경 스타일:</label>
+                            <select id="cfg-body-bg" class="w-full" onchange="updatePreview(true)">
+                                <option value="transparent" selected>투명 배경 (스킨 일체형)</option>
+                                <option value="white">흰색 배경 (#ffffff)</option>
+                                <option value="gray">클래식 그레이 (#c0c0c0)</option>
+                                <option value="checker">투명 격자 (체커보드)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] mb-0.5">전신 길이 표시 모드:</label>
+                            <select id="cfg-body-fit" class="w-full" onchange="updatePreview(true)">
+                                <option value="contain" selected>비율 맞춤 (최대 540px)</option>
+                                <option value="scroll">긴 전신 스크롤 뷰어</option>
+                                <option value="stretch">자유 높이 (스크롤 없음)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 두상 이미지 -->
+                    <div>
+                        <div class="flex items-center justify-between mb-0.5">
+                            <label class="text-[11px] font-bold">두상(Portrait) 이미지 URL:</label>
+                            <label class="text-[10px] text-blue-800 underline cursor-pointer" title="컴퓨터의 사진을 선택해 미리보기 확인">
+                                로컬 파일 선택 (미리보기)
+                                <input type="file" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'cfg-head-img')">
+                            </label>
+                        </div>
+                        <input type="text" id="cfg-head-img" class="w-full" placeholder="예시: https://blog.kakaocdn.net/dn/... (또는 외부 이미지 주소)" 
+                               value="" oninput="updatePreview()">
+                    </div>
+                </fieldset>
+
+                <!-- 3. 기본 인적사항 및 식별 헤더 -->
+                <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
+                    <legend class="px-1 text-[11px] font-bold text-[#000080]">캐릭터 이름 및 헤더 정보</legend>
+                    <div class="mb-2">
+                        <label class="block text-[11px] mb-0.5">캐릭터 이름 (메인):</label>
+                        <input type="text" id="cfg-char-name" class="w-full font-bold" placeholder="예시: 캐릭터 이름 (한글 / 영문)" value="" oninput="updatePreview()">
+                    </div>
+                    <div class="mb-1">
+                        <label class="block text-[11px] mb-0.5">부제목 / 상태 요약 (줄바꿈 가능):</label>
+                        <textarea id="cfg-char-sub" rows="2" class="w-full text-xs resize-none" placeholder="예시:&#10;소속: 제7기동대 정찰반&#10;상태: Active / 임무 수행 중" oninput="updatePreview()"></textarea>
+                    </div>
+                </fieldset>
+
+                <!-- 4. 상세 스펙 리스트 (동적 항목) -->
+                <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <legend class="px-1 text-[11px] font-bold text-[#000080]">프로필 세부 스펙</legend>
+                        <button type="button" class="win98-btn text-[10px] py-0.5 px-1.5" onclick="addSpecRow('', '')">+ 항목 추가</button>
+                    </div>
+                    <div id="spec-rows-container" class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                        <!-- 동적 주입 -->
+                    </div>
+                </fieldset>
+
+                <!-- 5. 특이사항 및 메모 텍스트 -->
+                <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
+                    <legend class="px-1 text-[11px] font-bold text-[#000080]">특이사항 / 추가 메모</legend>
+                    <textarea id="cfg-memo" rows="3" class="w-full text-xs" placeholder="예시: 캐릭터의 성격, 버릇, 관계도 및 세부 설정 메모를 작성하세요..." oninput="updatePreview()"></textarea>
+                </fieldset>
+
+            </div>
+
+            <!-- 하단 상태 표시줄 -->
+            <div class="p-1 bg-[#c0c0c0] border-t border-[#808080] flex items-center justify-between text-[11px]">
+                <span id="editor-status">준비 완료. 실시간 반영 중</span>
+                <span class="text-gray-600">UTF-8 / Win98 UI</span>
+            </div>
+        </section>
+
+        <!-- [우측 윈도우: 실시간 미리보기 & 생성 코드] -->
+        <main class="flex-1 flex flex-col win98-raised overflow-hidden">
+            <!-- 미리보기 타이틀바 -->
+            <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
+                <div class="flex items-center gap-1.5">
+                    <!-- 레트로 CRT 모니터 인라인 SVG -->
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0" aria-label="모니터 화면">
+                        <rect x="1" y="1" width="14" height="10" fill="#c0c0c0" stroke="#000" stroke-width="1"/>
+                        <line x1="2" y1="2" x2="14" y2="2" stroke="#ffffff"/>
+                        <line x1="2" y1="2" x2="2" y2="10" stroke="#ffffff"/>
+                        <rect x="3" y="3" width="10" height="6" fill="#008080"/>
+                        <rect x="4" y="4" width="7" height="4" fill="#ffffff"/>
+                        <rect x="4" y="4" width="7" height="1" fill="#000080"/>
+                        <rect x="6" y="11" width="4" height="2" fill="#808080"/>
+                        <rect x="3" y="13" width="10" height="2" fill="#c0c0c0" stroke="#000" stroke-width="1"/>
+                    </svg>
+                    <span>LIVE PREVIEW - 실제 티스토리 게시물 렌더링 화면</span>
+                </div>
+                <!-- 뷰포트 토글 버튼 -->
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] text-gray-200">너비 미리보기:</span>
+                    <button class="win98-btn text-[10px] py-0 px-1.5 active" id="btn-view-pc" onclick="setViewMode('pc')">PC 넓게</button>
+                    <button class="win98-btn text-[10px] py-0 px-1.5" id="btn-view-mobile" onclick="setViewMode('mobile')">모바일(좁게)</button>
+                </div>
+            </div>
+
+            <!-- 미리보기 본문 캔버스 -->
+            <div class="flex-1 p-4 overflow-y-auto bg-[#008080] flex justify-center items-start" id="preview-canvas-wrap">
+                <div id="preview-stage" class="w-full max-w-[760px] transition-all duration-200">
+                    <div id="rendered-output"></div>
+                </div>
+            </div>
+
+            <!-- 하단 생성된 HTML 코드 확인 창 -->
+            <div class="h-44 bg-[#c0c0c0] border-t-2 border-[#fff] flex flex-col p-1.5">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-1 text-[11px] font-bold">
+                        <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-2.png" width="14" alt="">
+                        <span>티스토리 글쓰기 HTML 모드에 그대로 붙여넣을 코드:</span>
+                    </div>
+                    <button class="win98-btn font-bold text-xs bg-[#ffffd0] text-[#000080] px-3 py-1" onclick="copyGeneratedCode()">
+                        📋 원클릭 복사하기
+                    </button>
+                </div>
+                <textarea id="raw-code-output" class="flex-1 w-full bg-white font-mono text-[11px] p-2 resize-none" readonly onclick="this.select()"></textarea>
+            </div>
+        </main>
+    </div>
+
+    <!-- [하단 작업 표시줄 (Taskbar)] -->
+    <footer class="h-8 bg-[#c0c0c0] border-t-2 border-white flex items-center px-1 text-xs gap-1 flex-shrink-0 z-50">
+        <button class="win98-btn font-bold px-2 py-0.5 flex items-center gap-1">
+            <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" width="16" alt="Windows">
+            시작
+        </button>
+        <div class="h-5 w-0.5 bg-gray-400 border-r border-white mx-1"></div>
+        <div class="flex items-center gap-1 flex-1">
+            <div class="win98-raised px-2 py-0.5 text-[11px] font-bold flex items-center gap-1 border-t-black border-l-black border-b-white border-r-white">
+                <img src="https://win98icons.alexmeub.com/icons/png/gears-0.png" width="14" alt="">
+                <span>OC_Status_Generator v2.1</span>
+            </div>
+        </div>
+        <div class="win98-sunken-gray px-2 py-0.5 text-[11px] flex items-center gap-2">
+            <span id="clock-display">00:00:00</span>
+        </div>
+    </footer>
+
+    <!-- 알림 토스트 박스 -->
+    <div id="toast-box" class="win98-raised p-2 flex items-center gap-2 bg-[#ffffc0] shadow-2xl border-2 border-black">
+        <img src="https://win98icons.alexmeub.com/icons/png/msg_information-0.png" width="20" alt="info">
+        <span id="toast-msg" class="text-xs font-bold text-black">클립보드에 코드가 복사되었습니다!</span>
+    </div>
+
+    <!-- 대용량 Base64 감지 경고 모달 -->
+    <div id="warning-modal">
+        <div class="window standard-win max-w-[420px] win98-raised shadow-2xl p-1" style="position:relative; width:92%; max-width:440px;">
+            <div class="bg-gradient-to-r from-[#800000] to-[#d01010] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
+                <span>경고 - 대용량 이미지 코드 감지됨</span>
+                <button class="win-ctrl-btn" onclick="closeWarningModal()">X</button>
+            </div>
+            <div class="p-3 bg-[#c0c0c0] text-xs text-black">
+                <div class="flex items-start gap-2 mb-3">
+                    <img src="https://win98icons.alexmeub.com/icons/png/msg_warning-0.png" width="32" height="32" alt="경고">
+                    <div>
+                        <b class="text-red-900 block mb-1">로컬 이미지(Base64)가 포함되어 있습니다!</b>
+                        컴퓨터에서 직접 불러온 파일은 수백만 자의 텍스트로 변환되어, 티스토리에 넣으면 <b>용량 초과로 무한 로딩이 걸리거나 글이 저장되지 않습니다.</b>
+                    </div>
+                </div>
+                <div class="bg-white border border-[#808080] p-2 mb-3 text-[11px] leading-relaxed">
+                    <b>올바른 해결 방법:</b><br>
+                    1. 티스토리 글쓰기 화면에서 사진 아이콘을 눌러 이미지를 임시 업로드합니다.<br>
+                    2. 업로드된 사진에 <b>우클릭 → [이미지 주소 복사]</b>를 누릅니다.<br>
+                    3. 복사한 주소(https://blog.kakaocdn.net/...)를 이 생성기의 URL 입력칸에 넣고 다시 복사하세요!
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button class="win98-btn text-xs font-bold" onclick="forceCopyCode()">그래도 복사하기</button>
+                    <button class="win98-btn text-xs font-bold text-blue-900" onclick="closeWarningModal()">확인 (주소로 바꿀게요)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* 초기 기본 빈 스펙 목록 (항목명만 가이드로 제공, 내용은 비움) */
+        const DEFAULT_SPECS = [
+            { key: "나이", val: "" },
+            { key: "신장/체중", val: "" },
+            { key: "소속", val: "" },
+            { key: "특기", val: "" },
+            { key: "상징색", val: "" }
+        ];
+
+        /* 시계 갱신 */
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('ko-KR', { hour12: false });
+            const clockEl = document.getElementById('clock-display');
+            if (clockEl) clockEl.innerText = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        /* 토스트 알림창 표시 */
+        function showToast(msg) {
+            const box = document.getElementById('toast-box');
+            const txt = document.getElementById('toast-msg');
+            txt.innerText = msg;
+            box.style.display = 'flex';
+            setTimeout(() => {
+                box.style.display = 'none';
+            }, 2400);
+        }
+
+        /* 스펙 동적 행 추가 함수 */
+        function addSpecRow(key = '', val = '') {
+            const container = document.getElementById('spec-rows-container');
+            const row = document.createElement('div');
+            row.className = "flex items-center gap-1 spec-row";
+            row.innerHTML = `
+                <input type="text" class="w-24 text-xs font-bold spec-key" placeholder="항목명 (예: 나이)" value="${escapeHtml(key)}" oninput="updatePreview()">
+                <span class="text-xs">:</span>
+                <input type="text" class="flex-1 text-xs spec-val" placeholder="내용 (예시 내용 입력)" value="${escapeHtml(val)}" oninput="updatePreview()">
+                <button type="button" class="win98-btn text-[10px] px-1.5 py-0 text-red-700" title="삭제" onclick="removeSpecRow(this)">×</button>
+            `;
+            container.appendChild(row);
+            updatePreview();
+        }
+
+        function removeSpecRow(btn) {
+            const row = btn.closest('.spec-row');
+            if (row) {
+                row.remove();
+                updatePreview();
+            }
+        }
+
+        /* HTML 이스케이프 유틸 */
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        /* 로컬 이미지 파일 업로드 처리 */
+        function handleFileUpload(event, targetInputId) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const maxDimension = 1200;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxDimension || height > maxDimension) {
+                        if (width > height) {
+                            height = Math.round((height * maxDimension) / width);
+                            width = maxDimension;
+                        } else {
+                            width = Math.round((width * maxDimension) / height);
+                            height = maxDimension;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const optimizedDataUrl = canvas.toDataURL('image/png', 0.9);
+                    document.getElementById(targetInputId).value = optimizedDataUrl;
+                    updatePreview(true);
+                    showToast("이미지를 최적화하여 불러왔습니다!");
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        /* 현재 에디터 상태를 파싱하여 순수 HTML/CSS 코드 생성 */
+        function generateOutputHTML() {
+            const titleBar = document.getElementById('cfg-title').value.trim() || 'STATUS_VIEWER.EXE - CHAR_DATA';
+            const charId = document.getElementById('cfg-id').value.trim() || 'ID: #0001';
+            const fullbodyImg = document.getElementById('cfg-fullbody-img').value.trim() || 'https://placehold.co/320x640/d4d0c8/666666?text=OC+FULLBODY';
+            const headImg = document.getElementById('cfg-head-img').value.trim() || 'https://placehold.co/120x120/d4d0c8/666666?text=FACE';
+            const charName = document.getElementById('cfg-char-name').value.trim() || '캐릭터 이름 (한글 / 영문)';
+            
+            const charSubRaw = document.getElementById('cfg-char-sub').value.trim() || '소속: 예시 소속 입력\n상태: Active / 임무 수행 중';
+            const charSubHtml = charSubRaw.split('\n').map(l => escapeHtml(l)).join('<br>');
+            
+            const memoRaw = document.getElementById('cfg-memo').value.trim();
+            const memoHtml = memoRaw ? memoRaw.split('\n').map(l => escapeHtml(l)).join('<br>') : '※ 특이사항: 캐릭터의 세부 설정 및 특이사항 메모를 자유롭게 작성하세요.';
+
+            const bgStyle = document.getElementById('cfg-body-bg').value;
+            const fitMode = document.getElementById('cfg-body-fit').value;
+
+            // 스펙 리스트 추출 (비어있을 경우 예시 표시)
+            const specRows = document.querySelectorAll('#spec-rows-container .spec-row');
+            let specsHtml = '';
+            specRows.forEach(row => {
+                const k = row.querySelector('.spec-key').value.trim();
+                const v = row.querySelector('.spec-val').value.trim();
+                if (k || v) {
+                    specsHtml += `                    <li><b>${escapeHtml(k || '항목')}:</b> <span>${escapeHtml(v || '내용 미입력')}</span></li>\n`;
+                }
+            });
+
+            if (!specsHtml) {
+                specsHtml = `                    <li><b>나이:</b> <span>20세</span></li>
+                    <li><b>신장/체중:</b> <span>175cm / 60kg</span></li>
+                    <li><b>소속:</b> <span>지원대대 정찰반</span></li>\n`;
+            }
+
+            // 전신 배경 스타일 CSS 계산
+            let bodyBgCss = 'background: transparent;';
+            if (bgStyle === 'white') {
+                bodyBgCss = 'background: #ffffff;';
+            } else if (bgStyle === 'gray') {
+                bodyBgCss = 'background: #c0c0c0;';
+            } else if (bgStyle === 'checker') {
+                bodyBgCss = `background-color: #e5e5e5;
+    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;`;
+            }
+
+            // 전신 세로 길이 피팅 모드 CSS 계산
+            let bodyImgCss = '';
+            let bodyColExtra = '';
+            if (fitMode === 'contain') {
+                bodyImgCss = `max-height: 540px !important;
+    width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    display: block !important;`;
+            } else if (fitMode === 'scroll') {
+                bodyColExtra = `max-height: 540px; overflow-y: auto;`;
+                bodyImgCss = `width: 100% !important;
+    height: auto !important;
+    display: block !important;`;
+            } else if (fitMode === 'stretch') {
+                bodyImgCss = `width: 100% !important;
+    height: auto !important;
+    display: block !important;`;
+            }
+
+            return `<!-- [Win98 OC Profile: 레트로 스탯창 서식] -->
+<style>
+/* 티스토리 기본 스킨 이미지/여백 강제 덮어쓰기 방지 */
+.article_view .oc-status-container img,
+.oc-status-container img {
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
+.article_view .oc-status-container ul,
+.oc-status-container ul {
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+.oc-status-container {
+    background: #c0c0c0;
+    border: 2px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    box-shadow: 1px 1px 0 #000000;
+    padding: 10px;
+    font-family: 'NeoDunggeunmo', 'Malgun Gothic', sans-serif;
+    color: #000000;
+    max-width: 740px;
+    margin: 20px auto;
+    box-sizing: border-box;
+    text-align: left;
+}
+.oc-status-titlebar {
+    background: linear-gradient(to right, #000080, #1084d0);
+    color: #ffffff;
+    padding: 3px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    user-select: none;
+}
+.oc-status-body {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+}
+/* 좌측 전신 영역 */
+.oc-body-col {
+    flex: 0 0 45%;
+    max-width: 45%;
+    border: 2px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    box-shadow: inset 1px 1px 0 #000000;
+    padding: 6px;
+    text-align: center;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    ${bodyBgCss}
+    ${bodyColExtra}
+}
+.oc-body-col img {
+    ${bodyImgCss}
+    margin: 0 auto !important;
+}
+
+/* 우측 상세 정보 영역 */
+.oc-info-col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.oc-head-box {
+    display: flex;
+    gap: 10px;
+    background: #c0c0c0;
+    border: 2px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    box-shadow: inset 1px 1px 0 #000000;
+    padding: 6px;
+    align-items: center;
+}
+.oc-head-img {
+    width: 76px;
+    height: 76px;
+    border: 1px solid #000000;
+    flex-shrink: 0;
+    background: #ffffff;
+    overflow: hidden;
+}
+.oc-head-img img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+.oc-name-meta {
+    flex: 1;
+    min-width: 0;
+}
+.oc-char-name {
+    font-size: 15px;
+    font-weight: bold;
+    color: #000080;
+    margin: 0 0 4px 0;
+    word-break: break-word;
+}
+.oc-char-sub {
+    font-size: 11px;
+    color: #333333;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* 스펙 리스트 웰 */
+.oc-spec-well {
+    background: #ffffff;
+    border: 2px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    box-shadow: inset 1px 1px 0 #000000;
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 1.65;
+    flex: 1;
+}
+.oc-spec-well ul {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.oc-spec-well li {
+    margin-bottom: 4px;
+    border-bottom: 1px dotted #d0d0d0;
+    padding-bottom: 2px;
+    display: flex;
+    word-break: break-word;
+}
+.oc-spec-well b {
+    color: #000000;
+    font-weight: bold;
+    min-width: 75px;
+    flex-shrink: 0;
+}
+
+/* 특이사항 메모 박스 */
+.oc-memo-box {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid #808080;
+    font-size: 11px;
+    color: #404040;
+    line-height: 1.5;
+}
+
+/* 모바일 화면 대응 */
+@media screen and (max-width: 640px) {
+    .oc-status-body {
+        flex-direction: column;
+    }
+    .oc-body-col {
+        flex: 1 1 100%;
+        max-width: 100%;
+        max-height: 480px;
+    }
+}
+</style>
+
+<div class="oc-status-container">
+    <div class="oc-status-titlebar">
+        <span>${escapeHtml(titleBar)}</span>
+        <span>${escapeHtml(charId)}</span>
+    </div>
+    <div class="oc-status-body">
+        <!-- 좌측: 전신 일러스트 -->
+        <div class="oc-body-col">
+            <img src="${escapeHtml(fullbodyImg)}" alt="전신 일러스트">
+        </div>
+
+        <!-- 우측: 두상 및 프로필 시트 -->
+        <div class="oc-info-col">
+            <div class="oc-head-box">
+                <div class="oc-head-img">
+                    <img src="${escapeHtml(headImg)}" alt="두상">
+                </div>
+                <div class="oc-name-meta">
+                    <div class="oc-char-name">${escapeHtml(charName)}</div>
+                    <div class="oc-char-sub">${charSubHtml}</div>
+                </div>
+            </div>
+
+            <div class="oc-spec-well">
+                <ul>
+${specsHtml}                </ul>
+                ${memoHtml ? `<div class="oc-memo-box">${memoHtml}</div>` : ''}
+            </div>
+        </div>
+    </div>
+</div>`;
+        }
+
+        /* 디바운스(Debounce) 타이머 및 수동 갱신 제어 */
+        let previewDebounceTimer = null;
+
+        function updatePreview(immediate = false) {
+            const isAuto = document.getElementById('cfg-auto-update')?.checked;
+
+            // [수동 모드] 실시간 체크가 꺼져 있고 강제 호출이 아닐 때는 타이핑 렉 원천 차단
+            if (!isAuto && !immediate) {
+                const statusEl = document.getElementById('editor-status');
+                if (statusEl) {
+                    statusEl.innerText = '수정됨 (상단 [미리보기 반영]을 누르세요)';
+                }
+                return;
+            }
+
+            const statusEl = document.getElementById('editor-status');
+            if (statusEl && !immediate) {
+                statusEl.innerText = '입력 처리 중...';
+            }
+
+            if (immediate) {
+                if (previewDebounceTimer) clearTimeout(previewDebounceTimer);
+                executeRender();
+                return;
+            }
+
+            if (previewDebounceTimer) clearTimeout(previewDebounceTimer);
+            previewDebounceTimer = setTimeout(() => {
+                executeRender();
+            }, 300);
+        }
+
+        function executeRender() {
+            const htmlCode = generateOutputHTML();
+            document.getElementById('rendered-output').innerHTML = htmlCode;
+            document.getElementById('raw-code-output').value = htmlCode;
+            
+            const statusEl = document.getElementById('editor-status');
+            if (statusEl) {
+                statusEl.innerText = '반영 완료. 티스토리 코드가 준비되었습니다.';
+            }
+        }
+
+        /* 클립보드 복사 전 Base64 검사 */
+        function copyGeneratedCode() {
+            const bodyImg = document.getElementById('cfg-fullbody-img').value;
+            const headImg = document.getElementById('cfg-head-img').value;
+
+            if (bodyImg.startsWith('data:') || headImg.startsWith('data:')) {
+                document.getElementById('warning-modal').style.display = 'flex';
+                return;
+            }
+
+            performActualCopy();
+        }
+
+        function closeWarningModal() {
+            document.getElementById('warning-modal').style.display = 'none';
+        }
+
+        function forceCopyCode() {
+            closeWarningModal();
+            performActualCopy();
+        }
+
+        /* 실제 복사 수행 */
+        function performActualCopy() {
+            const textarea = document.getElementById('raw-code-output');
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('티스토리용 HTML 코드가 복사되었습니다!');
+                } else {
+                    showToast('복사에 실패했습니다. 텍스트를 직접 복사해주세요.');
+                }
+            } catch (err) {
+                showToast('복사 중 오류가 발생했습니다.');
+            }
+        }
+
+        /* PC / 모바일 뷰 토글 */
+        function setViewMode(mode) {
+            const stage = document.getElementById('preview-stage');
+            const btnPc = document.getElementById('btn-view-pc');
+            const btnMobile = document.getElementById('btn-view-mobile');
+
+            if (mode === 'mobile') {
+                stage.style.maxWidth = '360px';
+                btnMobile.classList.add('active');
+                btnPc.classList.remove('active');
+            } else {
+                stage.style.maxWidth = '760px';
+                btnPc.classList.add('active');
+                btnMobile.classList.remove('active');
+            }
+        }
+
+        /* 기본 샘플 데이터 불러오기 (홍길동 더미 데이터) */
+        function loadSampleData() {
+            document.getElementById('cfg-title').value = "STATUS_VIEWER.EXE";
+            document.getElementById('cfg-id').value = "ID: #0001";
+            document.getElementById('cfg-fullbody-img').value = "https://placehold.co/320x640/d4d0c8/666666?text=SAMPLE+BODY";
+            document.getElementById('cfg-head-img').value = "https://placehold.co/120x120/d4d0c8/666666?text=SAMPLE+FACE";
+            document.getElementById('cfg-char-name').value = "홍길동 (Hong Gil-dong)";
+            document.getElementById('cfg-char-sub').value = "소속: 활빈당\n상태: 동에 번쩍 서에 번쩍";
+            document.getElementById('cfg-body-bg').value = "transparent";
+            document.getElementById('cfg-body-fit').value = "contain";
+            document.getElementById('cfg-memo').value = "※ 특이사항: 아버지를 아버지라 부르지 못하고 형을 형이라 부르지 못함. 도술 및 분신술에 능함.";
+
+            const container = document.getElementById('spec-rows-container');
+            container.innerHTML = '';
+            addSpecRow('나이', '20세');
+            addSpecRow('신장/체중', '175 cm / 65 kg');
+            addSpecRow('상징색', '#ff0000 (Red)');
+            addSpecRow('소속', '활빈당');
+            addSpecRow('특기', '축지법, 분신술');
+            addSpecRow('취미', '율도국 건설 구상');
+
+            updatePreview(true);
+            showToast("홍길동 샘플 데이터를 불러왔습니다.");
+        }
+
+        /* 전체 입력창 초기화 (내용 비우기) */
+        function resetForm() {
+            document.getElementById('cfg-title').value = "";
+            document.getElementById('cfg-id').value = "";
+            document.getElementById('cfg-fullbody-img').value = "";
+            document.getElementById('cfg-head-img').value = "";
+            document.getElementById('cfg-char-name').value = "";
+            document.getElementById('cfg-char-sub').value = "";
+            document.getElementById('cfg-body-bg').value = "transparent";
+            document.getElementById('cfg-body-fit').value = "contain";
+            document.getElementById('cfg-memo').value = "";
+            document.getElementById('spec-rows-container').innerHTML = '';
+
+            // 기본 빈 가이드 행 제공
+            DEFAULT_SPECS.forEach(item => {
+                addSpecRow(item.key, '');
+            });
+
+            updatePreview(true);
+            showToast("모든 입력 필드를 비웠습니다.");
+        }
+
+        window.onload = function () {
+            // 초기 로딩 시 입력창은 모두 비우고 항목명 가이드만 세팅
+            const container = document.getElementById('spec-rows-container');
+            container.innerHTML = '';
+            DEFAULT_SPECS.forEach(item => {
+                addSpecRow(item.key, item.val);
+            });
+            updatePreview(true);
+        };
+    </script>
+</body>
+</html>
