@@ -1622,7 +1622,11 @@ function renderSpeakerBlock(speaker, lines, showHeader, cfg) {
     }
     let dialogue = p.text;
     if (cfg.opts.novelMode) {
-      dialogue = '\u201C' + dialogue + '\u201D';
+      // 문장 전체가 형광이면 따옴표도 형광 안에 넣는다 (==대사== → =="대사"==)
+      const whole = dialogue.match(/^==([\s\S]+)==$/);
+      dialogue = whole
+        ? '==' + '\u201C' + whole[1] + '\u201D' + '=='
+        : '\u201C' + dialogue + '\u201D';
     }
     const indentStyle = cfg.indent ? 'text-indent:1em;' : '';
     // keepBreaks 모드일 땐 문단 사이 간격을 더 좁게 (줄바꿈 느낌 살리기)
