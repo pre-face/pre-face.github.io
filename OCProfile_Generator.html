@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win98 OC Profile Generator - 레트로 자캐 프로필 생성기</title>
+    <title>Win98 OC Profile Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -125,7 +125,6 @@
             background-color: #ffffee;
         }
 
-        /* Windows 98 고전 입체 슬라이더 */
         input[type="range"].win98-range {
             -webkit-appearance: none;
             appearance: none;
@@ -181,17 +180,6 @@
             border-color: #808080 #fff #fff #808080;
         }
 
-        .checkerboard-bg {
-            background-color: #e5e5e5;
-            background-image: 
-                linear-gradient(45deg, #ccc 25%, transparent 25%), 
-                linear-gradient(-45deg, #ccc 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #ccc 75%), 
-                linear-gradient(-45deg, transparent 75%, #ccc 75%);
-            background-size: 16px 16px;
-            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
-        }
-
         .oc-interactive-img {
             cursor: grab;
             transition: transform 0.05s ease-out;
@@ -199,98 +187,6 @@
         }
         .oc-interactive-img:active {
             cursor: grabbing;
-        }
-
-        .oc-media-wrap {
-            position: relative;
-            width: 100%;
-            margin-bottom: 8px;
-            box-sizing: border-box;
-        }
-
-        /* 플로팅 플레이어: 화면 기준 고정 위치라 프로필 박스 밖으로도 자유롭게 이동 */
-        .oc-floating-player {
-            display: none;
-            position: fixed;
-            top: 90px;
-            left: 40px;
-            width: 300px;
-            z-index: 99998;
-            background: #c0c0c0;
-            border: 2px solid;
-            border-color: #ffffff #808080 #808080 #ffffff;
-            box-shadow: 3px 4px 12px rgba(0, 0, 0, 0.5);
-            box-sizing: border-box;
-        }
-        .oc-floating-player.is-minimized .oc-drawer-body {
-            height: 0px !important;
-            min-height: 0px !important;
-            padding: 0 !important;
-            overflow: hidden !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-        .oc-drawer-titlebar {
-            background: linear-gradient(to right, #000080, #1084d0);
-            color: #ffffff;
-            padding: 2px 5px;
-            font-size: 11px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            user-select: none;
-            min-height: 20px;
-            box-sizing: border-box;
-            cursor: move;
-            touch-action: none;
-        }
-        .oc-drawer-title-text {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-size: 10px;
-            pointer-events: none;
-        }
-        .oc-drawer-ctrls {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-        .oc-drawer-btn {
-            width: 15px;
-            height: 13px;
-            background: #c0c0c0;
-            border: 1px solid;
-            border-color: #ffffff #555555 #555555 #ffffff;
-            color: #000000;
-            font-size: 9px;
-            font-weight: bold;
-            line-height: 1;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-sizing: border-box;
-        }
-        .oc-drawer-btn:active {
-            border-color: #555555 #ffffff #ffffff #555555;
-            padding: 1px 0 0 1px;
-        }
-        .oc-drawer-body {
-            width: 100%;
-            height: 168px;
-            background: #000000;
-            overflow: hidden;
-            position: relative;
-            transition: height 0.15s ease;
-        }
-        .oc-drawer-body iframe {
-            width: 100% !important;
-            height: 100% !important;
-            border: none !important;
-            display: block !important;
         }
 
         #preview-stage.view-pc {
@@ -334,7 +230,6 @@
             z-index: 100000;
         }
 
-        /* 고전 파일 목록 느낌의 행 */
         .slot-item {
             display: flex;
             align-items: center;
@@ -388,11 +283,10 @@
         
         <!-- [좌측 윈도우: 에디터 패널] -->
         <section class="w-full md:w-[480px] flex-shrink-0 flex flex-col win98-raised overflow-hidden">
-            <!-- 에디터 타이틀바 -->
             <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
                 <div class="flex items-center gap-1.5">
                     <img src="https://win98icons.alexmeub.com/icons/png/write_wordpad-1.png" width="16" height="16" alt="Icon">
-                    <span>PROFILE_BUILDER.EXE - 자캐 프로필 에디터</span>
+                    <span>PROFILE_BUILDER.EXE - 자캐 프로필 에디터 v6.0</span>
                 </div>
                 <div class="flex items-center gap-1">
                     <button class="win-ctrl-btn" title="최소화">_</button>
@@ -435,7 +329,7 @@
                     <legend class="px-1 text-[11px] font-bold text-[#000080]">윈도우 창 헤더</legend>
                     <div class="mt-1">
                         <label class="block text-[11px] mb-0.5">타이틀바 문구:</label>
-                        <input type="text" id="cfg-title" class="w-full" placeholder="예시: PROFILE_VIEWER.EXE" value="" oninput="handleInput()">
+                        <input type="text" id="cfg-title" class="w-full" placeholder="예시: PROFILE_VIEWER.EXE - CHAR_DATA" value="" oninput="handleInput()">
                     </div>
                 </fieldset>
 
@@ -454,13 +348,12 @@
                         <input type="text" id="cfg-fullbody-img" class="w-full" placeholder="이미지 링크 URL" value="" oninput="handleInput()">
                     </div>
 
-                    <!-- 전신 배경 및 피팅 모드 -->
                     <div class="grid grid-cols-2 gap-2 mb-2">
                         <div>
                             <label class="block text-[11px] mb-0.5">전신 박스 배경:</label>
                             <select id="cfg-body-bg" class="w-full" onchange="handleInput()">
-                                <option value="transparent" selected>투명 배경 (스킨 일체형)</option>
-                                <option value="white">흰색 배경 (#ffffff)</option>
+                                <option value="white" selected>흰색 배경 (#ffffff)</option>
+                                <option value="transparent">투명 배경 (스킨 일체형)</option>
                                 <option value="gray">클래식 그레이 (#c0c0c0)</option>
                                 <option value="checker">투명 격자 (체커보드)</option>
                             </select>
@@ -510,6 +403,7 @@
                     </div>
                 </fieldset>
 
+                <!-- 3. 두상 설정 -->
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
                     <legend class="px-1 text-[11px] font-bold text-[#000080]">두상(Portrait) 설정</legend>
                     <div class="mb-2">
@@ -558,6 +452,7 @@
                     </div>
                 </fieldset>
 
+                <!-- 4. 테마곡 설정 -->
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
                     <legend class="px-1 text-[11px] font-bold text-[#000080]">테마곡 미니 플레이어 바 (선택)</legend>
                     <div class="grid grid-cols-2 gap-2 mb-1.5">
@@ -574,23 +469,22 @@
                         <label class="block text-[11px] mb-0.5">음악 연결 링크 URL (유튜브 등):</label>
                         <input type="text" id="cfg-song-url" class="w-full text-xs" placeholder="https://www.youtube.com/watch?v=..." value="" oninput="handleInput()">
                     </div>
-                    <div class="mt-1.5 bg-[#ffffec] border border-[#808080] p-1.5 text-[10px] leading-relaxed text-gray-700">
-                        로컬 파일(file://)로 이 페이지를 열면 유튜브가 리퍼러를 확인하지 못해 <b>오류 153</b>이 뜹니다. 블로그에 올린 뒤에는 정상 재생됩니다.
-                    </div>
                 </fieldset>
 
+                <!-- 5. 캐릭터 이름 및 요약 -->
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
                     <legend class="px-1 text-[11px] font-bold text-[#000080]">캐릭터 이름 및 헤더 요약</legend>
                     <div class="mb-2">
                         <label class="block text-[11px] mb-0.5">캐릭터 이름 (메인):</label>
-                        <input type="text" id="cfg-char-name" class="w-full font-bold" placeholder="캐릭터 이름 (한글 / 영문)" value="" oninput="handleInput()">
+                        <input type="text" id="cfg-char-name" class="w-full font-bold" placeholder="캐릭터 이름" value="" oninput="handleInput()">
                     </div>
                     <div>
                         <label class="block text-[11px] mb-0.5">소속 / 상태 요약 (줄바꿈 가능):</label>
-                        <textarea id="cfg-char-sub" rows="2" class="w-full text-xs resize-none" placeholder="소속: 활빈당 의적단&#10;상태: Active / 임무 수행 중" oninput="handleInput()"></textarea>
+                        <textarea id="cfg-char-sub" rows="2" class="w-full text-xs resize-none" placeholder="소속: UNDERGROUND&#10;감시관: R" oninput="handleInput()"></textarea>
                     </div>
                 </fieldset>
 
+                <!-- 6. 컬러 팔레트 -->
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
                     <div class="flex items-center justify-between mb-1">
                         <legend class="px-1 text-[11px] font-bold text-[#000080]">상징색 컬러 팔레트 (선택)</legend>
@@ -598,29 +492,31 @@
                     </div>
                     <div class="grid grid-cols-4 gap-1.5">
                         <div>
-                            <input type="color" id="cfg-color-1" class="w-full h-6 p-0 border border-[#808080] cursor-pointer" value="#000080" oninput="syncColorInput(1)">
-                            <input type="text" id="cfg-color-1-hex" class="w-full text-[10px] mt-0.5 text-center" placeholder="#000080" oninput="syncHexInput(1)">
+                            <input type="color" id="cfg-color-1" class="w-full h-6 p-0 border border-[#808080] cursor-pointer" value="#97897E" oninput="syncColorInput(1)">
+                            <input type="text" id="cfg-color-1-hex" class="w-full text-[10px] mt-0.5 text-center" placeholder="#97897E" oninput="syncHexInput(1)">
                         </div>
                         <div>
-                            <input type="color" id="cfg-color-2" class="w-full h-6 p-0 border border-[#808080] cursor-pointer" value="#1084d0" oninput="syncColorInput(2)">
-                            <input type="text" id="cfg-color-2-hex" class="w-full text-[10px] mt-0.5 text-center" placeholder="#1084d0" oninput="syncHexInput(2)">
+                            <input type="color" id="cfg-color-2" class="w-full h-6 p-0 border border-[#808080] cursor-pointer" value="#568F48" oninput="syncColorInput(2)">
+                            <input type="text" id="cfg-color-2-hex" class="w-full text-[10px] mt-0.5 text-center" placeholder="#568F48" oninput="syncHexInput(2)">
                         </div>
                         <div>
                             <input type="color" id="cfg-color-3" class="w-full h-6 p-0 border border-[#808080] cursor-pointer" value="#ffffff" oninput="syncColorInput(3)">
-                            <input type="text" id="cfg-color-3-hex" class="w-full text-[10px] mt-0.5 text-center" placeholder="#ffffff" oninput="syncHexInput(3)">
+                            <input type="text" id="cfg-color-3-hex" class="w-full text-[10px] mt-0.5 text-center" placeholder="" oninput="syncHexInput(3)">
                         </div>
                         <div>
                             <input type="color" id="cfg-color-4" class="w-full h-6 p-0 border border-[#808080] cursor-pointer" value="#c0c0c0" oninput="syncColorInput(4)">
-                            <input type="text" id="cfg-color-4-hex" class="w-full text-[10px] mt-0.5 text-center" placeholder="#c0c0c0" oninput="syncHexInput(4)">
+                            <input type="text" id="cfg-color-4-hex" class="w-full text-[10px] mt-0.5 text-center" placeholder="" oninput="syncHexInput(4)">
                         </div>
                     </div>
                 </fieldset>
 
+                <!-- 7. 대표 대사 -->
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
                     <legend class="px-1 text-[11px] font-bold text-[#000080]">대표 대사 / 한마디 (선택)</legend>
-                    <input type="text" id="cfg-quote" class="w-full text-xs" placeholder="대표 대사를 입력하세요" value="" oninput="handleInput()">
+                    <input type="text" id="cfg-quote" class="w-full text-xs" placeholder="키우는 벌레야……." value="" oninput="handleInput()">
                 </fieldset>
 
+                <!-- 8. 상세 스펙 -->
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
                     <div class="flex items-center justify-between mb-1.5">
                         <legend class="px-1 text-[11px] font-bold text-[#000080]">캐릭터 상세 프로필</legend>
@@ -632,12 +528,10 @@
                         <input type="text" id="cfg-spec-title" class="w-full text-xs" placeholder="[ CHARACTER PROFILE ]" value="[ CHARACTER PROFILE ]" oninput="handleInput()">
                     </div>
 
-                    <div id="spec-rows-container" class="space-y-1.5 max-h-52 overflow-y-auto pr-1">
-                        <!-- 동적으로 스펙 행 삽입 -->
-                    </div>
+                    <div id="spec-rows-container" class="space-y-1.5 max-h-52 overflow-y-auto pr-1"></div>
                 </fieldset>
 
-                <!-- 8. 특이사항 및 메모 텍스트 -->
+                <!-- 9. 특이사항 메모 -->
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
                     <legend class="px-1 text-[11px] font-bold text-[#000080]">특이사항 / 세부 설정 메모</legend>
                     <textarea id="cfg-memo" rows="3" class="w-full text-xs" placeholder="캐릭터의 특이사항, 성격, 관계도 등의 설정 메모를 자유롭게 작성하세요..." oninput="handleInput()"></textarea>
@@ -652,43 +546,30 @@
             </div>
         </section>
 
+        <!-- [우측 윈도우: 실시간 미리보기 & 코드 패널] -->
         <main class="flex-1 flex flex-col win98-raised overflow-hidden">
-            <!-- 미리보기 타이틀바 -->
             <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
                 <div class="flex items-center gap-1.5">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0" aria-label="모니터">
-                        <rect x="1" y="1" width="14" height="10" fill="#c0c0c0" stroke="#000" stroke-width="1"/>
-                        <line x1="2" y1="2" x2="14" y2="2" stroke="#ffffff"/>
-                        <line x1="2" y1="2" x2="2" y2="10" stroke="#ffffff"/>
-                        <rect x="3" y="3" width="10" height="6" fill="#008080"/>
-                        <rect x="4" y="4" width="7" height="4" fill="#ffffff"/>
-                        <rect x="4" y="4" width="7" height="1" fill="#000080"/>
-                        <rect x="6" y="11" width="4" height="2" fill="#808080"/>
-                        <rect x="3" y="13" width="10" height="2" fill="#c0c0c0" stroke="#000" stroke-width="1"/>
-                    </svg>
-                    <span>LIVE PREVIEW</span>
+                    <img src="https://win98icons.alexmeub.com/icons/png/desktop-0.png" width="16" height="16" alt="Icon">
+                    <span>LIVE PREVIEW - 티스토리 에디터 완벽 호환 모드</span>
                 </div>
-                <!-- 뷰포트 토글 및 PNG 캡처 도구 -->
                 <div class="flex items-center gap-1">
-                    <button class="win98-btn text-[10px] py-0 px-1.5" onclick="downloadPreviewAsPng()" title="PNG 이미지 저장">
-                        💾 PNG 저장
-                    </button>
-                    <button class="win98-btn text-[10px] py-0 px-1.5" onclick="copyPreviewImageToClipboard()" title="클립보드에 이미지 복사">
-                        📋 이미지 복사
-                    </button>
+                    <button class="win98-btn text-[10px] py-0 px-1.5" onclick="downloadPreviewAsPng()" title="PNG 이미지 저장">💾 PNG 저장</button>
+                    <button class="win98-btn text-[10px] py-0 px-1.5" onclick="copyPreviewImageToClipboard()" title="클립보드에 이미지 복사">📋 이미지 복사</button>
                     <div class="h-3 w-px bg-white/40 mx-0.5"></div>
                     <button class="win98-btn text-[10px] py-0 px-1.5 active" id="btn-view-pc" onclick="setViewMode('pc')">PC</button>
                     <button class="win98-btn text-[10px] py-0 px-1.5" id="btn-view-mobile" onclick="setViewMode('mobile')">모바일</button>
                 </div>
             </div>
 
-            <!-- 미리보기 본문 캔버스 -->
+            <!-- 미리보기 캔버스 -->
             <div class="flex-1 p-4 overflow-x-auto overflow-y-auto bg-[#008080] flex justify-center items-start" id="preview-canvas-wrap">
                 <div id="preview-stage" class="view-pc transition-all duration-200">
                     <div id="rendered-output"></div>
                 </div>
             </div>
 
+            <!-- 하단 코드 복사 바 -->
             <div class="h-40 bg-[#c0c0c0] border-t-2 border-[#fff] flex flex-col p-1.5">
                 <div class="flex items-center justify-between mb-1">
                     <div class="flex items-center gap-1 text-[11px] font-bold">
@@ -704,6 +585,7 @@
         </main>
     </div>
 
+    <!-- 윈도우 98 작업 표시줄 -->
     <footer class="h-8 bg-[#c0c0c0] border-t-2 border-white flex items-center px-1 text-xs gap-1 flex-shrink-0 z-50">
         <button class="win98-btn font-bold px-2 py-0.5 flex items-center gap-1">
             <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" width="16" alt="Windows">
@@ -712,8 +594,8 @@
         <div class="h-5 w-0.5 bg-gray-400 border-r border-white mx-1"></div>
         <div class="flex items-center gap-1 flex-1">
             <div class="win98-raised px-2 py-0.5 text-[11px] font-bold flex items-center gap-1 border-t-black border-l-black border-b-white border-r-white">
-                <img src="https://win98icons.alexmeub.com/icons/png/gears-0.png" width="14" alt="">
-                <span>OC_Profile_Builder v4.6</span>
+                <img src="https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-4.png" width="14" alt="">
+                <span>OC_Profile_Builder v6.0 [Pure-CSS Icon Architecture]</span>
             </div>
         </div>
         <div class="win98-sunken-gray px-2 py-0.5 text-[11px] flex items-center gap-2">
@@ -721,12 +603,13 @@
         </div>
     </footer>
 
-    <!-- 알림 토스트 박스 -->
+    <!-- 알림 토스트 -->
     <div id="toast-box" class="win98-raised p-2 flex items-center gap-2 bg-[#ffffc0] shadow-2xl border-2 border-black">
         <img src="https://win98icons.alexmeub.com/icons/png/msg_information-0.png" width="20" alt="info">
         <span id="toast-msg" class="text-xs font-bold text-black">알림 메시지</span>
     </div>
 
+    <!-- 이미지 복사/다운로드 모달 -->
     <div id="image-result-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:100001; align-items:center; justify-content:center;">
         <div class="win98-raised p-1 shadow-2xl" style="max-width:92%; width:640px; max-height:90vh; display:flex; flex-direction:column;">
             <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
@@ -735,7 +618,7 @@
             </div>
             <div class="p-3 bg-[#c0c0c0] flex flex-col items-center flex-1 overflow-y-auto">
                 <div class="w-full bg-[#ffffec] border border-[#808080] p-2 text-[11px] mb-2 text-gray-800 leading-relaxed">
-                    💡 <b>이미지 준비 완료!</b> 아래 이미지를 <b>우클릭 > [이미지 복사]</b> 하셔도 바로 붙여넣기(Ctrl+V) 하실 수 있습니다.
+                    💡 <b>이미지 준비 완료!</b> 아래 이미지를 <b>우클릭 &gt; [이미지 복사]</b> 하셔도 바로 붙여넣기(Ctrl+V) 하실 수 있습니다.
                 </div>
                 <div class="max-h-[60vh] overflow-auto border-2 border-[#808080] bg-white p-2 mb-2 w-full flex justify-center">
                     <img id="modal-result-img" src="" alt="캡처 결과" style="max-width:100%; height:auto; display:block;">
@@ -748,7 +631,7 @@
         </div>
     </div>
 
-    <!-- 캐릭터 불러오기 / 슬롯 저장 선택창 -->
+    <!-- 저장 슬롯 모달 -->
     <div id="slot-modal">
         <div class="win98-raised p-1 shadow-2xl" style="width:400px; max-width:92%;">
             <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
@@ -756,9 +639,7 @@
                 <button class="win-ctrl-btn" onclick="closeSlotModal()">✕</button>
             </div>
             <div class="p-3 bg-[#c0c0c0]">
-                <div id="slot-modal-hint" class="text-[11px] mb-1.5 text-gray-800">
-                    불러올 항목을 고르세요.
-                </div>
+                <div id="slot-modal-hint" class="text-[11px] mb-1.5 text-gray-800">불러올 항목을 고르세요.</div>
                 <div id="slot-list" class="win98-sunken p-0.5 mb-2" style="height:150px; overflow-y:auto;"></div>
                 <div class="flex justify-end gap-2">
                     <button type="button" id="slot-modal-del" class="win98-btn text-xs text-red-700 mr-auto" onclick="deleteSelectedSlot()">슬롯 비우기</button>
@@ -769,7 +650,7 @@
         </div>
     </div>
 
-    <!-- 로컬 이미지 감지 경고 모달 -->
+    <!-- 로컬 이미지 경고 모달 -->
     <div id="warning-modal">
         <div class="max-w-[400px] win98-raised shadow-2xl p-1" style="position:relative; width:92%;">
             <div class="bg-gradient-to-r from-[#800000] to-[#d01010] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
@@ -781,11 +662,11 @@
                     <img src="https://win98icons.alexmeub.com/icons/png/msg_warning-0.png" width="32" height="32" alt="경고">
                     <div class="leading-relaxed">
                         <b class="text-red-900 block mb-1 text-[13px]">로컬 이미지가 포함되어 있습니다.</b>
-                        컴퓨터에서 불러온 이미지는 코드 길이가 너무 길어 글 등록 시 오류가 발생할 수 있습니다.
+                        컴퓨터에서 직접 불러온 이미지는 코드 길이가 너무 방대하여 블로그 글 등록 시 에디터 한도 초과 오류가 발생할 수 있습니다.
                     </div>
                 </div>
                 <div class="bg-white border border-[#808080] p-2 mb-3 text-[11px] leading-relaxed text-gray-800">
-                    이미지 URL을 넣거나 상단의 <b>[📋 이미지 복사]</b> 기능을 활용해주세요.
+                    블로그에 이미지를 먼저 업로드한 뒤 이미지 주소를 복사해 넣거나, 상단의 <b>[📋 이미지 복사]</b> 기능을 활용해 이미지 자체로 글에 붙여넣어 주세요.
                 </div>
                 <div class="flex justify-end gap-2">
                     <button class="win98-btn text-xs" onclick="forceCopyCode()">그래도 복사</button>
@@ -796,10 +677,9 @@
     </div>
 
     <script>
-        const STORAGE_KEY = 'win98_oc_draft_v4';
+        const STORAGE_KEY = 'win98_oc_draft_v6';
         const OC_FONT_URL = 'https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/NeoDunggeunmo.woff';
 
-        // 전신 및 두상 위치/배율 상태
         const transformState = {
             body: { zoom: 100, x: 0, y: 0 },
             head: { zoom: 100, x: 0, y: 0 }
@@ -834,7 +714,6 @@
             }
         };
 
-        // 시계 갱신
         function updateClock() {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('ko-KR', { hour12: false });
@@ -873,7 +752,6 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // 슬라이더 min/max와 동일한 값. 슬라이더, +/- 버튼, 직접 드래그가 모두 이 표를 따른다.
         const TRANSFORM_LIMITS = {
             body: { zoom: [50, 250], x: [-180, 180], y: [-240, 240] },
             head: { zoom: [50, 300], x: [-80, 80], y: [-80, 80] }
@@ -980,8 +858,6 @@
                     if (!isDragging) return;
                     const dx = e.clientX - startX;
                     const dy = e.clientY - startY;
-                    // 슬라이더 범위 안으로 묶는다. 안 그러면 드래그로 범위를 넘긴 뒤
-                    // 슬라이더를 건드리는 순간 이미지가 튄다.
                     transformState[type].x = clampAxis(type, 'x', initialPosX + dx);
                     transformState[type].y = clampAxis(type, 'y', initialPosY + dy);
                     updateTransformUiLabels(type);
@@ -1107,13 +983,12 @@
             showToast("미리보기를 반영했습니다!");
         }
 
-        /* 현재 폼 전체를 한 덩어리 객체로 만든다. 자동 임시저장과 슬롯 저장이 같이 쓴다. */
         function buildDraftObject() {
             const draft = {
                 title: document.getElementById('cfg-title')?.value || '',
                 fullbodyImg: document.getElementById('cfg-fullbody-img')?.value || '',
                 headImg: document.getElementById('cfg-head-img')?.value || '',
-                bodyBg: document.getElementById('cfg-body-bg')?.value || 'transparent',
+                bodyBg: document.getElementById('cfg-body-bg')?.value || 'white',
                 bodyFit: document.getElementById('cfg-body-fit')?.value || 'contain',
                 charName: document.getElementById('cfg-char-name')?.value || '',
                 charSub: document.getElementById('cfg-char-sub')?.value || '',
@@ -1168,9 +1043,6 @@
             }
         }
 
-        /* ===== 캐릭터 저장 슬롯 =====
-           자동 임시저장(win98_oc_draft_v4)과 별개로, 슬롯마다 키를 하나씩 쓴다.
-           전부 브라우저 localStorage 안에만 있고 서버로는 아무것도 나가지 않는다. */
         const SLOT_KEY_PREFIX = 'win98_oc_slot_';
 
         function readSlot(n) {
@@ -1183,7 +1055,7 @@
         }
 
         let slotModalMode = 'open';
-        let slotSelection = null; // { kind: 'sample' } 또는 { kind: 'slot', n: 1 }
+        let slotSelection = null;
 
         function openSlotModal(mode) {
             slotModalMode = mode === 'save' ? 'save' : 'open';
@@ -1231,7 +1103,6 @@
                 list.appendChild(row);
             };
 
-            // 예시 캐릭터는 불러오기 창에서만 보인다
             if (slotModalMode === 'open') {
                 makeRow(
                     'https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-2.png',
@@ -1327,7 +1198,6 @@
                 showToast(`슬롯 ${n}에 저장했습니다.`);
                 return true;
             } catch (e) {
-                // 업로드한 로컬 이미지가 용량을 다 먹은 경우
                 const slim = Object.assign({}, data);
                 let stripped = false;
                 if ((slim.fullbodyImg || '').startsWith('data:')) { slim.fullbodyImg = ''; stripped = true; }
@@ -1427,28 +1297,28 @@
             reader.readAsDataURL(file);
         }
 
+        /* ===== [핵심 업데이트] 클로드 최종 최적화 코드를 온전히 생성하는 템플릿 ===== */
         function generateOutputHTML() {
-            const titleBar = document.getElementById('cfg-title')?.value.trim() || 'PROFILE_VIEWER.EXE';
+            const titleBar = document.getElementById('cfg-title')?.value.trim() || 'PROFILE_VIEWER.EXE - CHAR_DATA';
             const fullbodyImg = document.getElementById('cfg-fullbody-img')?.value.trim() || 'https://images.placeholders.dev/?width=320&height=640&text=FULLBODY&theme=classic';
             const headImg = document.getElementById('cfg-head-img')?.value.trim() || 'https://images.placeholders.dev/?width=120&height=120&text=FACE&theme=classic';
             const charName = document.getElementById('cfg-char-name')?.value.trim() || '캐릭터 이름';
             
-            const charSubRaw = document.getElementById('cfg-char-sub')?.value.trim() || '소속: UNDERGROUND\n상태: Active';
+            const charSubRaw = document.getElementById('cfg-char-sub')?.value.trim() || '소속: UNDERGROUND\n감시관: R';
             const charSubHtml = charSubRaw.split('\n').map(l => escapeHtml(l)).join('<br>');
             
             const memoRaw = document.getElementById('cfg-memo')?.value.trim() || '';
             const memoHtml = memoRaw ? memoRaw.split('\n').map(l => escapeHtml(l)).join('<br>') : '';
 
             const quoteText = document.getElementById('cfg-quote')?.value.trim() || '';
-            const bgStyle = document.getElementById('cfg-body-bg')?.value || 'transparent';
+            const bgStyle = document.getElementById('cfg-body-bg')?.value || 'white';
             const fitMode = document.getElementById('cfg-body-fit')?.value || 'contain';
 
             const bT = transformState.body;
             const hT = transformState.head;
-            const bodyTransformStyle = `transform: translate(${bT.x}px, ${bT.y}px) scale(${bT.zoom / 100}); transform-origin: center center;`;
-            const headTransformStyle = `transform: translate(${hT.x}px, ${hT.y}px) scale(${hT.zoom / 100}); transform-origin: center center;`;
+            const bodyTransformStyle = `transform:translate(${bT.x}px,${bT.y}px) scale(${bT.zoom / 100});transform-origin:center center;`;
+            const headTransformStyle = `transform:translate(${hT.x}px,${hT.y}px) scale(${hT.zoom / 100});transform-origin:center center;`;
 
-            // 테마곡 바 및 플로팅 플레이어
             const songTitle = document.getElementById('cfg-song-title')?.value.trim() || '';
             const songArtist = document.getElementById('cfg-song-artist')?.value.trim() || '';
             const songUrl = sanitizeLinkUrl(document.getElementById('cfg-song-url')?.value);
@@ -1462,31 +1332,24 @@
                     ? `<a href="${escapeHtml(songUrl)}" target="_blank" rel="noopener noreferrer" class="oc-media-link" title="음악 링크 열기">♬ ${escapeHtml(songTitle)}${artistPart} ↗</a>`
                     : `<span>♬ ${escapeHtml(songTitle)}${artistPart}</span>`;
 
-                themeSongBarHtml = `                <div class="oc-media-wrap" data-audio-url="${escapeHtml(songUrl)}">
-                    <div class="oc-media-player">
-                        <button type="button" class="oc-media-play-btn" onclick="toggleOcAudio(this)" title="재생 / 정지">
-                            <svg class="oc-icon-play" width="7" height="8" viewBox="0 0 7 8" xmlns="http://www.w3.org/2000/svg"><polygon points="1,1 6,4 1,7" fill="#000080"/></svg>
-                            <svg class="oc-icon-stop" style="display:none;" width="7" height="7" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="5" height="5" fill="#800000"/></svg>
-                        </button>
-                        <div class="oc-media-track">${songContent}</div>
-                    </div>
-                </div>\n`;
+                themeSongBarHtml = `
+<div class="oc-media-wrap" data-audio-url="${escapeHtml(songUrl)}">
+<div class="oc-media-player">
+<button type="button" class="oc-media-play-btn" title="재생 / 정지">PLAY</button>
+<div class="oc-media-track">${songContent}</div>
+</div>
+</div>`;
 
                 floatingPlayerHtml = `
-    <!-- 플로팅 플레이어 (화면 어디로든 드래그 가능) -->
-    <div class="oc-floating-player">
-        <div class="oc-drawer-titlebar" onpointerdown="dragOcPlayer(event, this)">
-            <span class="oc-drawer-title-text">📻 CD_PLAYER.EXE [재생 중♬]</span>
-            <div class="oc-drawer-ctrls">
-                <button type="button" class="oc-drawer-btn oc-min-toggle" onclick="minimizeOcAudio(this)" title="최소화 / 복원">_</button>
-                <button type="button" class="oc-drawer-btn" onclick="closeOcAudio(this)" title="정지 및 닫기">✕</button>
-            </div>
-        </div>
-        <div class="oc-drawer-body oc-audio-host"></div>
-    </div>\n`;
+<div class="oc-floating-player">
+<div class="oc-drawer-titlebar">
+<span class="oc-drawer-title-text">♬ CD_PLAYER.EXE</span>
+<div class="oc-drawer-ctrls"><button type="button" class="oc-drawer-btn oc-min-toggle" title="최소화 / 복원">_</button><button type="button" class="oc-drawer-btn oc-close-toggle" title="정지 및 닫기">X</button></div>
+</div>
+<div class="oc-drawer-body oc-audio-host"><span class="oc-drawer-idle">STANDBY</span></div>
+</div>`;
             }
 
-            // 2) 상징색 팔레트
             const colorChips = [];
             for (let i = 1; i <= 4; i++) {
                 const hex = document.getElementById(`cfg-color-${i}-hex`)?.value.trim();
@@ -1497,25 +1360,21 @@
 
             let paletteHtml = '';
             if (colorChips.length > 0) {
-                const chipsHtml = colorChips.map(c => `
-                    <div class="oc-color-chip" title="${c}">
-                        <span class="oc-color-swatch" style="background:${c};"></span>
-                        <span class="oc-color-hex">${c}</span>
-                    </div>`).join('');
-                
-                paletteHtml = `            <div class="oc-palette-wrap">
-                <span class="oc-palette-label">COLOR:</span>
-                <div class="oc-chips-row">${chipsHtml}</div>
-            </div>\n`;
+                const chipsHtml = colorChips.map(c => `<div class="oc-color-chip" title="${c}"><span class="oc-color-swatch" style="background:${c};">&nbsp;</span><span class="oc-color-hex">${c}</span></div>`).join('\n');
+                paletteHtml = `
+<div class="oc-palette-wrap">
+<span class="oc-palette-label">COLOR:</span>
+<div class="oc-chips-row">
+${chipsHtml}
+</div>
+</div>`;
             }
 
-            // 대표 대사
             let quoteHtml = '';
             if (quoteText) {
                 let clean = quoteText.trim().replace(/^[“"']+|[”"']+$/g, '').trim();
-                quoteHtml = `            <div class="oc-quote-box">
-                <span class="oc-quote-mark">“</span><span class="oc-quote-text">${escapeHtml(clean)}</span><span class="oc-quote-mark">”</span>
-            </div>\n`;
+                quoteHtml = `
+<div class="oc-quote-box"><span class="oc-quote-mark">“</span><span class="oc-quote-text">${escapeHtml(clean)}</span><span class="oc-quote-mark">”</span></div>`;
             }
 
             const specTitle = document.getElementById('cfg-spec-title')?.value.trim() || '';
@@ -1527,653 +1386,228 @@
                 const k = row.querySelector('.spec-key')?.value.trim() || '';
                 const v = row.querySelector('.spec-val')?.value.trim() || '';
                 if (k || v) {
-                    specsHtml += `                <div class="oc-spec-row">
-                    <span class="oc-spec-k">${escapeHtml(k)}:</span>
-                    <span class="oc-spec-v">${escapeHtml(v)}</span>
-                </div>\n`;
+                    specsHtml += `<div class="oc-spec-row"><span class="oc-spec-k">${escapeHtml(k)}:</span><span class="oc-spec-v">${escapeHtml(v)}</span></div>\n`;
                 }
             });
 
-            let bodyBgCss = 'background: transparent;';
-            if (bgStyle === 'white') bodyBgCss = 'background: #ffffff;';
-            else if (bgStyle === 'gray') bodyBgCss = 'background: #c0c0c0;';
+            let bodyBgCss = 'background:#ffffff;';
+            if (bgStyle === 'transparent') bodyBgCss = 'background:transparent;';
+            else if (bgStyle === 'gray') bodyBgCss = 'background:#c0c0c0;';
             else if (bgStyle === 'checker') {
-                bodyBgCss = `background-color: #e5e5e5;
-    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%);
-    background-size: 16px 16px;
-    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;`;
+                bodyBgCss = `background-color:#e5e5e5;background-image:linear-gradient(45deg,#ccc 25%,transparent 25%),linear-gradient(-45deg,#ccc 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#ccc 75%),linear-gradient(-45deg,transparent 75%,#ccc 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0px;`;
             }
 
-            let bodyImgCss = `max-width: 100% !important; max-height: 520px !important; width: auto !important; height: auto !important; object-fit: contain !important; display: block !important; ${bodyTransformStyle}`;
+            let bodyImgCss = `max-width:100%!important;max-height:520px!important;width:auto!important;height:auto!important;object-fit:contain!important;display:block!important;${bodyTransformStyle}`;
             let bodyColExtra = '';
             if (fitMode === 'scroll') {
-                bodyColExtra = `max-height: 520px; overflow-y: auto; align-items: flex-start;`;
-                bodyImgCss = `max-width: 100% !important; width: 100% !important; height: auto !important; display: block !important; ${bodyTransformStyle}`;
+                bodyColExtra = `max-height:520px;overflow-y:auto;align-items:flex-start;`;
+                bodyImgCss = `max-width:100%!important;width:100%!important;height:auto!important;display:block!important;${bodyTransformStyle}`;
             } else if (fitMode === 'stretch') {
-                bodyImgCss = `max-width: 100% !important; width: 100% !important; height: auto !important; display: block !important; ${bodyTransformStyle}`;
+                bodyImgCss = `max-width:100%!important;width:100%!important;height:auto!important;display:block!important;${bodyTransformStyle}`;
             }
 
             return `<style>
-@font-face {
-    font-family: 'NeoDunggeunmo';
-    src: url('${OC_FONT_URL}') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-.article_view .oc-profile-container img,
-.oc-profile-container img {
-    border: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-shadow: none !important;
-    max-width: 100% !important;
-}
-.article_view .oc-profile-container ul,
-.oc-profile-container ul {
-    margin: 0 !important;
-    padding: 0 !important;
-    list-style: none !important;
-}
-.oc-profile-container {
-    position: relative;
-    background: #c0c0c0;
-    border: 2px solid;
-    border-color: #ffffff #808080 #808080 #ffffff;
-    box-shadow: 1px 1px 0 #000000;
-    padding: 10px;
-    font-family: 'NeoDunggeunmo', 'Malgun Gothic', sans-serif;
-    color: #000000;
-    max-width: 740px;
-    margin: 20px auto;
-    box-sizing: border-box;
-    text-align: left;
-    line-height: 1.4;
-}
-.oc-profile-titlebar {
-    background: linear-gradient(to right, #000080, #1084d0);
-    color: #ffffff;
-    padding: 3px 6px;
-    font-size: 11px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    user-select: none;
-    min-height: 24px;
-    box-sizing: border-box;
-}
-.oc-titlebar-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    min-width: 0;
-    flex: 1;
-    line-height: 1.3;
-    padding: 1px 0;
-}
-.oc-titlebar-ctrls {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    margin-left: 6px;
-}
-.oc-win-ctrl {
-    width: 16px;
-    height: 14px;
-    background: #c0c0c0;
-    border: 1px solid;
-    border-color: #ffffff #555555 #555555 #ffffff;
-    color: #000000;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    margin-left: 2px;
-    padding: 0;
-}
-.oc-profile-body {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    width: 100%;
-    box-sizing: border-box;
-}
-.oc-body-col {
-    flex: 0 0 290px;
-    width: 290px;
-    max-width: 290px;
-    min-width: 290px;
-    box-sizing: border-box;
-    border: 2px solid;
-    border-color: #808080 #ffffff #ffffff #808080;
-    padding: 6px;
-    margin-right: 12px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-    ${bodyBgCss}
-    ${bodyColExtra}
-}
-.oc-body-col img {
-    ${bodyImgCss}
-    margin: 0 auto !important;
-}
-.oc-info-col {
-    flex: 1 1 auto;
-    width: calc(100% - 302px);
-    min-width: 0;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-}
-.oc-media-wrap {
-    position: relative;
-    width: 100%;
-    margin-bottom: 8px;
-    box-sizing: border-box;
-}
-.oc-media-player {
-    width: 100%;
-    background: #d8d8d8;
-    border: 2px solid;
-    border-color: #808080 #ffffff #ffffff #808080;
-    padding: 3px 6px;
-    display: flex;
-    align-items: center;
-    font-size: 11px;
-    box-sizing: border-box;
-    min-height: 26px;
-}
-/* 화면 기준 고정 위치라 글 영역 밖으로도 자유롭게 끌어낼 수 있다 */
-.oc-floating-player {
-    display: none;
-    position: fixed;
-    top: 90px;
-    left: 40px;
-    width: 300px;
-    max-width: 92vw;
-    z-index: 99998;
-    background: #c0c0c0;
-    border: 2px solid;
-    border-color: #ffffff #808080 #808080 #ffffff;
-    box-shadow: 3px 4px 12px rgba(0, 0, 0, 0.5);
-    box-sizing: border-box;
-}
-.oc-floating-player.is-minimized .oc-drawer-body {
-    height: 0px !important;
-    min-height: 0px !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-.oc-drawer-titlebar {
-    background: linear-gradient(to right, #000080, #1084d0);
-    color: #ffffff;
-    padding: 2px 5px;
-    font-size: 11px;
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    user-select: none;
-    min-height: 20px;
-    box-sizing: border-box;
-    cursor: move;
-    touch-action: none;
-}
-.oc-drawer-title-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 10px;
-    pointer-events: none;
-}
-.oc-drawer-ctrls {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-}
-.oc-drawer-btn {
-    width: 15px;
-    height: 13px;
-    background: #c0c0c0;
-    border: 1px solid;
-    border-color: #ffffff #555555 #555555 #ffffff;
-    color: #000000;
-    font-size: 9px;
-    font-weight: bold;
-    line-height: 1;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-sizing: border-box;
-}
-.oc-drawer-btn:active {
-    border-color: #555555 #ffffff #ffffff #555555;
-    padding: 1px 0 0 1px;
-}
-.oc-drawer-body {
-    width: 100%;
-    height: 168px;
-    background: #000000;
-    overflow: hidden;
-    position: relative;
-    transition: height 0.15s ease;
-}
-.oc-drawer-body iframe {
-    width: 100% !important;
-    height: 100% !important;
-    border: none !important;
-    display: block !important;
-}
-.oc-media-play-btn {
-    width: 18px;
-    height: 18px;
-    background: #c0c0c0;
-    border: 2px solid;
-    border-color: #ffffff #808080 #808080 #ffffff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    padding: 0;
-    margin-right: 6px;
-    cursor: pointer;
-}
-.oc-media-play-btn:active, .oc-media-play-btn.active {
-    border-color: #808080 #ffffff #ffffff #808080;
-    padding: 1px 0 0 1px;
-}
-.oc-media-track {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    line-height: 1.4;
-}
-.oc-media-link {
-    color: #000080;
-    text-decoration: none !important;
-}
-.oc-media-link:hover {
-    text-decoration: underline !important;
-}
-.oc-song-artist {
-    color: #555555;
-    font-size: 10px;
-    margin-left: 3px;
-}
-.oc-head-box {
-    width: 100%;
-    display: flex;
-    background: #c0c0c0;
-    border: 2px solid;
-    border-color: #808080 #ffffff #ffffff #808080;
-    padding: 6px;
-    align-items: center;
-    box-sizing: border-box;
-    margin-bottom: 8px;
-}
-.oc-head-img {
-    width: 76px;
-    height: 76px;
-    border: 1px solid #000000;
-    flex-shrink: 0;
-    background: #ffffff;
-    overflow: hidden;
-    margin-right: 10px;
-    position: relative;
-}
-.oc-head-img img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    display: block !important;
-    ${headTransformStyle}
-}
-.oc-name-meta {
-    flex: 1;
-    min-width: 0;
-}
-.oc-char-name {
-    font-size: 15px;
-    font-weight: bold;
-    color: #000080;
-    margin: 0 0 4px 0;
-    line-height: 1.3;
-    word-break: break-word;
-}
-.oc-char-sub {
-    font-size: 11px;
-    color: #333333;
-    line-height: 1.45;
-    word-break: break-word;
-}
-.oc-palette-wrap {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    background: #e4e4e4;
-    border: 1px solid #808080;
-    padding: 3px 6px;
-    font-size: 10px;
-    box-sizing: border-box;
-    min-height: 26px;
-    margin-bottom: 8px;
-}
-.oc-palette-label {
-    font-weight: bold;
-    color: #404040;
-    margin-right: 8px;
-    flex-shrink: 0;
-}
-.oc-chips-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-}
-.oc-color-chip {
-    display: inline-flex;
-    align-items: center;
-    background: #ffffff;
-    border: 1px solid #808080;
-    padding: 2px 6px;
-    margin-right: 6px;
-    box-sizing: border-box;
-    line-height: 1;
-}
-.oc-color-swatch {
-    width: 10px;
-    height: 10px;
-    border: 1px solid #000000;
-    display: inline-block;
-    margin-right: 5px;
-    flex-shrink: 0;
-}
-.oc-color-hex {
-    font-size: 10px;
-    color: #000000;
-    line-height: 1;
-    font-family: 'NeoDunggeunmo', monospace;
-}
-.oc-quote-box {
-    width: 100%;
-    background: #ffffec;
-    border: 1px solid #c0b080;
-    border-left: 3px solid #000080;
-    padding: 5px 8px;
-    box-sizing: border-box;
-    line-height: 1.4;
-    margin-bottom: 8px;
-}
-.oc-quote-mark {
-    color: #000080;
-    font-size: 13px;
-    font-weight: bold;
-    margin-right: 4px;
-    display: inline;
-}
-.oc-quote-text {
-    font-size: 11px;
-    color: #303030;
-    font-style: italic;
-    line-height: 1.4;
-    word-break: break-word;
-    display: inline;
-}
-.oc-spec-well {
-    width: 100%;
-    background: #ffffff;
-    border: 2px solid;
-    border-color: #808080 #ffffff #ffffff #808080;
-    padding: 8px 10px;
-    font-size: 12px;
-    line-height: 1.45;
-    flex: 1;
-    box-sizing: border-box;
-}
-.oc-spec-heading {
-    font-weight: bold;
-    color: #000080;
-    font-size: 11px;
-    border-bottom: 1px dashed #808080;
-    padding-bottom: 5px;
-    margin-bottom: 7px;
-    line-height: 1.3;
-}
-.oc-spec-list {
-    width: 100%;
-    margin: 0 !important;
-    padding: 0 !important;
-    list-style: none !important;
-}
-.oc-spec-row {
-    display: flex;
-    align-items: flex-start;
-    padding: 4px 0;
-    border-bottom: 1px dotted #d8d8d8;
-    line-height: 1.45;
-    box-sizing: border-box;
-}
-.oc-spec-k {
-    min-width: 80px;
-    flex-shrink: 0;
-    font-weight: bold;
-    color: #000000;
-    margin-right: 8px;
-    line-height: 1.45;
-    word-break: keep-all;
-}
-.oc-spec-v {
-    flex: 1 1 auto;
-    min-width: 0;
-    color: #111111;
-    line-height: 1.45;
-    word-break: break-word;
-}
-.oc-memo-box {
-    margin-top: 8px;
-    padding-top: 6px;
-    border-top: 1px solid #808080;
-    font-size: 11px;
-    color: #404040;
-    line-height: 1.5;
-    word-break: break-word;
-}
-@media screen and (max-width: 640px) {
-    .oc-profile-body {
-        flex-direction: column !important;
-    }
-    .oc-body-col {
-        flex: none !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 0 !important;
-        max-height: 480px !important;
-        margin-right: 0 !important;
-        margin-bottom: 8px !important;
-    }
-    .oc-info-col {
-        flex: none !important;
-        width: 100% !important;
-        max-width: 100% !important;
-    }
+@font-face{font-family:'NeoDunggeunmo';src:url('${OC_FONT_URL}') format('woff');font-weight:normal;font-style:normal;font-display:swap;}
+.article_view .oc-profile-container img,.oc-profile-container img{border:none!important;margin:0!important;padding:0!important;box-shadow:none!important;max-width:100%!important;}
+.article_view .oc-profile-container p,.oc-profile-container p{margin:0!important;padding:0!important;}
+.oc-profile-container a{text-decoration:none!important;}
+.oc-profile-container button{font-family:inherit;}
+.oc-profile-container{position:relative;background:#c0c0c0;border:2px solid;border-color:#ffffff #808080 #808080 #ffffff;box-shadow:1px 1px 0 #000000;padding:10px;font-family:'NeoDunggeunmo','Malgun Gothic',sans-serif;color:#000000;max-width:740px;margin:20px auto;box-sizing:border-box;text-align:left;line-height:1.4;}
+.oc-profile-titlebar{background:linear-gradient(to right,#000080,#1084d0);color:#ffffff;padding:3px 3px 3px 6px;font-size:11px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;user-select:none;min-height:24px;box-sizing:border-box;}
+.oc-titlebar-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1;line-height:1.3;padding:1px 0;letter-spacing:.3px;}
+.oc-titlebar-ctrls{display:flex;align-items:center;flex-shrink:0;margin-left:6px;}
+.oc-win-ctrl{position:relative;width:16px;height:14px;background:#c0c0c0;border:1px solid;border-color:#ffffff #000000 #000000 #ffffff;box-shadow:inset 1px 1px 0 #dfdfdf,inset -1px -1px 0 #808080;box-sizing:border-box;margin-left:2px;display:inline-block;font-size:0!important;line-height:0;color:transparent;overflow:hidden;}
+.oc-win-ctrl.oc-ctrl-close{margin-left:4px;}
+.oc-win-ctrl::before,.oc-win-ctrl::after{content:"";position:absolute;}
+.oc-ctrl-min::before{left:4px;bottom:3px;width:6px;height:2px;background:#000000;}
+.oc-ctrl-max::before{left:3px;top:2px;width:8px;height:7px;border:1px solid #000000;border-top-width:2px;box-sizing:border-box;}
+.oc-ctrl-close::before,.oc-ctrl-close::after{left:3px;top:5px;width:8px;height:2px;background:#000000;}
+.oc-ctrl-close::before{transform:rotate(45deg);}
+.oc-ctrl-close::after{transform:rotate(-45deg);}
+.oc-profile-body{display:flex;flex-direction:row;align-items:stretch;width:100%;box-sizing:border-box;}
+.oc-body-col{flex:0 0 290px;width:290px;max-width:290px;min-width:290px;box-sizing:border-box;border:2px solid;border-color:#808080 #ffffff #ffffff #808080;padding:6px;margin-right:12px;text-align:center;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;${bodyBgCss}${bodyColExtra}}
+.oc-body-col img{${bodyImgCss}margin:0 auto!important;}
+.oc-info-col{flex:1 1 auto;width:calc(100% - 302px);min-width:0;box-sizing:border-box;display:flex;flex-direction:column;}
+.oc-media-wrap{position:relative;width:100%;margin-bottom:8px;box-sizing:border-box;}
+.oc-media-player{width:100%;background:#d8d8d8;border:2px solid;border-color:#808080 #ffffff #ffffff #808080;padding:3px 6px;display:flex;align-items:center;font-size:11px;box-sizing:border-box;min-height:28px;}
+.oc-media-play-btn{position:relative;width:20px;height:20px;background:#c0c0c0;border:2px solid;border-color:#ffffff #808080 #808080 #ffffff;box-shadow:1px 1px 0 #000000;flex-shrink:0;padding:0;margin-right:7px;cursor:pointer;font-size:0!important;line-height:0;color:transparent;overflow:hidden;box-sizing:border-box;}
+.oc-media-play-btn::before,.oc-media-play-btn::after{content:"";position:absolute;top:50%;left:50%;}
+.oc-media-play-btn::before{width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:7px solid #000080;transform:translate(-40%,-50%);}
+.oc-media-play-btn::after{width:7px;height:7px;background:#800000;transform:translate(-50%,-50%);display:none;}
+.oc-media-play-btn.active{border-color:#808080 #ffffff #ffffff #808080;box-shadow:inset 1px 1px 0 #000000;}
+.oc-media-play-btn.active::before{display:none;}
+.oc-media-play-btn.active::after{display:block;}
+.oc-media-track{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4;}
+.oc-media-link{color:#000080!important;}
+.oc-media-link:hover{text-decoration:underline!important;}
+.oc-song-artist{color:#555555;font-size:10px;margin-left:3px;}
+.oc-media-wrap[data-playing="true"] .oc-media-track::before{content:"▶ ";color:#008000;}
+.oc-floating-player{display:none;position:fixed;top:90px;left:40px;width:320px;max-width:92vw;z-index:99998;background:#c0c0c0;border:2px solid;border-color:#dfdfdf #000000 #000000 #dfdfdf;box-shadow:inset 1px 1px 0 #ffffff,inset -1px -1px 0 #808080,4px 4px 0 rgba(0,0,0,.35);box-sizing:border-box;padding:3px;font-family:'NeoDunggeunmo','Malgun Gothic',sans-serif;}
+.oc-drawer-titlebar{background:linear-gradient(to right,#000080,#1084d0);color:#ffffff;padding:2px 2px 2px 6px;font-size:11px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;user-select:none;min-height:20px;box-sizing:border-box;cursor:move;touch-action:none;}
+.oc-drawer-title-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;pointer-events:none;letter-spacing:.3px;}
+.oc-drawer-ctrls{display:flex;align-items:center;flex-shrink:0;}
+.oc-drawer-btn{position:relative;width:16px;height:14px;background:#c0c0c0;border:1px solid;border-color:#ffffff #000000 #000000 #ffffff;box-shadow:inset 1px 1px 0 #dfdfdf,inset -1px -1px 0 #808080;box-sizing:border-box;margin-left:2px;padding:0;cursor:pointer;font-size:0!important;line-height:0;color:transparent;overflow:hidden;}
+.oc-drawer-btn:active{border-color:#000000 #ffffff #ffffff #000000;}
+.oc-drawer-btn::before,.oc-drawer-btn::after{content:"";position:absolute;}
+.oc-min-toggle::before{left:4px;bottom:3px;width:6px;height:2px;background:#000000;}
+.oc-floating-player.is-minimized .oc-min-toggle::before{left:5px;top:2px;width:7px;height:6px;border:1px solid #000000;border-top-width:2px;background:transparent;box-sizing:border-box;bottom:auto;}
+.oc-floating-player.is-minimized .oc-min-toggle::after{left:2px;top:5px;width:7px;height:6px;border:1px solid #000000;border-top-width:2px;background:#c0c0c0;box-sizing:border-box;}
+.oc-close-toggle{margin-left:4px;}
+.oc-close-toggle::before,.oc-close-toggle::after{left:3px;top:5px;width:8px;height:2px;background:#000000;}
+.oc-close-toggle::before{transform:rotate(45deg);}
+.oc-close-toggle::after{transform:rotate(-45deg);}
+.oc-drawer-body{width:100%;height:178px;background:#000000;overflow:hidden;position:relative;margin-top:3px;border:2px solid;border-color:#808080 #ffffff #ffffff #808080;box-sizing:border-box;}
+.oc-drawer-body iframe{width:100%!important;height:100%!important;border:none!important;display:block!important;}
+.oc-drawer-idle{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;color:#00aa00;font-size:10px;letter-spacing:2px;}
+.oc-floating-player.is-minimized .oc-drawer-body{display:none!important;}
+.oc-head-box{width:100%;display:flex;background:#c0c0c0;border:2px solid;border-color:#808080 #ffffff #ffffff #808080;padding:6px;align-items:center;box-sizing:border-box;margin-bottom:8px;}
+.oc-head-img{width:76px;height:76px;border:1px solid #000000;flex-shrink:0;background:#ffffff;overflow:hidden;margin-right:10px;position:relative;}
+.oc-head-img img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;${headTransformStyle}}
+.oc-name-meta{flex:1;min-width:0;}
+.oc-char-name{font-size:15px;font-weight:bold;color:#000080;margin:0 0 4px 0;line-height:1.3;word-break:break-word;}
+.oc-char-sub{font-size:11px;color:#333333;line-height:1.45;word-break:break-word;}
+.oc-palette-wrap{width:100%;display:flex;align-items:center;background:#e4e4e4;border:1px solid #808080;padding:3px 6px;font-size:10px;box-sizing:border-box;min-height:26px;margin-bottom:8px;}
+.oc-palette-label{font-weight:bold;color:#404040;margin-right:8px;flex-shrink:0;}
+.oc-chips-row{display:flex;flex-wrap:wrap;align-items:center;}
+.oc-color-chip{display:inline-flex;align-items:center;background:#ffffff;border:1px solid #808080;padding:2px 6px;margin-right:6px;box-sizing:border-box;line-height:1;}
+.oc-color-swatch{width:10px;height:10px;border:1px solid #000000;display:inline-block;margin-right:5px;flex-shrink:0;}
+.oc-color-hex{font-size:10px;color:#000000;line-height:1;font-family:'NeoDunggeunmo',monospace;}
+.oc-quote-box{width:100%;background:#ffffec;border:1px solid #c0b080;border-left:3px solid #000080;padding:5px 8px;box-sizing:border-box;line-height:1.4;margin-bottom:8px;}
+.oc-quote-mark{color:#000080;font-size:13px;font-weight:bold;margin-right:4px;display:inline;}
+.oc-quote-text{font-size:11px;color:#303030;font-style:italic;line-height:1.4;word-break:break-word;display:inline;}
+.oc-spec-well{width:100%;background:#ffffff;border:2px solid;border-color:#808080 #ffffff #ffffff #808080;padding:8px 10px;font-size:12px;line-height:1.45;flex:1;box-sizing:border-box;}
+.oc-spec-heading{font-weight:bold;color:#000080;font-size:11px;border-bottom:1px dashed #808080;padding-bottom:5px;margin-bottom:7px;line-height:1.3;}
+.oc-spec-list{width:100%;margin:0!important;padding:0!important;list-style:none!important;}
+.oc-spec-row{display:flex;align-items:flex-start;padding:4px 0;border-bottom:1px dotted #d8d8d8;line-height:1.45;box-sizing:border-box;}
+.oc-spec-k{min-width:80px;flex-shrink:0;font-weight:bold;color:#000000;margin-right:8px;line-height:1.45;word-break:keep-all;}
+.oc-spec-v{flex:1 1 auto;min-width:0;color:#111111;line-height:1.45;word-break:break-word;}
+.oc-memo-box{margin-top:8px;padding-top:6px;border-top:1px solid #808080;font-size:11px;color:#404040;line-height:1.5;word-break:break-word;}
+@media screen and (max-width:640px){
+.oc-profile-body{flex-direction:column!important;}
+.oc-body-col{flex:none!important;width:100%!important;max-width:100%!important;min-width:0!important;max-height:480px!important;margin-right:0!important;margin-bottom:8px!important;}
+.oc-info-col{flex:none!important;width:100%!important;max-width:100%!important;}
 }
 </style>
 
 <div class="oc-profile-container">
-    <div class="oc-profile-titlebar">
-        <div class="oc-titlebar-text">${escapeHtml(titleBar)}</div>
-        <div class="oc-titlebar-ctrls">
-            <span class="oc-win-ctrl" title="최소화"><svg width="6" height="2" viewBox="0 0 6 2" xmlns="http://www.w3.org/2000/svg"><rect width="6" height="2" fill="#000"/></svg></span>
-            <span class="oc-win-ctrl" title="최대화"><svg width="8" height="7" viewBox="0 0 8 7" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="7" height="6" stroke="#000"/><rect x="0.5" y="0.5" width="7" height="1.5" fill="#000"/></svg></span>
-            <span class="oc-win-ctrl" title="닫기"><svg width="8" height="7" viewBox="0 0 8 7" xmlns="http://www.w3.org/2000/svg"><path d="M1 1 L7 6 M7 1 L1 6" stroke="#000" stroke-width="1.2"/></svg></span>
-        </div>
-    </div>
-    <div class="oc-profile-body">
-        <div class="oc-body-col">
-            <img src="${escapeHtml(fullbodyImg)}" alt="전신 일러스트">
-        </div>
+<div class="oc-profile-titlebar">
+<div class="oc-titlebar-text">${escapeHtml(titleBar)}</div>
+<div class="oc-titlebar-ctrls"><span class="oc-win-ctrl oc-ctrl-min" title="최소화">_</span><span class="oc-win-ctrl oc-ctrl-max" title="최대화">□</span><span class="oc-win-ctrl oc-ctrl-close" title="닫기">X</span></div>
+</div>
+<div class="oc-profile-body">
+<div class="oc-body-col"><img src="${escapeHtml(fullbodyImg)}" alt="전신 일러스트"></div>
 
-        <div class="oc-info-col">
-${themeSongBarHtml}            <div class="oc-head-box">
-                <div class="oc-head-img">
-                    <img src="${escapeHtml(headImg)}" alt="두상">
-                </div>
-                <div class="oc-name-meta">
-                    <div class="oc-char-name">${escapeHtml(charName)}</div>
-                    <div class="oc-char-sub">${charSubHtml}</div>
-                </div>
-            </div>
+<div class="oc-info-col">
+${themeSongBarHtml}
+<div class="oc-head-box">
+<div class="oc-head-img"><img src="${escapeHtml(headImg)}" alt="두상"></div>
+<div class="oc-name-meta">
+<div class="oc-char-name">${escapeHtml(charName)}</div>
+<div class="oc-char-sub">${charSubHtml}</div>
+</div>
+</div>
+${paletteHtml}
+${quoteHtml}
+<div class="oc-spec-well">
+${specTitleHtml}
+<div class="oc-spec-list">
+${specsHtml}
+</div>
+${memoHtml ? `<div class="oc-memo-box">${memoHtml}</div>` : ''}
+</div>
+</div>
+</div>
+${floatingPlayerHtml}
+</div>
 
-${paletteHtml}${quoteHtml}            <div class="oc-spec-well">
-${specTitleHtml}                <div class="oc-spec-list">
-${specsHtml}                </div>
-                ${memoHtml ? `<div class="oc-memo-box">${memoHtml}</div>` : ''}
-            </div>
-        </div>
-    </div>
-${floatingPlayerHtml}</div>
 ` + `<` + `script>
-(function () {
-    if (window.__ocPlayerReady) return;
-    window.__ocPlayerReady = true;
+(function(){
+  if(window.__ocPlayerReady)return;
+  window.__ocPlayerReady=true;
 
-    function clampPlayer(player, x, y) {
-        var w = player.offsetWidth || 300;
-        var minVisible = 60;
-        var maxX = window.innerWidth - minVisible;
-        var minX = minVisible - w;
-        var maxY = window.innerHeight - 24;
-        return {
-            x: Math.min(Math.max(x, minX), maxX),
-            y: Math.min(Math.max(y, 0), maxY)
-        };
+  function clampPlayer(p,x,y){
+    var w=p.offsetWidth||320,minV=60;
+    return{x:Math.min(Math.max(x,minV-w),window.innerWidth-minV),y:Math.min(Math.max(y,0),window.innerHeight-24)};
+  }
+  function extractYtId(u){
+    var m=u.match(/[?&]v=([^&#\\s]+)/);if(m)return m[1];
+    m=u.match(/youtu\\.be\\/([^?&#\\s]+)/);if(m)return m[1];
+    m=u.match(/embed\\/([^?&#\\s]+)/);if(m)return m[1];
+    m=u.match(/shorts\\/([^?&#\\s]+)/);if(m)return m[1];
+    return null;
+  }
+  function getUrl(wrap){
+    var u=wrap.getAttribute('data-audio-url')||'';
+    if(!u){var a=wrap.querySelector('.oc-media-link');if(a)u=a.getAttribute('href')||'';}
+    return u;
+  }
+  function buildNode(url){
+    var id=extractYtId(url);
+    if(id){
+      var t=url.match(/[?&]t=(\\d+)/i);
+      var f=document.createElement('iframe');
+      f.setAttribute('src','https://www.youtube.com/embed/'+id+'?autoplay=1&playsinline=1&rel=0'+(t?'&start='+t[1]:''));
+      f.setAttribute('frameborder','0');
+      f.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+      f.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
+      f.setAttribute('allowfullscreen','true');
+      return f;
     }
+    var box=document.createElement('div');
+    box.style.cssText='padding:15px 10px;text-align:center;background:#c0c0c0;';
+    var au=document.createElement('audio');
+    au.setAttribute('src',url);au.setAttribute('controls','true');au.setAttribute('autoplay','true');au.style.width='90%';
+    box.appendChild(au);return box;
+  }
 
-    window.dragOcPlayer = function (e, titlebar) {
-        var player = titlebar.closest('.oc-floating-player');
-        if (!player) return;
-        if (e.target.closest('.oc-drawer-btn')) return;
-        e.preventDefault();
-
-        var rect = player.getBoundingClientRect();
-        var offX = e.clientX - rect.left;
-        var offY = e.clientY - rect.top;
-        player.style.right = 'auto';
-        player.style.bottom = 'auto';
-
-        function onMove(ev) {
-            var pos = clampPlayer(player, ev.clientX - offX, ev.clientY - offY);
-            player.style.left = pos.x + 'px';
-            player.style.top = pos.y + 'px';
-        }
-        function onUp() {
-            window.removeEventListener('pointermove', onMove);
-            window.removeEventListener('pointerup', onUp);
-        }
-        window.addEventListener('pointermove', onMove);
-        window.addEventListener('pointerup', onUp);
-    };
-
-    function extractYtId(url) {
-        var m = url.match(/[?&]v=([^&#\\s]+)/);
-        if (m) return m[1];
-        m = url.match(/youtu\\.be\\/([^?&#\\s]+)/);
-        if (m) return m[1];
-        m = url.match(/embed\\/([^?&#\\s]+)/);
-        if (m) return m[1];
-        m = url.match(/shorts\\/([^?&#\\s]+)/);
-        if (m) return m[1];
-        return null;
+  function stop(container){
+    var wrap=container.querySelector('.oc-media-wrap'),btn=container.querySelector('.oc-media-play-btn'),
+        player=container.querySelector('.oc-floating-player'),host=container.querySelector('.oc-audio-host');
+    if(host)host.innerHTML='<span class="oc-drawer-idle">STANDBY</span>';
+    if(player){player.style.display='none';player.classList.remove('is-minimized');}
+    if(wrap)wrap.setAttribute('data-playing','false');
+    if(btn)btn.classList.remove('active');
+  }
+  function togglePlay(btn){
+    var wrap=btn.closest('.oc-media-wrap'),container=btn.closest('.oc-profile-container');
+    if(!wrap||!container)return;
+    if(wrap.getAttribute('data-playing')==='true'){stop(container);return;}
+    var url=getUrl(wrap);if(!url)return;
+    var player=container.querySelector('.oc-floating-player'),host=container.querySelector('.oc-audio-host');
+    if(player){
+      player.classList.remove('is-minimized');player.style.display='block';
+      var r=btn.getBoundingClientRect(),pos=clampPlayer(player,r.left-4,r.bottom+8);
+      player.style.left=pos.x+'px';player.style.top=pos.y+'px';player.style.right='auto';player.style.bottom='auto';
     }
+    if(host){host.innerHTML='';host.appendChild(buildNode(url));}
+    wrap.setAttribute('data-playing','true');btn.classList.add('active');
+  }
+  function toggleMin(b){var p=b.closest('.oc-floating-player');if(p)p.classList.toggle('is-minimized');}
+  function startDrag(e,bar){
+    var p=bar.closest('.oc-floating-player');if(!p)return;
+    e.preventDefault();
+    var r=p.getBoundingClientRect(),ox=e.clientX-r.left,oy=e.clientY-r.top;
+    p.style.right='auto';p.style.bottom='auto';
+    function mv(ev){var pos=clampPlayer(p,ev.clientX-ox,ev.clientY-oy);p.style.left=pos.x+'px';p.style.top=pos.y+'px';}
+    function up(){window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);}
+    window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
+  }
 
-    window.toggleOcAudio = function (btn) {
-        var wrap = btn.closest('.oc-media-wrap');
-        var container = btn.closest('.oc-profile-container');
-        if (!wrap || !container) return;
-
-        var player = container.querySelector('.oc-floating-player');
-        var host = container.querySelector('.oc-audio-host');
-        var playIcon = wrap.querySelector('.oc-icon-play');
-        var stopIcon = wrap.querySelector('.oc-icon-stop');
-        var minBtn = container.querySelector('.oc-min-toggle');
-
-        var url = wrap.getAttribute('data-audio-url') || '';
-        if (!url) return;
-
-        var isPlaying = wrap.getAttribute('data-playing') === 'true';
-        if (isPlaying) {
-            if (host) host.innerHTML = '';
-            if (player) {
-                player.style.display = 'none';
-                player.classList.remove('is-minimized');
-            }
-            wrap.setAttribute('data-playing', 'false');
-            if (playIcon) playIcon.style.display = 'block';
-            if (stopIcon) stopIcon.style.display = 'none';
-            if (minBtn) minBtn.innerText = '_';
-            btn.classList.remove('active');
-            return;
-        }
-
-        var ytId = extractYtId(url);
-
-        if (player) {
-            player.classList.remove('is-minimized');
-            player.style.display = 'block';
-            // 재생 버튼 바로 아래에서 시작하고, 화면 밖으로 나가지 않게 보정
-            var bRect = btn.getBoundingClientRect();
-            var pos = clampPlayer(player, bRect.left - 4, bRect.bottom + 8);
-            player.style.left = pos.x + 'px';
-            player.style.top = pos.y + 'px';
-            player.style.right = 'auto';
-        }
-        if (minBtn) minBtn.innerText = '_';
-
-        if (host) {
-            if (ytId) {
-                var tMatch = url.match(/[?&]t=(\\d+)/i);
-                var startParam = tMatch ? '&start=' + tMatch[1] : '';
-                host.innerHTML = '<iframe width="100%" height="168" src="https://www.youtube.com/embed/' + ytId + '?autoplay=1&playsinline=1&rel=0' + startParam + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="width:100%;height:168px;display:block;border:none;"></iframe>';
-            } else {
-                host.innerHTML = '<div style="padding:15px 10px; text-align:center; background:#c0c0c0;"><audio src="' + url + '" controls autoplay style="width:90%;"></audio></div>';
-            }
-        }
-        wrap.setAttribute('data-playing', 'true');
-        if (playIcon) playIcon.style.display = 'none';
-        if (stopIcon) stopIcon.style.display = 'block';
-        btn.classList.add('active');
-    };
-
-    window.minimizeOcAudio = function (minBtn) {
-        var player = minBtn.closest('.oc-floating-player');
-        if (!player) return;
-        if (player.classList.contains('is-minimized')) {
-            player.classList.remove('is-minimized');
-            minBtn.innerText = '_';
-            minBtn.setAttribute('title', '최소화');
-        } else {
-            player.classList.add('is-minimized');
-            minBtn.innerText = '□';
-            minBtn.setAttribute('title', '복원');
-        }
-    };
-
-    window.closeOcAudio = function (closeBtn) {
-        var container = closeBtn.closest('.oc-profile-container');
-        if (!container) return;
-        var playBtn = container.querySelector('.oc-media-play-btn');
-        if (playBtn) window.toggleOcAudio(playBtn);
-    };
+  document.addEventListener('click',function(e){
+    if(!e.target||!e.target.closest)return;
+    var el=e.target.closest('.oc-media-play-btn');
+    if(el){e.preventDefault();togglePlay(el);return;}
+    el=e.target.closest('.oc-min-toggle');
+    if(el){e.preventDefault();toggleMin(el);return;}
+    el=e.target.closest('.oc-close-toggle');
+    if(el){e.preventDefault();var c=el.closest('.oc-profile-container');if(c)stop(c);return;}
+  });
+  document.addEventListener('pointerdown',function(e){
+    if(!e.target||!e.target.closest)return;
+    if(e.target.closest('.oc-drawer-btn'))return;
+    var bar=e.target.closest('.oc-drawer-titlebar');
+    if(bar)startDrag(e,bar);
+  });
 })();
 <` + `/script>`;
         }
@@ -2217,9 +1651,8 @@ ${floatingPlayerHtml}</div>
             return null;
         }
 
-        /* 플로팅 창 위치 계산: 화면 밖으로 완전히 사라지지 않게 최소 60px은 남긴다 */
         function clampOcPlayer(player, x, y) {
-            const w = player.offsetWidth || 300;
+            const w = player.offsetWidth || 320;
             const minVisible = 60;
             return {
                 x: Math.min(Math.max(x, minVisible - w), window.innerWidth - minVisible),
@@ -2227,10 +1660,10 @@ ${floatingPlayerHtml}</div>
             };
         }
 
-        window.dragOcPlayer = function(e, titlebar) {
+        /* ===== 미리보기 화면 실시간 상호작용 (재생/최소화/정지/드래그) ===== */
+        function ocStartDrag(e, titlebar) {
             const player = titlebar.closest('.oc-floating-player');
             if (!player) return;
-            if (e.target.closest('.oc-drawer-btn')) return;
             e.preventDefault();
 
             const rect = player.getBoundingClientRect();
@@ -2250,43 +1683,45 @@ ${floatingPlayerHtml}</div>
             };
             window.addEventListener('pointermove', onMove);
             window.addEventListener('pointerup', onUp);
-        };
+        }
 
-        window.toggleOcAudio = function(btn) {
+        function ocStop(container) {
+            const wrap = container.querySelector('.oc-media-wrap');
+            const btn = container.querySelector('.oc-media-play-btn');
+            const player = container.querySelector('.oc-floating-player');
+            const host = container.querySelector('.oc-audio-host');
+            if (host) host.innerHTML = '<span class="oc-drawer-idle">STANDBY</span>';
+            if (player) {
+                player.style.display = 'none';
+                player.classList.remove('is-minimized');
+            }
+            if (wrap) wrap.setAttribute('data-playing', 'false');
+            if (btn) btn.classList.remove('active');
+            showToast('음악 재생을 중지했습니다.');
+        }
+
+        function ocTogglePlay(btn) {
             const wrap = btn.closest('.oc-media-wrap');
             const container = btn.closest('.oc-profile-container');
             if (!wrap || !container) return;
 
-            // 플로팅 플레이어는 .oc-media-wrap이 아니라 컨테이너 직속에 있다
-            const player = container.querySelector('.oc-floating-player');
-            const host = container.querySelector('.oc-audio-host');
-            const playIcon = wrap.querySelector('.oc-icon-play');
-            const stopIcon = wrap.querySelector('.oc-icon-stop');
-            const minBtn = container.querySelector('.oc-min-toggle');
-            const url = wrap.getAttribute('data-audio-url') || document.getElementById('cfg-song-url')?.value?.trim() || '';
+            if (wrap.getAttribute('data-playing') === 'true') {
+                ocStop(container);
+                return;
+            }
 
+            let url = wrap.getAttribute('data-audio-url') || '';
+            if (!url) {
+                const link = wrap.querySelector('.oc-media-link');
+                if (link) url = link.getAttribute('href') || '';
+            }
             if (!url) {
                 showToast('연결된 음악 링크가 없습니다.');
                 return;
             }
 
-            const isPlaying = wrap.getAttribute('data-playing') === 'true';
-            if (isPlaying) {
-                if (host) host.innerHTML = '';
-                if (player) {
-                    player.style.display = 'none';
-                    player.classList.remove('is-minimized');
-                }
-                wrap.setAttribute('data-playing', 'false');
-                if (playIcon) playIcon.style.display = 'block';
-                if (stopIcon) stopIcon.style.display = 'none';
-                if (minBtn) minBtn.innerText = '_';
-                btn.classList.remove('active');
-                showToast('음악 재생을 중지했습니다.');
-                return;
-            }
-
-            const ytId = extractYouTubeId(url);
+            const player = container.querySelector('.oc-floating-player');
+            const host = container.querySelector('.oc-audio-host');
 
             if (player) {
                 player.classList.remove('is-minimized');
@@ -2296,49 +1731,77 @@ ${floatingPlayerHtml}</div>
                 player.style.left = pos.x + 'px';
                 player.style.top = pos.y + 'px';
                 player.style.right = 'auto';
+                player.style.bottom = 'auto';
             }
-            if (minBtn) minBtn.innerText = '_';
 
             if (host) {
+                host.innerHTML = '';
+                const ytId = extractYouTubeId(url);
                 if (ytId) {
                     const tMatch = url.match(/[?&]t=(\d+)/i);
-                    const startParam = tMatch ? '&start=' + tMatch[1] : '';
-                    host.innerHTML = `<iframe width="100%" height="168" src="https://www.youtube.com/embed/${ytId}?autoplay=1&playsinline=1&rel=0${startParam}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="width:100%;height:168px;display:block;border:none;"></iframe>`;
+                    const iframe = document.createElement('iframe');
+                    iframe.setAttribute('src', `https://www.youtube.com/embed/${ytId}?autoplay=1&playsinline=1&rel=0${tMatch ? '&start=' + tMatch[1] : ''}`);
+                    iframe.setAttribute('frameborder', '0');
+                    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+                    iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+                    iframe.setAttribute('allowfullscreen', 'true');
+                    iframe.style.cssText = 'width:100%;height:100%;display:block;border:none;';
+                    host.appendChild(iframe);
                 } else {
-                    host.innerHTML = `<div style="padding:15px 10px; text-align:center; background:#c0c0c0;"><audio src="${escapeHtml(url)}" controls autoplay style="width:90%;"></audio></div>`;
+                    const box = document.createElement('div');
+                    box.style.cssText = 'padding:15px 10px;text-align:center;background:#c0c0c0;';
+                    const audio = document.createElement('audio');
+                    audio.setAttribute('src', url);
+                    audio.setAttribute('controls', 'true');
+                    audio.setAttribute('autoplay', 'true');
+                    audio.style.width = '90%';
+                    box.appendChild(audio);
+                    host.appendChild(box);
                 }
             }
 
             wrap.setAttribute('data-playing', 'true');
-            if (playIcon) playIcon.style.display = 'none';
-            if (stopIcon) stopIcon.style.display = 'block';
             btn.classList.add('active');
-            showToast('테마곡 재생 시작 ♬ (타이틀바를 끌어 옮길 수 있습니다)');
-        };
+            showToast('테마곡 재생 시작 ♬');
+        }
 
-        window.minimizeOcAudio = function(minBtn) {
+        function ocToggleMinimize(minBtn) {
             const player = minBtn.closest('.oc-floating-player');
             if (!player) return;
-
+            player.classList.toggle('is-minimized');
             if (player.classList.contains('is-minimized')) {
-                player.classList.remove('is-minimized');
-                minBtn.innerText = '_';
-                minBtn.setAttribute('title', '최소화');
-                showToast('플레이어 창을 펼쳤습니다.');
+                showToast('플레이어를 최소화했습니다.');
             } else {
-                player.classList.add('is-minimized');
-                minBtn.innerText = '□';
-                minBtn.setAttribute('title', '복원');
-                showToast('플레이어를 최소화했습니다. 음악은 계속 재생됩니다 ♬');
+                showToast('플레이어를 복원했습니다.');
             }
-        };
+        }
 
-        window.closeOcAudio = function(closeBtn) {
-            const container = closeBtn.closest('.oc-profile-container');
-            if (!container) return;
-            const playBtn = container.querySelector('.oc-media-play-btn');
-            if (playBtn) window.toggleOcAudio(playBtn);
-        };
+        document.addEventListener('click', function (e) {
+            if (!e.target || !e.target.closest) return;
+            if (!e.target.closest('#rendered-output')) return;
+
+            const playBtn = e.target.closest('.oc-media-play-btn');
+            if (playBtn) { e.preventDefault(); ocTogglePlay(playBtn); return; }
+
+            const minBtn = e.target.closest('.oc-min-toggle');
+            if (minBtn) { e.preventDefault(); ocToggleMinimize(minBtn); return; }
+
+            const closeBtn = e.target.closest('.oc-close-toggle');
+            if (closeBtn) {
+                e.preventDefault();
+                const container = closeBtn.closest('.oc-profile-container');
+                if (container) ocStop(container);
+                return;
+            }
+        });
+
+        document.addEventListener('pointerdown', function (e) {
+            if (!e.target || !e.target.closest) return;
+            if (!e.target.closest('#rendered-output')) return;
+            if (e.target.closest('.oc-drawer-btn')) return;
+            const titlebar = e.target.closest('.oc-drawer-titlebar');
+            if (titlebar) ocStartDrag(e, titlebar);
+        });
 
         let cachedFontBase64 = null;
         async function getEmbeddedFontCss() {
@@ -2569,10 +2032,10 @@ ${floatingPlayerHtml}</div>
         }
 
         function fillFormWithData(data) {
-            document.getElementById('cfg-title').value = data.title || '';
+            document.getElementById('cfg-title').value = data.title || 'PROFILE_VIEWER.EXE - CHAR_DATA';
             document.getElementById('cfg-fullbody-img').value = data.fullbodyImg || '';
             document.getElementById('cfg-head-img').value = data.headImg || '';
-            document.getElementById('cfg-body-bg').value = data.bodyBg || 'transparent';
+            document.getElementById('cfg-body-bg').value = data.bodyBg || 'white';
             document.getElementById('cfg-body-fit').value = data.bodyFit || 'contain';
             document.getElementById('cfg-char-name').value = data.charName || '';
             document.getElementById('cfg-char-sub').value = data.charSub || '';
@@ -2585,9 +2048,9 @@ ${floatingPlayerHtml}</div>
 
             ['body', 'head'].forEach(type => {
                 const saved = data.transforms?.[type];
-                transformState[type].zoom = clampAxis(type, 'zoom', saved?.zoom ?? 100);
-                transformState[type].x = clampAxis(type, 'x', saved?.x ?? 0);
-                transformState[type].y = clampAxis(type, 'y', saved?.y ?? 0);
+                transformState[type].zoom = clampAxis(type, 'zoom', saved?.zoom ?? (type === 'body' ? 125 : 100));
+                transformState[type].x = clampAxis(type, 'x', saved?.x ?? (type === 'body' ? -12 : 0));
+                transformState[type].y = clampAxis(type, 'y', saved?.y ?? (type === 'body' ? 1 : 0));
             });
             updateTransformUiLabels('body');
             updateTransformUiLabels('head');
@@ -2616,14 +2079,14 @@ ${floatingPlayerHtml}</div>
         function loadSampleData() {
             fillFormWithData(SAMPLE_DATA);
             saveDraftToStorage();
-            showToast("샘플 데이터를 불러왔습니다.");
+            showToast("홍길동 샘플 데이터를 불러왔습니다.");
         }
 
         function resetForm() {
             if (!confirm('모든 입력창을 비웁니다. 저장하지 않은 내용은 사라집니다. 계속할까요?')) return;
 
             const emptyData = {
-                title: "PROFILE_VIEWER.EXE",
+                title: "PROFILE_VIEWER.EXE - CHAR_DATA",
                 fullbodyImg: "",
                 headImg: "",
                 bodyBg: "transparent",
@@ -2639,10 +2102,9 @@ ${floatingPlayerHtml}</div>
                 colors: ["", "", "", ""],
                 specs: [
                     { key: "나이", val: "" },
-                    { key: "신장/체중", val: "" },
-                    { key: "소속", val: "" },
-                    { key: "특기", val: "" },
-                    { key: "상징색", val: "" }
+                    { key: "신장", val: "" },
+                    { key: "등급", val: "" },
+                    { key: "능력", val: "" }
                 ],
                 transforms: {
                     body: { zoom: 100, x: 0, y: 0 },
