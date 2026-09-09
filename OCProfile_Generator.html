@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Win98 OC Profile Generator</title>
+    <title>Win98 OC Profile Generator - 레트로 자캐 프로필 생성기</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -200,6 +200,24 @@
             min-width: 0 !important;
         }
 
+        #preview-stage.view-mobile .oc-profile-body {
+            flex-direction: column !important;
+        }
+        #preview-stage.view-mobile .oc-body-col {
+            flex: none !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            max-height: 480px !important;
+            margin-right: 0 !important;
+            margin-bottom: 8px !important;
+        }
+        #preview-stage.view-mobile .oc-info-col {
+            flex: none !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
         @keyframes fadeInOut {
             0% { opacity: 0; transform: translate(-50%, 10px); }
             15% { opacity: 1; transform: translate(-50%, 0); }
@@ -286,7 +304,7 @@
             <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
                 <div class="flex items-center gap-1.5">
                     <img src="https://win98icons.alexmeub.com/icons/png/write_wordpad-1.png" width="16" height="16" alt="Icon">
-                    <span>PROFILE_BUILDER.EXE - 자캐 프로필 에디터 v6.0</span>
+                    <span>OC Profile Generator.EXE</span>
                 </div>
                 <div class="flex items-center gap-1">
                     <button class="win-ctrl-btn" title="최소화">_</button>
@@ -551,7 +569,7 @@
             <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
                 <div class="flex items-center gap-1.5">
                     <img src="https://win98icons.alexmeub.com/icons/png/desktop-0.png" width="16" height="16" alt="Icon">
-                    <span>LIVE PREVIEW - 티스토리 에디터 완벽 호환 모드</span>
+                    <span>LIVE PREVIEW</span>
                 </div>
                 <div class="flex items-center gap-1">
                     <button class="win98-btn text-[10px] py-0 px-1.5" onclick="downloadPreviewAsPng()" title="PNG 이미지 저장">💾 PNG 저장</button>
@@ -595,7 +613,7 @@
         <div class="flex items-center gap-1 flex-1">
             <div class="win98-raised px-2 py-0.5 text-[11px] font-bold flex items-center gap-1 border-t-black border-l-black border-b-white border-r-white">
                 <img src="https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-4.png" width="14" alt="">
-                <span>OC_Profile_Builder v6.0 [Pure-CSS Icon Architecture]</span>
+                <span>OC Profile Generator</span>
             </div>
         </div>
         <div class="win98-sunken-gray px-2 py-0.5 text-[11px] flex items-center gap-2">
@@ -1412,7 +1430,7 @@ ${chipsHtml}
 .article_view .oc-profile-container p,.oc-profile-container p{margin:0!important;padding:0!important;}
 .oc-profile-container a{text-decoration:none!important;}
 .oc-profile-container button{font-family:inherit;}
-.oc-profile-container{position:relative;background:#c0c0c0;border:2px solid;border-color:#ffffff #808080 #808080 #ffffff;box-shadow:1px 1px 0 #000000;padding:10px;font-family:'NeoDunggeunmo','Malgun Gothic',sans-serif;color:#000000;max-width:740px;margin:20px auto;box-sizing:border-box;text-align:left;line-height:1.4;}
+.oc-profile-container{position:relative;background:#c0c0c0;border:2px solid;border-color:#ffffff #808080 #808080 #ffffff;box-shadow:1px 1px 0 #000000;padding:10px;font-family:'NeoDunggeunmo','Malgun Gothic',sans-serif;color:#000000;max-width:740px;margin:20px auto;box-sizing:border-box;text-align:left;line-height:1.4;container-type:inline-size;}
 .oc-profile-titlebar{background:linear-gradient(to right,#000080,#1084d0);color:#ffffff;padding:3px 3px 3px 6px;font-size:11px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;user-select:none;min-height:24px;box-sizing:border-box;}
 .oc-titlebar-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1;line-height:1.3;padding:1px 0;letter-spacing:.3px;}
 .oc-titlebar-ctrls{display:flex;align-items:center;flex-shrink:0;margin-left:6px;}
@@ -1482,6 +1500,11 @@ ${chipsHtml}
 .oc-spec-k{min-width:80px;flex-shrink:0;font-weight:bold;color:#000000;margin-right:8px;line-height:1.45;word-break:keep-all;}
 .oc-spec-v{flex:1 1 auto;min-width:0;color:#111111;line-height:1.45;word-break:break-word;}
 .oc-memo-box{margin-top:8px;padding-top:6px;border-top:1px solid #808080;font-size:11px;color:#404040;line-height:1.5;word-break:break-word;}
+@container (max-width:580px){
+.oc-profile-body{flex-direction:column!important;}
+.oc-body-col{flex:none!important;width:100%!important;max-width:100%!important;min-width:0!important;max-height:480px!important;margin-right:0!important;margin-bottom:8px!important;}
+.oc-info-col{flex:none!important;width:100%!important;max-width:100%!important;}
+}
 @media screen and (max-width:640px){
 .oc-profile-body{flex-direction:column!important;}
 .oc-body-col{flex:none!important;width:100%!important;max-width:100%!important;min-width:0!important;max-height:480px!important;margin-right:0!important;margin-bottom:8px!important;}
