@@ -321,6 +321,53 @@
             animation: fadeInOut 2.4s ease-in-out;
         }
 
+        #slot-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+        }
+
+        /* 고전 파일 목록 느낌의 행 */
+        .slot-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 6px;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px dotted transparent;
+        }
+        .slot-item:hover {
+            background: #eaeaea;
+        }
+        .slot-item.selected {
+            background: #000080;
+            color: #ffffff;
+            border: 1px dotted #ffffff;
+        }
+        .slot-item.selected .slot-item-sub {
+            color: #c8d4ff;
+        }
+        .slot-item-name {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .slot-item-sub {
+            font-size: 10px;
+            color: #666666;
+            flex-shrink: 0;
+        }
+
         #warning-modal {
             position: fixed;
             top: 0;
@@ -350,29 +397,34 @@
                 <div class="flex items-center gap-1">
                     <button class="win-ctrl-btn" title="최소화">_</button>
                     <button class="win-ctrl-btn" title="최대화">□</button>
-                    <button class="win-ctrl-btn" title="비우기" onclick="resetForm()">✕</button>
+                    <button class="win-ctrl-btn" title="닫기">✕</button>
                 </div>
             </div>
 
             <!-- 빠른 도구 모음 -->
-            <div class="p-1 bg-[#c0c0c0] border-b border-[#808080] flex flex-wrap items-center gap-1 text-xs">
-                <button type="button" class="win98-btn text-[11px]" onclick="loadSampleData()">
+            <div class="p-1 bg-[#c0c0c0] border-b border-[#808080] flex items-center gap-1 text-xs flex-nowrap overflow-hidden">
+                <button type="button" class="win98-btn text-[11px] whitespace-nowrap" onclick="openSlotModal('open')" title="예시 캐릭터 또는 저장 슬롯 열기">
                     <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-2.png" width="14" alt="">
-                    샘플 로드
+                    열기
                 </button>
-                <button type="button" class="win98-btn text-[11px]" onclick="resetForm()">
-                    <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png" width="14" alt="">
-                    전체 비우기
+                <button type="button" class="win98-btn text-[11px] whitespace-nowrap" onclick="openSlotModal('save')" title="현재 내용을 슬롯에 저장">
+                    <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-2.png" width="14" alt="">
+                    저장
                 </button>
-                <button type="button" class="win98-btn text-[11px] font-bold text-[#000080]" onclick="triggerManualRender()">
-                    ⚙️ 미리보기 반영
+
+                <div class="h-4 w-px bg-[#808080] border-r border-white mx-1 flex-shrink-0"></div>
+
+                <button type="button" class="win98-btn text-[11px] font-bold text-[#000080] whitespace-nowrap" onclick="triggerManualRender()" title="지금 입력한 내용을 미리보기에 반영">
+                    미리보기 반영
                 </button>
-                <label class="inline-flex items-center gap-1 text-[11px] cursor-pointer ml-1 bg-white/40 px-1 py-0.5 border border-[#808080]">
+                <label class="inline-flex items-center gap-1 text-[11px] cursor-pointer bg-white/40 px-1 py-0.5 border border-[#808080] whitespace-nowrap" title="입력할 때마다 자동으로 반영">
                     <input type="checkbox" id="chk-live-render" onchange="toggleLiveMode()">
                     <span>실시간</span>
                 </label>
-                <button type="button" class="win98-btn text-[11px] font-bold text-[#800000] ml-auto" onclick="copyGeneratedCode()">
-                    📋 코드 복사
+
+                <button type="button" class="win98-btn text-[11px] whitespace-nowrap ml-auto" onclick="resetForm()" title="모든 입력창 비우기">
+                    <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png" width="14" alt="">
+                    비우기
                 </button>
             </div>
 
@@ -661,7 +713,7 @@
         <div class="flex items-center gap-1 flex-1">
             <div class="win98-raised px-2 py-0.5 text-[11px] font-bold flex items-center gap-1 border-t-black border-l-black border-b-white border-r-white">
                 <img src="https://win98icons.alexmeub.com/icons/png/gears-0.png" width="14" alt="">
-                <span>OC_Profile_Builder v4.3</span>
+                <span>OC_Profile_Builder v4.6</span>
             </div>
         </div>
         <div class="win98-sunken-gray px-2 py-0.5 text-[11px] flex items-center gap-2">
@@ -691,6 +743,27 @@
                 <div class="flex justify-end gap-2 w-full">
                     <a id="modal-download-btn" href="#" download="oc_profile.png" class="win98-btn text-xs font-bold text-blue-900 no-underline">💾 PNG 파일 저장</a>
                     <button class="win98-btn text-xs" onclick="closeImageModal()">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 캐릭터 불러오기 / 슬롯 저장 선택창 -->
+    <div id="slot-modal">
+        <div class="win98-raised p-1 shadow-2xl" style="width:400px; max-width:92%;">
+            <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
+                <span id="slot-modal-title">OPEN_CHARACTER.EXE - 불러오기</span>
+                <button class="win-ctrl-btn" onclick="closeSlotModal()">✕</button>
+            </div>
+            <div class="p-3 bg-[#c0c0c0]">
+                <div id="slot-modal-hint" class="text-[11px] mb-1.5 text-gray-800">
+                    불러올 항목을 고르세요.
+                </div>
+                <div id="slot-list" class="win98-sunken p-0.5 mb-2" style="height:150px; overflow-y:auto;"></div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" id="slot-modal-del" class="win98-btn text-xs text-red-700 mr-auto" onclick="deleteSelectedSlot()">슬롯 비우기</button>
+                    <button type="button" id="slot-modal-ok" class="win98-btn text-xs font-bold text-[#000080]" onclick="confirmSlotModal()">열기</button>
+                    <button type="button" class="win98-btn text-xs" onclick="closeSlotModal()">취소</button>
                 </div>
             </div>
         </div>
@@ -745,13 +818,13 @@
             songArtist: "Joseon Beats",
             songUrl: "https://www.youtube.com/watch?v=K4DyBUG242c",
             specTitle: "[ CHARACTER PROFILE ]",
-            colors: ["#100a0a", "#850000", "", ""],
+            colors: ["#000080", "#1084d0", "#c0c0c0", ""],
             specs: [
                 { key: "나이", val: "24세" },
                 { key: "신장/체중", val: "178 cm / 68 kg" },
                 { key: "소속", val: "활빈당 두목" },
                 { key: "특기", val: "축지법, 둔갑술, 분신술" },
-                { key: "상징색", val: "#000080 (조선 코발트 블루)" },
+                { key: "상징색", val: "#000080" },
                 { key: "취미", val: "탐관오리 재물 털기, 붓글씨" }
             ],
             memo: "※ 특이사항: 도술에 매우 능통하여 율도국을 세울 계획을 세우고 있음. 평소에는 신분을 숨기고 봇짐장수로 변장해 저잣거리를 관찰함.",
@@ -800,6 +873,19 @@
                 .replace(/'/g, "&#039;");
         }
 
+        // 슬라이더 min/max와 동일한 값. 슬라이더, +/- 버튼, 직접 드래그가 모두 이 표를 따른다.
+        const TRANSFORM_LIMITS = {
+            body: { zoom: [50, 250], x: [-180, 180], y: [-240, 240] },
+            head: { zoom: [50, 300], x: [-80, 80], y: [-80, 80] }
+        };
+
+        function clampAxis(type, axis, value) {
+            const range = TRANSFORM_LIMITS[type]?.[axis];
+            const num = Math.round(parseFloat(value) || 0);
+            if (!range) return num;
+            return Math.min(Math.max(num, range[0]), range[1]);
+        }
+
         function updateTransformUiLabels(type) {
             const st = transformState[type];
             if (!st) return;
@@ -838,7 +924,7 @@
 
         function onSliderInput(type, axis, val) {
             if (!transformState[type]) return;
-            transformState[type][axis] = parseFloat(val) || 0;
+            transformState[type][axis] = clampAxis(type, axis, val);
             updateTransformUiLabels(type);
             updateLiveElementTransform(type);
             handleInput();
@@ -846,14 +932,8 @@
 
         function stepTransform(type, axis, delta) {
             if (!transformState[type]) return;
-            let current = transformState[type][axis] || 0;
-            let next = current + delta;
-            if (axis === 'zoom') {
-                const min = 50;
-                const max = type === 'body' ? 250 : 300;
-                next = Math.max(min, Math.min(max, next));
-            }
-            transformState[type][axis] = next;
+            const current = transformState[type][axis] || 0;
+            transformState[type][axis] = clampAxis(type, axis, current + delta);
             updateTransformUiLabels(type);
             updateLiveElementTransform(type);
             handleInput();
@@ -900,8 +980,10 @@
                     if (!isDragging) return;
                     const dx = e.clientX - startX;
                     const dy = e.clientY - startY;
-                    transformState[type].x = Math.round(initialPosX + dx);
-                    transformState[type].y = Math.round(initialPosY + dy);
+                    // 슬라이더 범위 안으로 묶는다. 안 그러면 드래그로 범위를 넘긴 뒤
+                    // 슬라이더를 건드리는 순간 이미지가 튄다.
+                    transformState[type].x = clampAxis(type, 'x', initialPosX + dx);
+                    transformState[type].y = clampAxis(type, 'y', initialPosY + dy);
                     updateTransformUiLabels(type);
                     updateLiveElementTransform(type);
                 };
@@ -1025,8 +1107,8 @@
             showToast("미리보기를 반영했습니다!");
         }
 
-        function saveDraftToStorage() {
-            const draftStatus = document.getElementById('draft-status');
+        /* 현재 폼 전체를 한 덩어리 객체로 만든다. 자동 임시저장과 슬롯 저장이 같이 쓴다. */
+        function buildDraftObject() {
             const draft = {
                 title: document.getElementById('cfg-title')?.value || '',
                 fullbodyImg: document.getElementById('cfg-fullbody-img')?.value || '',
@@ -1048,7 +1130,10 @@
                     document.getElementById('cfg-color-4-hex')?.value || ''
                 ],
                 specs: [],
-                transforms: transformState
+                transforms: {
+                    body: Object.assign({}, transformState.body),
+                    head: Object.assign({}, transformState.head)
+                }
             };
 
             const specRows = document.querySelectorAll('#spec-rows-container .spec-row');
@@ -1058,6 +1143,13 @@
                     val: row.querySelector('.spec-val')?.value || ''
                 });
             });
+
+            return draft;
+        }
+
+        function saveDraftToStorage() {
+            const draftStatus = document.getElementById('draft-status');
+            const draft = buildDraftObject();
 
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
@@ -1074,6 +1166,212 @@
                     if (draftStatus) draftStatus.innerText = '임시저장 실패 (저장 공간 부족)';
                 }
             }
+        }
+
+        /* ===== 캐릭터 저장 슬롯 =====
+           자동 임시저장(win98_oc_draft_v4)과 별개로, 슬롯마다 키를 하나씩 쓴다.
+           전부 브라우저 localStorage 안에만 있고 서버로는 아무것도 나가지 않는다. */
+        const SLOT_KEY_PREFIX = 'win98_oc_slot_';
+
+        function readSlot(n) {
+            try {
+                const raw = localStorage.getItem(SLOT_KEY_PREFIX + n);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        let slotModalMode = 'open';
+        let slotSelection = null; // { kind: 'sample' } 또는 { kind: 'slot', n: 1 }
+
+        function openSlotModal(mode) {
+            slotModalMode = mode === 'save' ? 'save' : 'open';
+            slotSelection = null;
+
+            const titleEl = document.getElementById('slot-modal-title');
+            const hintEl = document.getElementById('slot-modal-hint');
+            const okBtn = document.getElementById('slot-modal-ok');
+
+            if (slotModalMode === 'save') {
+                titleEl.innerText = 'SAVE_CHARACTER.EXE - 슬롯 저장';
+                hintEl.innerText = '지금 편집 중인 내용을 넣어둘 슬롯을 고르세요.';
+                okBtn.innerText = '저장';
+            } else {
+                titleEl.innerText = 'OPEN_CHARACTER.EXE - 불러오기';
+                hintEl.innerText = '불러올 항목을 고르세요. (두 번 클릭하면 바로 열립니다)';
+                okBtn.innerText = '열기';
+            }
+
+            renderSlotList();
+            document.getElementById('slot-modal').style.display = 'flex';
+        }
+
+        function closeSlotModal() {
+            const modal = document.getElementById('slot-modal');
+            if (modal) modal.style.display = 'none';
+            slotSelection = null;
+        }
+
+        function renderSlotList() {
+            const list = document.getElementById('slot-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            const makeRow = (icon, name, sub, sel) => {
+                const row = document.createElement('div');
+                row.className = 'slot-item';
+                row.innerHTML = `
+                    <img src="${icon}" width="16" height="16" alt="">
+                    <span class="slot-item-name">${escapeHtml(name)}</span>
+                    <span class="slot-item-sub">${escapeHtml(sub)}</span>
+                `;
+                row.onclick = () => selectSlotItem(sel, row);
+                row.ondblclick = () => { selectSlotItem(sel, row); confirmSlotModal(); };
+                list.appendChild(row);
+            };
+
+            // 예시 캐릭터는 불러오기 창에서만 보인다
+            if (slotModalMode === 'open') {
+                makeRow(
+                    'https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-2.png',
+                    '홍길동 (예시)',
+                    '샘플',
+                    { kind: 'sample' }
+                );
+            }
+
+            for (let n = 1; n <= 3; n++) {
+                const data = readSlot(n);
+                const filled = !!data;
+                const name = filled
+                    ? `${n}. ${(data.charName || '').trim() || '이름 없음'}`
+                    : `${n}. (비어 있음)`;
+                makeRow(
+                    filled
+                        ? 'https://win98icons.alexmeub.com/icons/png/write_wordpad-1.png'
+                        : 'https://win98icons.alexmeub.com/icons/png/notepad_file-2.png',
+                    name,
+                    filled ? (data.savedAt || '') : '',
+                    { kind: 'slot', n: n }
+                );
+            }
+
+            updateSlotModalButtons();
+        }
+
+        function selectSlotItem(sel, rowEl) {
+            slotSelection = sel;
+            document.querySelectorAll('#slot-list .slot-item').forEach(el => el.classList.remove('selected'));
+            if (rowEl) rowEl.classList.add('selected');
+            updateSlotModalButtons();
+        }
+
+        function updateSlotModalButtons() {
+            const okBtn = document.getElementById('slot-modal-ok');
+            const delBtn = document.getElementById('slot-modal-del');
+            if (!okBtn || !delBtn) return;
+
+            okBtn.style.opacity = slotSelection ? '1' : '0.5';
+            const canDelete = slotSelection && slotSelection.kind === 'slot' && !!readSlot(slotSelection.n);
+            delBtn.style.opacity = canDelete ? '1' : '0.5';
+        }
+
+        function confirmSlotModal() {
+            if (!slotSelection) {
+                showToast('먼저 항목을 선택하세요.');
+                return;
+            }
+
+            if (slotModalMode === 'save') {
+                if (slotSelection.kind !== 'slot') return;
+                if (saveToSlot(slotSelection.n)) closeSlotModal();
+                return;
+            }
+
+            if (slotSelection.kind === 'sample') {
+                if (!confirm('예시 캐릭터를 불러오면 지금 편집 중인 내용은 사라집니다. 계속할까요?')) return;
+                loadSampleData();
+                closeSlotModal();
+                return;
+            }
+
+            if (loadFromSlot(slotSelection.n)) closeSlotModal();
+        }
+
+        function deleteSelectedSlot() {
+            if (!slotSelection || slotSelection.kind !== 'slot') {
+                showToast('비울 슬롯을 선택하세요.');
+                return;
+            }
+            if (clearSlot(slotSelection.n)) {
+                slotSelection = null;
+                renderSlotList();
+            }
+        }
+
+        function saveToSlot(n) {
+            const existing = readSlot(n);
+            if (existing) {
+                const who = (existing.charName || '').trim() || '이름 없음';
+                if (!confirm(`슬롯 ${n}에는 이미 "${who}"이(가) 있습니다. 덮어쓸까요?`)) return false;
+            }
+
+            const now = new Date();
+            const data = buildDraftObject();
+            data.savedAt = now.toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })
+                + ' ' + now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+
+            try {
+                localStorage.setItem(SLOT_KEY_PREFIX + n, JSON.stringify(data));
+                showToast(`슬롯 ${n}에 저장했습니다.`);
+                return true;
+            } catch (e) {
+                // 업로드한 로컬 이미지가 용량을 다 먹은 경우
+                const slim = Object.assign({}, data);
+                let stripped = false;
+                if ((slim.fullbodyImg || '').startsWith('data:')) { slim.fullbodyImg = ''; stripped = true; }
+                if ((slim.headImg || '').startsWith('data:')) { slim.headImg = ''; stripped = true; }
+                try {
+                    localStorage.setItem(SLOT_KEY_PREFIX + n, JSON.stringify(slim));
+                    showToast(stripped
+                        ? `슬롯 ${n}에 저장했습니다. 업로드 이미지는 용량이 커서 제외됐습니다.`
+                        : `슬롯 ${n}에 저장했습니다.`);
+                    return true;
+                } catch (e2) {
+                    showToast(`슬롯 ${n} 저장 실패: 저장 공간이 부족합니다.`);
+                    return false;
+                }
+            }
+        }
+
+        function loadFromSlot(n) {
+            const data = readSlot(n);
+            if (!data) {
+                showToast(`슬롯 ${n}은 비어 있습니다.`);
+                return false;
+            }
+            if (!confirm(`슬롯 ${n}을 불러오면 지금 편집 중인 내용은 사라집니다. 계속할까요?`)) return false;
+
+            fillFormWithData(data);
+            saveDraftToStorage();
+            const who = (data.charName || '').trim() || '이름 없음';
+            showToast(`슬롯 ${n} "${who}"을(를) 불러왔습니다.`);
+            return true;
+        }
+
+        function clearSlot(n) {
+            if (!readSlot(n)) {
+                showToast(`슬롯 ${n}은 이미 비어 있습니다.`);
+                return false;
+            }
+            if (!confirm(`슬롯 ${n}을 비울까요? 되돌릴 수 없습니다.`)) return false;
+
+            try {
+                localStorage.removeItem(SLOT_KEY_PREFIX + n);
+            } catch (e) {}
+            showToast(`슬롯 ${n}을 비웠습니다.`);
+            return true;
         }
 
         function loadDraftFromStorage() {
@@ -2285,10 +2583,12 @@ ${floatingPlayerHtml}</div>
             document.getElementById('cfg-spec-title').value = data.specTitle || '[ CHARACTER PROFILE ]';
             document.getElementById('cfg-memo').value = data.memo || '';
 
-            if (data.transforms) {
-                if (data.transforms.body) Object.assign(transformState.body, data.transforms.body);
-                if (data.transforms.head) Object.assign(transformState.head, data.transforms.head);
-            }
+            ['body', 'head'].forEach(type => {
+                const saved = data.transforms?.[type];
+                transformState[type].zoom = clampAxis(type, 'zoom', saved?.zoom ?? 100);
+                transformState[type].x = clampAxis(type, 'x', saved?.x ?? 0);
+                transformState[type].y = clampAxis(type, 'y', saved?.y ?? 0);
+            });
             updateTransformUiLabels('body');
             updateTransformUiLabels('head');
 
@@ -2320,6 +2620,8 @@ ${floatingPlayerHtml}</div>
         }
 
         function resetForm() {
+            if (!confirm('모든 입력창을 비웁니다. 저장하지 않은 내용은 사라집니다. 계속할까요?')) return;
+
             const emptyData = {
                 title: "PROFILE_VIEWER.EXE",
                 fullbodyImg: "",
