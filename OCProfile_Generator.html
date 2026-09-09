@@ -67,6 +67,62 @@
             border-color: var(--win-dark) var(--win-light) var(--win-light) var(--win-dark);
         }
 
+        /* Win98 클래식 트랙바 (슬라이더) */
+        .win98-range {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            height: 16px;
+            margin: 0;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+        .win98-range:focus {
+            outline: 1px dotted #000080;
+            outline-offset: 1px;
+        }
+        .win98-range::-webkit-slider-runnable-track {
+            height: 4px;
+            background: #808080;
+            border-bottom: 1px solid #ffffff;
+            border-right: 1px solid #ffffff;
+            border-top: 1px solid #404040;
+            border-left: 1px solid #404040;
+            box-sizing: border-box;
+        }
+        .win98-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 11px;
+            height: 18px;
+            margin-top: -8px;
+            background: var(--win-gray);
+            border: 2px solid;
+            border-color: #ffffff #555555 #555555 #ffffff;
+            box-shadow: 1px 1px 0px #000000;
+            cursor: ew-resize;
+        }
+        .win98-range::-webkit-slider-thumb:active {
+            border-color: #555555 #ffffff #ffffff #555555;
+        }
+        .win98-range::-moz-range-track {
+            height: 4px;
+            background: #808080;
+            border-bottom: 1px solid #ffffff;
+            border-right: 1px solid #ffffff;
+            border-top: 1px solid #404040;
+            border-left: 1px solid #404040;
+        }
+        .win98-range::-moz-range-thumb {
+            width: 11px;
+            height: 18px;
+            background: var(--win-gray);
+            border: 2px solid;
+            border-color: #ffffff #555555 #555555 #ffffff;
+            box-shadow: 1px 1px 0px #000000;
+            cursor: ew-resize;
+        }
+
         /* Win98 윈도우 버튼 */
         .win98-btn {
             background-color: var(--win-gray);
@@ -189,11 +245,11 @@
             animation: fadeInOut 2.4s ease-in-out;
         }
 
-        /* 미리보기 뷰포트 분리 */
+        /* 미리보기 뷰포트 분리: PC 모드 기준 너비(700px) 및 전신 박스 너비(290px) 고정 */
         #preview-stage.view-pc {
-            width: 100%;
-            max-width: 720px;
-            min-width: 620px;
+            width: 700px !important;
+            max-width: 700px !important;
+            min-width: 700px !important;
         }
         #preview-stage.view-pc .oc-profile-body {
             display: flex !important;
@@ -201,14 +257,14 @@
             align-items: stretch !important;
         }
         #preview-stage.view-pc .oc-body-col {
-            flex: 0 0 44% !important;
-            width: 44% !important;
-            max-width: 44% !important;
+            flex: 0 0 290px !important;
+            width: 290px !important;
+            max-width: 290px !important;
             margin-bottom: 0 !important;
         }
         #preview-stage.view-pc .oc-info-col {
-            flex: 1 1 56% !important;
-            width: 56% !important;
+            flex: 1 1 auto !important;
+            width: auto !important;
             min-width: 0 !important;
         }
 
@@ -262,6 +318,45 @@
             z-index: -1;
             pointer-events: none;
             background: transparent;
+        }
+
+        /* 직접 조작 모서리 툴바 */
+        .preview-interactive-tool {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #ffffff;
+            border: 1px solid #ffffff;
+            border-radius: 2px;
+            padding: 1px 4px;
+            font-size: 10px;
+            font-family: 'NeoDunggeunmo', sans-serif;
+            pointer-events: auto;
+            user-select: none;
+        }
+        .preview-interactive-tool .tool-zoom-text {
+            color: #ffff80;
+            font-size: 9px;
+            font-weight: bold;
+        }
+        .preview-interactive-tool button {
+            background: #c0c0c0;
+            border: 1px solid;
+            border-color: #ffffff #555555 #555555 #ffffff;
+            color: #000000;
+            font-size: 9px;
+            padding: 0 3px;
+            cursor: pointer;
+            line-height: 1.2;
+        }
+        .preview-interactive-tool button:active {
+            border-color: #555555 #ffffff #ffffff #555555;
+            padding: 1px 2px -1px 4px;
         }
     </style>
 </head>
@@ -322,7 +417,7 @@
                     <legend class="px-1 text-[11px] font-bold text-[#000080]">이미지 및 전신 뷰어 설정</legend>
                     
                     <!-- 전신 이미지 -->
-                    <div class="mb-2">
+                    <div class="mb-1.5">
                         <div class="flex items-center justify-between mb-0.5">
                             <label class="text-[11px] font-bold">전신(Fullbody) 이미지 URL:</label>
                             <label class="text-[10px] text-blue-800 underline cursor-pointer" title="내 컴퓨터 사진 선택">
@@ -331,6 +426,40 @@
                             </label>
                         </div>
                         <input type="text" id="cfg-fullbody-img" class="w-full" placeholder="예시: https://blog.kakaocdn.net/dn/... 또는 외부 URL" value="" oninput="handleInput()">
+                    </div>
+
+                    <!-- 전신 구도 및 배율 제어 위젯 (Win98 제어판 스타일) -->
+                    <div class="win98-sunken-gray p-1.5 mb-2">
+                        <div class="flex items-center justify-between pb-1 border-b border-[#808080] mb-1.5">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[11px] font-bold text-black">전신 구도/배율 맞춤</span>
+                                <span class="text-[10px] text-gray-600">(드래그·휠 연동)</span>
+                            </div>
+                            <button type="button" class="win98-btn text-[10px] py-0 px-2" onclick="resetBodyTransform()">초기화</button>
+                        </div>
+                        <div class="space-y-1">
+                            <!-- 배율 트랙바 + 미세조정 버튼 -->
+                            <div class="flex items-center gap-1.5 text-[11px]">
+                                <span class="w-7 text-[10px] font-bold text-gray-800">배율:</span>
+                                <button type="button" class="win98-btn text-[9px] w-4 h-4 p-0 font-bold" onclick="stepTransform('body', 'zoom', -5)">-</button>
+                                <input type="range" id="cfg-body-zoom" min="30" max="300" step="5" value="100" class="win98-range flex-1" oninput="handleSliderChange('body')">
+                                <button type="button" class="win98-btn text-[9px] w-4 h-4 p-0 font-bold" onclick="stepTransform('body', 'zoom', 5)">+</button>
+                                <span id="lbl-body-zoom" class="win98-sunken px-1 text-[10px] font-mono w-10 text-center bg-white">100%</span>
+                            </div>
+                            <!-- 좌우 / 상하 이동 슬라이더 -->
+                            <div class="grid grid-cols-2 gap-2 pt-0.5">
+                                <div class="flex items-center gap-1 text-[11px]">
+                                    <span class="text-[10px] text-gray-700 w-7">좌우:</span>
+                                    <input type="range" id="cfg-body-x" min="-100" max="100" step="1" value="0" class="win98-range flex-1" oninput="handleSliderChange('body')">
+                                    <span id="lbl-body-x" class="win98-sunken px-0.5 text-[9px] font-mono w-8 text-center bg-white">0%</span>
+                                </div>
+                                <div class="flex items-center gap-1 text-[11px]">
+                                    <span class="text-[10px] text-gray-700 w-7">상하:</span>
+                                    <input type="range" id="cfg-body-y" min="-100" max="100" step="1" value="0" class="win98-range flex-1" oninput="handleSliderChange('body')">
+                                    <span id="lbl-body-y" class="win98-sunken px-0.5 text-[9px] font-mono w-8 text-center bg-white">0%</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- 전신 뷰어 배경 & 피팅 모드 -->
@@ -364,6 +493,40 @@
                             </label>
                         </div>
                         <input type="text" id="cfg-head-img" class="w-full" placeholder="예시: https://blog.kakaocdn.net/dn/... 또는 외부 URL" value="" oninput="handleInput()">
+                    </div>
+
+                    <!-- 두상 구도 및 배율 제어 위젯 (Win98 제어판 스타일) -->
+                    <div class="win98-sunken-gray p-1.5 mt-1.5">
+                        <div class="flex items-center justify-between pb-1 border-b border-[#808080] mb-1.5">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[11px] font-bold text-black">두상 구도/배율 맞춤</span>
+                                <span class="text-[10px] text-gray-600">(드래그·휠 연동)</span>
+                            </div>
+                            <button type="button" class="win98-btn text-[10px] py-0 px-2" onclick="resetHeadTransform()">초기화</button>
+                        </div>
+                        <div class="space-y-1">
+                            <!-- 배율 트랙바 + 미세조정 버튼 -->
+                            <div class="flex items-center gap-1.5 text-[11px]">
+                                <span class="w-7 text-[10px] font-bold text-gray-800">배율:</span>
+                                <button type="button" class="win98-btn text-[9px] w-4 h-4 p-0 font-bold" onclick="stepTransform('head', 'zoom', -5)">-</button>
+                                <input type="range" id="cfg-head-zoom" min="50" max="400" step="5" value="100" class="win98-range flex-1" oninput="handleSliderChange('head')">
+                                <button type="button" class="win98-btn text-[9px] w-4 h-4 p-0 font-bold" onclick="stepTransform('head', 'zoom', 5)">+</button>
+                                <span id="lbl-head-zoom" class="win98-sunken px-1 text-[10px] font-mono w-10 text-center bg-white">100%</span>
+                            </div>
+                            <!-- 좌우 / 상하 이동 슬라이더 -->
+                            <div class="grid grid-cols-2 gap-2 pt-0.5">
+                                <div class="flex items-center gap-1 text-[11px]">
+                                    <span class="text-[10px] text-gray-700 w-7">좌우:</span>
+                                    <input type="range" id="cfg-head-x" min="-100" max="100" step="1" value="0" class="win98-range flex-1" oninput="handleSliderChange('head')">
+                                    <span id="lbl-head-x" class="win98-sunken px-0.5 text-[9px] font-mono w-8 text-center bg-white">0%</span>
+                                </div>
+                                <div class="flex items-center gap-1 text-[11px]">
+                                    <span class="text-[10px] text-gray-700 w-7">상하:</span>
+                                    <input type="range" id="cfg-head-y" min="-100" max="100" step="1" value="0" class="win98-range flex-1" oninput="handleSliderChange('head')">
+                                    <span id="lbl-head-y" class="win98-sunken px-0.5 text-[9px] font-mono w-8 text-center bg-white">0%</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </fieldset>
 
@@ -595,6 +758,12 @@
         const STORAGE_KEY = 'win98_oc_draft_v3';
         const OC_FONT_URL = 'https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/NeoDunggeunmo.woff';
 
+        // 전신 및 두상 위치/배율 상태
+        const transformState = {
+            body: { zoom: 100, x: 0, y: 0 },
+            head: { zoom: 100, x: 0, y: 0 }
+        };
+
         // 홍길동 더미 샘플 데이터
         const SAMPLE_DATA = {
             title: "PROFILE_VIEWER.EXE - CHAR_DATA",
@@ -602,6 +771,12 @@
             headImg: "https://images.placeholders.dev/?width=120&height=120&text=FACE&theme=classic",
             bodyBg: "transparent",
             bodyFit: "contain",
+            bodyZoom: 100,
+            bodyX: 0,
+            bodyY: 0,
+            headZoom: 100,
+            headX: 0,
+            headY: 0,
             charName: "홍길동 (Hong Gil-dong)",
             charSub: "소속: 활빈당 의적단\n상태: 동에 번쩍 서에 번쩍 / 활동 중",
             quote: "\"아버지를 아버지라 부르지 못하고, 형을 형이라 부르지 못하니…….\"",
@@ -615,7 +790,7 @@
                 { key: "신장/체중", val: "178 cm / 68 kg" },
                 { key: "소속", val: "활빈당 두목" },
                 { key: "특기", val: "축지법, 둔갑술, 분신술" },
-                { key: "상징색", val: "#000080 (조선 코발트 블루)" },
+                { key: "상징색", val: "#000080" },
                 { key: "취미", val: "탐관오리 재물 털기, 붓글씨" }
             ],
             memo: "※ 특이사항: 도술에 매우 능통하여 율도국을 세울 계획을 세우고 있음. 평소에는 신분을 숨기고 봇짐장수로 변장해 저잣거리를 관찰함."
@@ -790,42 +965,198 @@
             showToast("미리보기를 반영했습니다!");
         }
 
+        function updateTransformUiLabels() {
+            const bodyZoom = transformState.body.zoom ?? 100;
+            const bodyX = transformState.body.x ?? 0;
+            const bodyY = transformState.body.y ?? 0;
+
+            const headZoom = transformState.head.zoom ?? 100;
+            const headX = transformState.head.x ?? 0;
+            const headY = transformState.head.y ?? 0;
+
+            // 전신 슬라이더 및 텍스트 동기화
+            const bZoomInp = document.getElementById('cfg-body-zoom');
+            const bXInp = document.getElementById('cfg-body-x');
+            const bYInp = document.getElementById('cfg-body-y');
+            const bZoomLbl = document.getElementById('lbl-body-zoom');
+            const bXLbl = document.getElementById('lbl-body-x');
+            const bYLbl = document.getElementById('lbl-body-y');
+
+            if (bZoomInp) bZoomInp.value = bodyZoom;
+            if (bXInp) bXInp.value = bodyX;
+            if (bYInp) bYInp.value = bodyY;
+            if (bZoomLbl) bZoomLbl.innerText = `${bodyZoom}%`;
+            if (bXLbl) bXLbl.innerText = `${bodyX}%`;
+            if (bYLbl) bYLbl.innerText = `${bodyY}%`;
+
+            // 두상 슬라이더 및 텍스트 동기화
+            const hZoomInp = document.getElementById('cfg-head-zoom');
+            const hXInp = document.getElementById('cfg-head-x');
+            const hYInp = document.getElementById('cfg-head-y');
+            const hZoomLbl = document.getElementById('lbl-head-zoom');
+            const hXLbl = document.getElementById('lbl-head-x');
+            const hYLbl = document.getElementById('lbl-head-y');
+
+            if (hZoomInp) hZoomInp.value = headZoom;
+            if (hXInp) hXInp.value = headX;
+            if (hYInp) hYInp.value = headY;
+            if (hZoomLbl) hZoomLbl.innerText = `${headZoom}%`;
+            if (hXLbl) hXLbl.innerText = `${headX}%`;
+            if (hYLbl) hYLbl.innerText = `${headY}%`;
+        }
+
+        /* [+-] 미세 조절 버튼 핸들러 */
+        function stepTransform(type, prop, delta) {
+            if (!transformState[type]) return;
+            let val = transformState[type][prop] + delta;
+            if (prop === 'zoom') {
+                const minZ = type === 'body' ? 30 : 50;
+                const maxZ = type === 'body' ? 300 : 400;
+                val = Math.max(minZ, Math.min(maxZ, val));
+            } else {
+                val = Math.max(-100, Math.min(100, val));
+            }
+            transformState[type][prop] = val;
+            updateLiveElementTransform(type);
+            updateTransformUiLabels();
+            debounceUpdateCode();
+        }
+
+        /* 슬라이더(스크롤)를 움직였을 때 실시간 반영 핸들러 */
+        function handleSliderChange(type) {
+            const zoomInp = document.getElementById(`cfg-${type}-zoom`);
+            const xInp = document.getElementById(`cfg-${type}-x`);
+            const yInp = document.getElementById(`cfg-${type}-y`);
+
+            if (!zoomInp || !xInp || !yInp) return;
+
+            transformState[type].zoom = Number(zoomInp.value);
+            transformState[type].x = Number(xInp.value);
+            transformState[type].y = Number(yInp.value);
+
+            const zoomLbl = document.getElementById(`lbl-${type}-zoom`);
+            const xLbl = document.getElementById(`lbl-${type}-x`);
+            const yLbl = document.getElementById(`lbl-${type}-y`);
+
+            if (zoomLbl) zoomLbl.innerText = `${transformState[type].zoom}%`;
+            if (xLbl) xLbl.innerText = `${transformState[type].x}%`;
+            if (yLbl) yLbl.innerText = `${transformState[type].y}%`;
+
+            updateLiveElementTransform(type);
+            debounceUpdateCode();
+        }
+
+        function updateLiveElementTransform(type) {
+            const container = type === 'body'
+                ? document.querySelector('#rendered-output .oc-body-col')
+                : document.querySelector('#rendered-output .oc-head-img');
+            if (!container) return;
+
+            const img = container.querySelector('img');
+            if (img) {
+                const z = transformState[type].zoom / 100;
+                const x = transformState[type].x;
+                const y = transformState[type].y;
+                if (z !== 1 || x !== 0 || y !== 0) {
+                    img.style.transform = `translate(${x}%, ${y}%) scale(${z})`;
+                    img.style.transformOrigin = 'center center';
+                } else {
+                    img.style.transform = '';
+                    img.style.transformOrigin = '';
+                }
+            }
+        }
+
+        function resetBodyTransform() {
+            transformState.body = { zoom: 100, x: 0, y: 0 };
+            updateLiveElementTransform('body');
+            updateTransformUiLabels();
+            updateRawCodeTextarea();
+            showToast("전신 이미지 위치/배율을 초기화했습니다.");
+        }
+
+        function resetHeadTransform() {
+            transformState.head = { zoom: 100, x: 0, y: 0 };
+            updateLiveElementTransform('head');
+            updateTransformUiLabels();
+            updateRawCodeTextarea();
+            showToast("두상 이미지 위치/배율을 초기화했습니다.");
+        }
+
+        /* 임시저장: 저장 공간이 부족하면 업로드 이미지를 뺀 채로 다시 저장하고 사용자에게 알림 */
+        let quotaWarned = false;
         function saveDraftToStorage() {
+            const draftStatus = document.getElementById('draft-status');
+
+            const draft = {
+                title: document.getElementById('cfg-title')?.value || '',
+                fullbodyImg: document.getElementById('cfg-fullbody-img')?.value || '',
+                headImg: document.getElementById('cfg-head-img')?.value || '',
+                bodyBg: document.getElementById('cfg-body-bg')?.value || 'transparent',
+                bodyFit: document.getElementById('cfg-body-fit')?.value || 'contain',
+                bodyZoom: Number(transformState.body.zoom ?? 100),
+                bodyX: Number(transformState.body.x ?? 0),
+                bodyY: Number(transformState.body.y ?? 0),
+                headZoom: Number(transformState.head.zoom ?? 100),
+                headX: Number(transformState.head.x ?? 0),
+                headY: Number(transformState.head.y ?? 0),
+                charName: document.getElementById('cfg-char-name')?.value || '',
+                charSub: document.getElementById('cfg-char-sub')?.value || '',
+                quote: document.getElementById('cfg-quote')?.value || '',
+                songTitle: document.getElementById('cfg-song-title')?.value || '',
+                songArtist: document.getElementById('cfg-song-artist')?.value || '',
+                songUrl: document.getElementById('cfg-song-url')?.value || '',
+                specTitle: document.getElementById('cfg-spec-title')?.value || '',
+                memo: document.getElementById('cfg-memo')?.value || '',
+                colors: [
+                    document.getElementById('cfg-color-1-hex')?.value || '',
+                    document.getElementById('cfg-color-2-hex')?.value || '',
+                    document.getElementById('cfg-color-3-hex')?.value || '',
+                    document.getElementById('cfg-color-4-hex')?.value || ''
+                ],
+                specs: []
+            };
+
+            const specRows = document.querySelectorAll('#spec-rows-container .spec-row');
+            specRows.forEach(row => {
+                const k = row.querySelector('.spec-key')?.value || '';
+                const v = row.querySelector('.spec-val')?.value || '';
+                draft.specs.push({ key: k, val: v });
+            });
+
+            const stamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
             try {
-                const draft = {
-                    title: document.getElementById('cfg-title')?.value || '',
-                    fullbodyImg: document.getElementById('cfg-fullbody-img')?.value || '',
-                    headImg: document.getElementById('cfg-head-img')?.value || '',
-                    bodyBg: document.getElementById('cfg-body-bg')?.value || 'transparent',
-                    bodyFit: document.getElementById('cfg-body-fit')?.value || 'contain',
-                    charName: document.getElementById('cfg-char-name')?.value || '',
-                    charSub: document.getElementById('cfg-char-sub')?.value || '',
-                    quote: document.getElementById('cfg-quote')?.value || '',
-                    songTitle: document.getElementById('cfg-song-title')?.value || '',
-                    songArtist: document.getElementById('cfg-song-artist')?.value || '',
-                    songUrl: document.getElementById('cfg-song-url')?.value || '',
-                    specTitle: document.getElementById('cfg-spec-title')?.value || '',
-                    memo: document.getElementById('cfg-memo')?.value || '',
-                    colors: [
-                        document.getElementById('cfg-color-1-hex')?.value || '',
-                        document.getElementById('cfg-color-2-hex')?.value || '',
-                        document.getElementById('cfg-color-3-hex')?.value || '',
-                        document.getElementById('cfg-color-4-hex')?.value || ''
-                    ],
-                    specs: []
-                };
-
-                const specRows = document.querySelectorAll('#spec-rows-container .spec-row');
-                specRows.forEach(row => {
-                    const k = row.querySelector('.spec-key')?.value || '';
-                    const v = row.querySelector('.spec-val')?.value || '';
-                    draft.specs.push({ key: k, val: v });
-                });
-
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
-                const draftStatus = document.getElementById('draft-status');
-                if (draftStatus) draftStatus.innerText = '임시저장됨: ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            } catch (e) {}
+                if (draftStatus) draftStatus.innerText = '임시저장됨: ' + stamp;
+                return;
+            } catch (e) {
+                // 용량 초과 시 이미지 제외 저장 시도
+            }
+
+            const slim = Object.assign({}, draft);
+            let strippedImage = false;
+            if (slim.fullbodyImg.startsWith('data:')) { slim.fullbodyImg = ''; strippedImage = true; }
+            if (slim.headImg.startsWith('data:')) { slim.headImg = ''; strippedImage = true; }
+
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
+                if (draftStatus) {
+                    draftStatus.innerText = strippedImage
+                        ? '임시저장됨 (업로드 이미지 제외): ' + stamp
+                        : '임시저장됨: ' + stamp;
+                }
+                if (strippedImage && !quotaWarned) {
+                    quotaWarned = true;
+                    showToast("업로드 이미지는 용량이 커서 임시저장에서 빠집니다. 이미지 URL 사용을 권장합니다.");
+                }
+            } catch (e2) {
+                if (draftStatus) draftStatus.innerText = '임시저장 실패 (저장 공간 부족)';
+                if (!quotaWarned) {
+                    quotaWarned = true;
+                    showToast("임시저장 공간이 부족합니다. 작업 내용을 코드로 복사해두세요.");
+                }
+            }
         }
 
         function loadDraftFromStorage() {
@@ -907,6 +1238,25 @@
             const quoteText = document.getElementById('cfg-quote')?.value.trim() || '';
             const bgStyle = document.getElementById('cfg-body-bg')?.value || 'transparent';
             const fitMode = document.getElementById('cfg-body-fit')?.value || 'contain';
+
+            // 이미지 배율 및 위치 CSS
+            const bodyZoom = Number(transformState.body.zoom ?? 100);
+            const bodyX = Number(transformState.body.x ?? 0);
+            const bodyY = Number(transformState.body.y ?? 0);
+
+            const headZoom = Number(transformState.head.zoom ?? 100);
+            const headX = Number(transformState.head.x ?? 0);
+            const headY = Number(transformState.head.y ?? 0);
+
+            let bodyTransformCss = '';
+            if (bodyZoom !== 100 || bodyX !== 0 || bodyY !== 0) {
+                bodyTransformCss = `transform: translate(${bodyX}%, ${bodyY}%) scale(${bodyZoom / 100}); transform-origin: center center;`;
+            }
+
+            let headTransformCss = '';
+            if (headZoom !== 100 || headX !== 0 || headY !== 0) {
+                headTransformCss = `transform: translate(${headX}%, ${headY}%) scale(${headZoom / 100}); transform-origin: center center;`;
+            }
 
             // 1) 테마곡 바
             const songTitle = document.getElementById('cfg-song-title')?.value.trim() || '';
@@ -1097,9 +1447,9 @@
     box-sizing: border-box;
 }
 .oc-body-col {
-    flex: 0 0 44%;
-    width: 44%;
-    max-width: 44%;
+    flex: 0 0 290px;
+    width: 290px;
+    max-width: 290px;
     min-width: 0;
     box-sizing: border-box;
     border: 2px solid;
@@ -1117,10 +1467,11 @@
 .oc-body-col img {
     ${bodyImgCss}
     margin: 0 auto !important;
+    ${bodyTransformCss}
 }
 .oc-info-col {
-    flex: 1 1 56%;
-    width: calc(56% - 12px);
+    flex: 1 1 auto;
+    width: calc(100% - 302px);
     min-width: 0;
     box-sizing: border-box;
     display: flex;
@@ -1197,6 +1548,7 @@
     height: 100% !important;
     object-fit: cover !important;
     display: block !important;
+    ${headTransformCss}
 }
 .oc-name-meta {
     flex: 1;
@@ -1450,6 +1802,21 @@ ${specsHtml}                </div>
             }, 70);
         }
 
+        function updateRawCodeTextarea() {
+            const code = generateOutputHTML();
+            const codeEl = document.getElementById('raw-code-output');
+            if (codeEl) codeEl.value = code;
+            saveDraftToStorage();
+        }
+
+        let wheelDebounceTimer = null;
+        function debounceUpdateCode() {
+            if (wheelDebounceTimer) clearTimeout(wheelDebounceTimer);
+            wheelDebounceTimer = setTimeout(() => {
+                updateRawCodeTextarea();
+            }, 120);
+        }
+
         function executeRender() {
             const htmlCode = generateOutputHTML();
             const previewEl = document.getElementById('rendered-output');
@@ -1460,6 +1827,113 @@ ${specsHtml}                </div>
 
             const statusEl = document.getElementById('editor-status');
             if (statusEl) statusEl.innerText = '준비 완료. [미리보기 반영]을 누르세요';
+
+            attachInteractiveImageControls();
+            updateTransformUiLabels();
+        }
+
+        /* [직접 조작 엔진] 미리보기 창의 전신 및 두상 사진에 드래그/휠 줌 리스너 연결 */
+        function attachInteractiveImageControls() {
+            const bodyCol = document.querySelector('#rendered-output .oc-body-col');
+            const headBox = document.querySelector('#rendered-output .oc-head-img');
+
+            if (bodyCol) setupInteractiveTarget(bodyCol, 'body');
+            if (headBox) setupInteractiveTarget(headBox, 'head');
+        }
+
+        function setupInteractiveTarget(container, type) {
+            const img = container.querySelector('img');
+            if (!img) return;
+
+            // 브라우저 기본 고스트 드래그 방지
+            img.draggable = false;
+            container.style.cursor = 'grab';
+            container.style.userSelect = 'none';
+            container.style.position = 'relative';
+
+            // 1. 마우스 휠 줌 (Zoom In / Out)
+            container.onwheel = function(e) {
+                e.preventDefault();
+                const zoomDelta = e.deltaY < 0 ? 5 : -5;
+                let newZoom = transformState[type].zoom + zoomDelta;
+                const minZ = type === 'body' ? 30 : 50;
+                const maxZ = type === 'body' ? 300 : 400;
+                newZoom = Math.max(minZ, Math.min(maxZ, newZoom));
+                transformState[type].zoom = newZoom;
+
+                updateLiveElementTransform(type);
+                updateTransformUiLabels();
+                debounceUpdateCode();
+            };
+
+            // 2. 마우스 / 터치 직접 드래그 이동 (Pan X, Y)
+            let isDragging = false;
+            let startX = 0, startY = 0;
+            let initX = 0, initY = 0;
+
+            function onPointerDown(e) {
+                isDragging = true;
+                container.style.cursor = 'grabbing';
+
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                startX = clientX;
+                startY = clientY;
+                initX = transformState[type].x;
+                initY = transformState[type].y;
+
+                window.addEventListener('mousemove', onPointerMove, { passive: false });
+                window.addEventListener('mouseup', onPointerUp);
+                window.addEventListener('touchmove', onPointerMove, { passive: false });
+                window.addEventListener('touchend', onPointerUp);
+                e.preventDefault();
+            }
+
+            function onPointerMove(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+
+                const rect = img.getBoundingClientRect();
+                const currentZoom = (transformState[type].zoom / 100) || 1;
+                const unscaledW = (rect.width / currentZoom) || 100;
+                const unscaledH = (rect.height / currentZoom) || 100;
+
+                const deltaPercentX = (dx / unscaledW) * 100;
+                const deltaPercentY = (dy / unscaledH) * 100;
+
+                let newX = Math.round(initX + deltaPercentX);
+                let newY = Math.round(initY + deltaPercentY);
+
+                newX = Math.max(-100, Math.min(100, newX));
+                newY = Math.max(-100, Math.min(100, newY));
+
+                transformState[type].x = newX;
+                transformState[type].y = newY;
+
+                updateLiveElementTransform(type);
+                updateTransformUiLabels();
+            }
+
+            function onPointerUp() {
+                if (!isDragging) return;
+                isDragging = false;
+                container.style.cursor = 'grab';
+
+                window.removeEventListener('mousemove', onPointerMove);
+                window.removeEventListener('mouseup', onPointerUp);
+                window.removeEventListener('touchmove', onPointerMove);
+                window.removeEventListener('touchend', onPointerUp);
+
+                updateRawCodeTextarea();
+            }
+
+            container.onmousedown = onPointerDown;
+            container.ontouchstart = onPointerDown;
         }
 
         /* =========================================================
@@ -1555,6 +2029,10 @@ ${specsHtml}                </div>
                         cacheBust: true,
                         style: {
                             margin: '0'
+                        },
+                        filter: (node) => {
+                            if (node.classList && node.classList.contains('preview-interactive-tool')) return false;
+                            return true;
                         }
                     };
                     if (fontCss) {
@@ -1564,7 +2042,12 @@ ${specsHtml}                </div>
                     const dataUrl = await window.htmlToImage.toPng(liveTarget, options);
                     return { blob, dataUrl };
                 } else if (window.html2canvas) {
-                    const canvas = await html2canvas(liveTarget, { scale: 2, backgroundColor: null, useCORS: true });
+                    const canvas = await html2canvas(liveTarget, { 
+                        scale: 2, 
+                        backgroundColor: null, 
+                        useCORS: true,
+                        ignoreElements: (el) => el.classList && el.classList.contains('preview-interactive-tool')
+                    });
                     const dataUrl = canvas.toDataURL('image/png');
                     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
                     return { blob, dataUrl };
@@ -1719,6 +2202,18 @@ ${specsHtml}                </div>
             document.getElementById('cfg-head-img').value = data.headImg || '';
             document.getElementById('cfg-body-bg').value = data.bodyBg || 'transparent';
             document.getElementById('cfg-body-fit').value = data.bodyFit || 'contain';
+
+            // 배율 및 위치 상태 복원
+            transformState.body.zoom = Number(data.bodyZoom ?? 100);
+            transformState.body.x = Number(data.bodyX ?? 0);
+            transformState.body.y = Number(data.bodyY ?? 0);
+
+            transformState.head.zoom = Number(data.headZoom ?? 100);
+            transformState.head.x = Number(data.headX ?? 0);
+            transformState.head.y = Number(data.headY ?? 0);
+
+            updateTransformUiLabels();
+
             document.getElementById('cfg-char-name').value = data.charName || '';
             document.getElementById('cfg-char-sub').value = data.charSub || '';
             document.getElementById('cfg-quote').value = data.quote || '';
@@ -1764,6 +2259,12 @@ ${specsHtml}                </div>
                 headImg: "",
                 bodyBg: "transparent",
                 bodyFit: "contain",
+                bodyZoom: 100,
+                bodyX: 0,
+                bodyY: 0,
+                headZoom: 100,
+                headX: 0,
+                headY: 0,
                 charName: "",
                 charSub: "",
                 quote: "",
