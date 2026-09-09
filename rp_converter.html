@@ -1902,9 +1902,10 @@ async function saveImage() {
   if (fmt !== 'none') { savePagedImages(); return; }
 
   showToast('이미지를 만드는 중...');
+  const cap = cloneForCapture(target);
   try {
     const cfg = getConfig();
-    const canvas = await html2canvas(target, {
+    const canvas = await html2canvas(cap.clone, {
       backgroundColor: cfg.pageColor,
       scale: 2,
       useCORS: true,
@@ -1929,6 +1930,8 @@ async function saveImage() {
   } catch(e) {
     console.error(e);
     showToast('이미지 저장 실패');
+  } finally {
+    document.body.removeChild(cap.holder);
   }
 }
 
@@ -2322,6 +2325,60 @@ function makeQuotePiece(item) {
   return shell;
 }
 
+// 여러 줄에 걸친 형광(<mark>)을 줄 단위 조각으로 나눈다.
+// html2canvas는 여러 줄 인라인 요소의 배경을 하나의 큰 사각형으로 그려서
+// 사이에 낀 다른 문장까지 칠해버리므로, 캡처 직전에 줄마다 잘라준다.
+function splitMarksForCapture(root) {
+  root.querySelectorAll('mark[data-hl]').forEach(mk => {
+    const style = mk.getAttribute('style') || '';
+    const text = mk.textContent;
+    if (!text) return;
+
+    // 글자별 위치를 재서 줄이 바뀌는 지점을 찾는다
+    const tn = mk.firstChild;
+    if (!tn || tn.nodeType !== 3 || mk.childNodes.length !== 1) return;
+    const range = document.createRange();
+    const lines = [];
+    let start = 0, prevTop = null;
+    for (let i = 0; i < text.length; i++) {
+      range.setStart(tn, i);
+      range.setEnd(tn, i + 1);
+      const r = range.getBoundingClientRect();
+      const top = Math.round(r.top);
+      if (prevTop === null) prevTop = top;
+      else if (Math.abs(top - prevTop) > 2) { // 줄이 바뀜
+        lines.push(text.slice(start, i));
+        start = i;
+        prevTop = top;
+      }
+    }
+    lines.push(text.slice(start));
+    if (lines.length <= 1) return; // 한 줄이면 그대로 둬도 문제없음
+
+    // 줄마다 별도 span 으로 교체 (각자 자기 배경만 칠하게)
+    const frag = document.createDocumentFragment();
+    lines.forEach(line => {
+      const sp = document.createElement('span');
+      sp.setAttribute('style', style);
+      sp.textContent = line;
+      frag.appendChild(sp);
+    });
+    mk.replaceWith(frag);
+  });
+}
+
+// 캡처용으로 요소를 화면 밖에 복제한다 (원본 미리보기를 건드리지 않기 위해)
+function cloneForCapture(el) {
+  const holder = document.createElement('div');
+  holder.style.cssText = `position:fixed;left:-99999px;top:0;width:${el.offsetWidth}px;`;
+  const clone = el.cloneNode(true);
+  clone.style.margin = '0';
+  holder.appendChild(clone);
+  document.body.appendChild(holder);
+  splitMarksForCapture(clone);
+  return { holder, clone };
+}
+
 // 카드 안의 이미지가 다 로드될 때까지 기다린다 (캡처 전 안전장치)
 function waitForImages(root) {
   const imgs = Array.from(root.querySelectorAll('img'));
@@ -2466,6 +2523,7 @@ async function saveQuoteCards() {
   const built = buildQuoteCards();
   if (!built) { showToast('먼저 발췌할 부분을 골라주세요'); return; }
   await waitForImages(built.holder);
+  splitMarksForCapture(built.holder);
   const cfg = getConfig();
   const { holder, cards, W } = built;
   const scale = Math.min(4, 1440 / W);
@@ -2514,6 +2572,7 @@ async function copyQuoteCards() {
   const built = buildQuoteCards();
   if (!built) { showToast('먼저 발췌할 부분을 골라주세요'); return; }
   await waitForImages(built.holder);
+  splitMarksForCapture(built.holder);
   const cfg = getConfig();
   const { holder, cards, W } = built;
   const scale = Math.min(4, 1440 / W);
@@ -2555,6 +2614,7 @@ async function savePagedImages() {
 
   // 각 페이지 하단 가운데에 쪽수 표기
   addPageFooters(pages, cfg, hasCover);
+  splitMarksForCapture(holder);
 
   const scale = Math.min(4, PAGE_WIDTH_PX / width);
   const fname = (cfg.meta.title || 'log').replace(/[^\w가-힣\-]/g,'_');
@@ -2988,9 +3048,10 @@ async function copyImage() {
   }
 
   showToast('이미지를 만드는 중...');
+  const cap = cloneForCapture(target);
   try {
     const cfg = getConfig();
-    const canvas = await html2canvas(target, {
+    const canvas = await html2canvas(cap.clone, {
       backgroundColor: cfg.pageColor,
       scale: 2,
       useCORS: true,
@@ -3011,6 +3072,8 @@ async function copyImage() {
   } catch(e) {
     console.error(e);
     showToast('이미지 복사 실패');
+  } finally {
+    document.body.removeChild(cap.holder);
   }
 }
 
