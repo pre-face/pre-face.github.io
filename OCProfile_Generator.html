@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Win98 OC Profile Generator - 레트로 자캐 프로필 생성기</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 차세대 고화질 DOM 캡처 엔진 (화면 100% 완벽 일치) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
-    <!-- html2canvas 라이브러리 (폴백 전용) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -46,7 +43,6 @@
             flex-direction: column;
         }
 
-        /* 볼록한 외곽선 (Raised) */
         .win98-raised {
             background-color: var(--win-gray);
             border: 2px solid;
@@ -54,7 +50,6 @@
             box-shadow: 1px 1px 0px #000000;
         }
 
-        /* 오목한 내부 웰 (Sunken) */
         .win98-sunken {
             background-color: #ffffff;
             border: 2px solid;
@@ -62,68 +57,11 @@
         }
 
         .win98-sunken-gray {
-            background-color: var(--win-gray);
+            background-color: #d4d0c8;
             border: 2px solid;
             border-color: var(--win-dark) var(--win-light) var(--win-light) var(--win-dark);
         }
 
-        /* Win98 클래식 트랙바 (슬라이더) */
-        .win98-range {
-            -webkit-appearance: none;
-            appearance: none;
-            background: transparent;
-            height: 16px;
-            margin: 0;
-            cursor: pointer;
-            vertical-align: middle;
-        }
-        .win98-range:focus {
-            outline: 1px dotted #000080;
-            outline-offset: 1px;
-        }
-        .win98-range::-webkit-slider-runnable-track {
-            height: 4px;
-            background: #808080;
-            border-bottom: 1px solid #ffffff;
-            border-right: 1px solid #ffffff;
-            border-top: 1px solid #404040;
-            border-left: 1px solid #404040;
-            box-sizing: border-box;
-        }
-        .win98-range::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 11px;
-            height: 18px;
-            margin-top: -8px;
-            background: var(--win-gray);
-            border: 2px solid;
-            border-color: #ffffff #555555 #555555 #ffffff;
-            box-shadow: 1px 1px 0px #000000;
-            cursor: ew-resize;
-        }
-        .win98-range::-webkit-slider-thumb:active {
-            border-color: #555555 #ffffff #ffffff #555555;
-        }
-        .win98-range::-moz-range-track {
-            height: 4px;
-            background: #808080;
-            border-bottom: 1px solid #ffffff;
-            border-right: 1px solid #ffffff;
-            border-top: 1px solid #404040;
-            border-left: 1px solid #404040;
-        }
-        .win98-range::-moz-range-thumb {
-            width: 11px;
-            height: 18px;
-            background: var(--win-gray);
-            border: 2px solid;
-            border-color: #ffffff #555555 #555555 #ffffff;
-            box-shadow: 1px 1px 0px #000000;
-            cursor: ew-resize;
-        }
-
-        /* Win98 윈도우 버튼 */
         .win98-btn {
             background-color: var(--win-gray);
             border: 2px solid;
@@ -149,7 +87,6 @@
             padding: 4px 7px 2px 9px;
         }
 
-        /* 컨트롤 미니 버튼 */
         .win-ctrl-btn {
             width: 16px;
             height: 14px;
@@ -188,19 +125,44 @@
             background-color: #ffffee;
         }
 
-        /* 투명 격자 패턴 */
-        .checkerboard-bg {
-            background-color: #e5e5e5;
-            background-image: 
-                linear-gradient(45deg, #ccc 25%, transparent 25%), 
-                linear-gradient(-45deg, #ccc 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #ccc 75%), 
-                linear-gradient(-45deg, transparent 75%, #ccc 75%);
-            background-size: 16px 16px;
-            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+        /* Windows 98 고전 입체 슬라이더 */
+        input[type="range"].win98-range {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 14px;
+            background: transparent;
+            outline: none;
+            margin: 2px 0;
+            cursor: pointer;
         }
 
-        /* 레트로 스크롤바 */
+        input[type="range"].win98-range::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            background: #808080;
+            border-top: 1px solid #000000;
+            border-bottom: 1px solid #ffffff;
+            box-sizing: border-box;
+        }
+
+        input[type="range"].win98-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 11px;
+            height: 18px;
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #555555 #555555 #ffffff;
+            box-shadow: 1px 1px 0px #000000;
+            margin-top: -7px;
+            cursor: ew-resize;
+        }
+
+        input[type="range"].win98-range:active::-webkit-slider-thumb {
+            border-color: #555555 #ffffff #ffffff #555555;
+        }
+
         ::-webkit-scrollbar {
             width: 14px;
             height: 14px;
@@ -219,20 +181,134 @@
             border-color: #808080 #fff #fff #808080;
         }
 
-        /* 드래그 앤 드롭 행 스타일 */
-        .spec-row {
-            transition: background-color 0.15s;
+        .checkerboard-bg {
+            background-color: #e5e5e5;
+            background-image: 
+                linear-gradient(45deg, #ccc 25%, transparent 25%), 
+                linear-gradient(-45deg, #ccc 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #ccc 75%), 
+                linear-gradient(-45deg, transparent 75%, #ccc 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
         }
-        .spec-row.dragging {
-            opacity: 0.5;
-            background-color: #b0c4de !important;
-        }
-        .drag-handle {
+
+        .oc-interactive-img {
             cursor: grab;
+            transition: transform 0.05s ease-out;
             touch-action: none;
         }
-        .drag-handle:active {
+        .oc-interactive-img:active {
             cursor: grabbing;
+        }
+
+        .oc-media-wrap {
+            position: relative;
+            width: 100%;
+            margin-bottom: 8px;
+            box-sizing: border-box;
+        }
+
+        /* 플로팅 플레이어: 화면 기준 고정 위치라 프로필 박스 밖으로도 자유롭게 이동 */
+        .oc-floating-player {
+            display: none;
+            position: fixed;
+            top: 90px;
+            left: 40px;
+            width: 300px;
+            z-index: 99998;
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            box-shadow: 3px 4px 12px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+        }
+        .oc-floating-player.is-minimized .oc-drawer-body {
+            height: 0px !important;
+            min-height: 0px !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        .oc-drawer-titlebar {
+            background: linear-gradient(to right, #000080, #1084d0);
+            color: #ffffff;
+            padding: 2px 5px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            min-height: 20px;
+            box-sizing: border-box;
+            cursor: move;
+            touch-action: none;
+        }
+        .oc-drawer-title-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 10px;
+            pointer-events: none;
+        }
+        .oc-drawer-ctrls {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .oc-drawer-btn {
+            width: 15px;
+            height: 13px;
+            background: #c0c0c0;
+            border: 1px solid;
+            border-color: #ffffff #555555 #555555 #ffffff;
+            color: #000000;
+            font-size: 9px;
+            font-weight: bold;
+            line-height: 1;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+        .oc-drawer-btn:active {
+            border-color: #555555 #ffffff #ffffff #555555;
+            padding: 1px 0 0 1px;
+        }
+        .oc-drawer-body {
+            width: 100%;
+            height: 168px;
+            background: #000000;
+            overflow: hidden;
+            position: relative;
+            transition: height 0.15s ease;
+        }
+        .oc-drawer-body iframe {
+            width: 100% !important;
+            height: 100% !important;
+            border: none !important;
+            display: block !important;
+        }
+
+        #preview-stage.view-pc {
+            width: 700px !important;
+            min-width: 700px !important;
+            max-width: 700px !important;
+        }
+        #preview-stage.view-mobile {
+            width: 360px !important;
+            max-width: 360px !important;
+            min-width: 0 !important;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, 10px); }
+            15% { opacity: 1; transform: translate(-50%, 0); }
+            85% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, -10px); }
         }
 
         #toast-box {
@@ -243,58 +319,6 @@
             z-index: 99999;
             display: none;
             animation: fadeInOut 2.4s ease-in-out;
-        }
-
-        /* 미리보기 뷰포트 분리: PC 모드 기준 너비(700px) 및 전신 박스 너비(290px) 고정 */
-        #preview-stage.view-pc {
-            width: 700px !important;
-            max-width: 700px !important;
-            min-width: 700px !important;
-        }
-        #preview-stage.view-pc .oc-profile-body {
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: stretch !important;
-        }
-        #preview-stage.view-pc .oc-body-col {
-            flex: 0 0 290px !important;
-            width: 290px !important;
-            max-width: 290px !important;
-            margin-bottom: 0 !important;
-        }
-        #preview-stage.view-pc .oc-info-col {
-            flex: 1 1 auto !important;
-            width: auto !important;
-            min-width: 0 !important;
-        }
-
-        #preview-stage.view-mobile {
-            width: 360px !important;
-            max-width: 360px !important;
-            min-width: 0 !important;
-        }
-        #preview-stage.view-mobile .oc-profile-body {
-            display: flex !important;
-            flex-direction: column !important;
-        }
-        #preview-stage.view-mobile .oc-body-col {
-            width: 100% !important;
-            max-width: 100% !important;
-            max-height: 440px !important;
-            margin-bottom: 8px !important;
-            flex: none !important;
-        }
-        #preview-stage.view-mobile .oc-info-col {
-            width: 100% !important;
-            max-width: 100% !important;
-            flex: none !important;
-        }
-
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, 10px); }
-            15% { opacity: 1; transform: translate(-50%, 0); }
-            85% { opacity: 1; transform: translate(-50%, 0); }
-            100% { opacity: 0; transform: translate(-50%, -10px); }
         }
 
         #warning-modal {
@@ -308,55 +332,6 @@
             align-items: center;
             justify-content: center;
             z-index: 100000;
-        }
-
-        /* 캡처 전용 오프스크린 스테이지 */
-        #capture-host {
-            position: fixed;
-            left: -99999px;
-            top: 0;
-            z-index: -1;
-            pointer-events: none;
-            background: transparent;
-        }
-
-        /* 직접 조작 모서리 툴바 */
-        .preview-interactive-tool {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            z-index: 20;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(0, 0, 0, 0.75);
-            color: #ffffff;
-            border: 1px solid #ffffff;
-            border-radius: 2px;
-            padding: 1px 4px;
-            font-size: 10px;
-            font-family: 'NeoDunggeunmo', sans-serif;
-            pointer-events: auto;
-            user-select: none;
-        }
-        .preview-interactive-tool .tool-zoom-text {
-            color: #ffff80;
-            font-size: 9px;
-            font-weight: bold;
-        }
-        .preview-interactive-tool button {
-            background: #c0c0c0;
-            border: 1px solid;
-            border-color: #ffffff #555555 #555555 #ffffff;
-            color: #000000;
-            font-size: 9px;
-            padding: 0 3px;
-            cursor: pointer;
-            line-height: 1.2;
-        }
-        .preview-interactive-tool button:active {
-            border-color: #555555 #ffffff #ffffff #555555;
-            padding: 1px 2px -1px 4px;
         }
     </style>
 </head>
@@ -375,7 +350,7 @@
                 <div class="flex items-center gap-1">
                     <button class="win-ctrl-btn" title="최소화">_</button>
                     <button class="win-ctrl-btn" title="최대화">□</button>
-                    <button class="win-ctrl-btn" title="비우기" onclick="resetForm()">X</button>
+                    <button class="win-ctrl-btn" title="비우기" onclick="resetForm()">✕</button>
                 </div>
             </div>
 
@@ -412,57 +387,22 @@
                     </div>
                 </fieldset>
 
-                <!-- 2. 이미지 및 배경 설정 -->
+                <!-- 2. 전신 이미지 및 조작 설정 -->
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
-                    <legend class="px-1 text-[11px] font-bold text-[#000080]">이미지 및 전신 뷰어 설정</legend>
+                    <legend class="px-1 text-[11px] font-bold text-[#000080]">전신 일러스트 설정</legend>
                     
-                    <!-- 전신 이미지 -->
-                    <div class="mb-1.5">
+                    <div class="mb-2">
                         <div class="flex items-center justify-between mb-0.5">
                             <label class="text-[11px] font-bold">전신(Fullbody) 이미지 URL:</label>
                             <label class="text-[10px] text-blue-800 underline cursor-pointer" title="내 컴퓨터 사진 선택">
-                                로컬 파일 선택 (미리보기)
+                                로컬 파일 선택
                                 <input type="file" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'cfg-fullbody-img')">
                             </label>
                         </div>
-                        <input type="text" id="cfg-fullbody-img" class="w-full" placeholder="예시: https://blog.kakaocdn.net/dn/... 또는 외부 URL" value="" oninput="handleInput()">
+                        <input type="text" id="cfg-fullbody-img" class="w-full" placeholder="이미지 링크 URL" value="" oninput="handleInput()">
                     </div>
 
-                    <!-- 전신 구도 및 배율 제어 위젯 (Win98 제어판 스타일) -->
-                    <div class="win98-sunken-gray p-1.5 mb-2">
-                        <div class="flex items-center justify-between pb-1 border-b border-[#808080] mb-1.5">
-                            <div class="flex items-center gap-1">
-                                <span class="text-[11px] font-bold text-black">전신 구도/배율 맞춤</span>
-                                <span class="text-[10px] text-gray-600">(드래그·휠 연동)</span>
-                            </div>
-                            <button type="button" class="win98-btn text-[10px] py-0 px-2" onclick="resetBodyTransform()">초기화</button>
-                        </div>
-                        <div class="space-y-1">
-                            <!-- 배율 트랙바 + 미세조정 버튼 -->
-                            <div class="flex items-center gap-1.5 text-[11px]">
-                                <span class="w-7 text-[10px] font-bold text-gray-800">배율:</span>
-                                <button type="button" class="win98-btn text-[9px] w-4 h-4 p-0 font-bold" onclick="stepTransform('body', 'zoom', -5)">-</button>
-                                <input type="range" id="cfg-body-zoom" min="30" max="300" step="5" value="100" class="win98-range flex-1" oninput="handleSliderChange('body')">
-                                <button type="button" class="win98-btn text-[9px] w-4 h-4 p-0 font-bold" onclick="stepTransform('body', 'zoom', 5)">+</button>
-                                <span id="lbl-body-zoom" class="win98-sunken px-1 text-[10px] font-mono w-10 text-center bg-white">100%</span>
-                            </div>
-                            <!-- 좌우 / 상하 이동 슬라이더 -->
-                            <div class="grid grid-cols-2 gap-2 pt-0.5">
-                                <div class="flex items-center gap-1 text-[11px]">
-                                    <span class="text-[10px] text-gray-700 w-7">좌우:</span>
-                                    <input type="range" id="cfg-body-x" min="-100" max="100" step="1" value="0" class="win98-range flex-1" oninput="handleSliderChange('body')">
-                                    <span id="lbl-body-x" class="win98-sunken px-0.5 text-[9px] font-mono w-8 text-center bg-white">0%</span>
-                                </div>
-                                <div class="flex items-center gap-1 text-[11px]">
-                                    <span class="text-[10px] text-gray-700 w-7">상하:</span>
-                                    <input type="range" id="cfg-body-y" min="-100" max="100" step="1" value="0" class="win98-range flex-1" oninput="handleSliderChange('body')">
-                                    <span id="lbl-body-y" class="win98-sunken px-0.5 text-[9px] font-mono w-8 text-center bg-white">0%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 전신 뷰어 배경 & 피팅 모드 -->
+                    <!-- 전신 배경 및 피팅 모드 -->
                     <div class="grid grid-cols-2 gap-2 mb-2">
                         <div>
                             <label class="block text-[11px] mb-0.5">전신 박스 배경:</label>
@@ -476,95 +416,129 @@
                         <div>
                             <label class="block text-[11px] mb-0.5">전신 길이 맞춤:</label>
                             <select id="cfg-body-fit" class="w-full" onchange="handleInput()">
-                                <option value="contain" selected>비율 맞춤 (최대 540px)</option>
+                                <option value="contain" selected>비율 맞춤 (최대 520px)</option>
                                 <option value="scroll">긴 전신 스크롤 뷰어</option>
                                 <option value="stretch">자유 높이 (스크롤 없음)</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- 두상 이미지 -->
-                    <div>
-                        <div class="flex items-center justify-between mb-0.5">
-                            <label class="text-[11px] font-bold">두상(Portrait) 이미지 URL:</label>
-                            <label class="text-[10px] text-blue-800 underline cursor-pointer" title="내 컴퓨터 사진 선택">
-                                로컬 파일 선택 (미리보기)
-                                <input type="file" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'cfg-head-img')">
-                            </label>
+                    <div class="win98-sunken-gray p-2 border border-[#808080]">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[11px] font-bold text-[#000080]">전신 구도/배율 맞춤</span>
+                            <button type="button" class="win98-btn text-[9px] py-0 px-1.5" onclick="resetTransform('body')">↺ 초기화</button>
                         </div>
-                        <input type="text" id="cfg-head-img" class="w-full" placeholder="예시: https://blog.kakaocdn.net/dn/... 또는 외부 URL" value="" oninput="handleInput()">
-                    </div>
-
-                    <!-- 두상 구도 및 배율 제어 위젯 (Win98 제어판 스타일) -->
-                    <div class="win98-sunken-gray p-1.5 mt-1.5">
-                        <div class="flex items-center justify-between pb-1 border-b border-[#808080] mb-1.5">
-                            <div class="flex items-center gap-1">
-                                <span class="text-[11px] font-bold text-black">두상 구도/배율 맞춤</span>
-                                <span class="text-[10px] text-gray-600">(드래그·휠 연동)</span>
+                        <div class="mb-1.5">
+                            <div class="flex items-center justify-between text-[10px] mb-0.5">
+                                <span>배율(Zoom):</span>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" class="win98-btn text-[9px] py-0 px-1" onclick="stepTransform('body', 'zoom', -5)">-</button>
+                                    <span id="label-body-zoom" class="font-mono bg-white border border-[#808080] px-1 text-[10px] min-w-[42px] text-center">100%</span>
+                                    <button type="button" class="win98-btn text-[9px] py-0 px-1" onclick="stepTransform('body', 'zoom', 5)">+</button>
+                                </div>
                             </div>
-                            <button type="button" class="win98-btn text-[10px] py-0 px-2" onclick="resetHeadTransform()">초기화</button>
+                            <input type="range" id="slider-body-zoom" class="win98-range" min="50" max="250" value="100" oninput="onSliderInput('body', 'zoom', this.value)">
                         </div>
-                        <div class="space-y-1">
-                            <!-- 배율 트랙바 + 미세조정 버튼 -->
-                            <div class="flex items-center gap-1.5 text-[11px]">
-                                <span class="w-7 text-[10px] font-bold text-gray-800">배율:</span>
-                                <button type="button" class="win98-btn text-[9px] w-4 h-4 p-0 font-bold" onclick="stepTransform('head', 'zoom', -5)">-</button>
-                                <input type="range" id="cfg-head-zoom" min="50" max="400" step="5" value="100" class="win98-range flex-1" oninput="handleSliderChange('head')">
-                                <button type="button" class="win98-btn text-[9px] w-4 h-4 p-0 font-bold" onclick="stepTransform('head', 'zoom', 5)">+</button>
-                                <span id="lbl-head-zoom" class="win98-sunken px-1 text-[10px] font-mono w-10 text-center bg-white">100%</span>
+                        <div class="grid grid-cols-2 gap-2 text-[10px]">
+                            <div>
+                                <div class="flex justify-between mb-0.5">
+                                    <span>좌우(X):</span>
+                                    <span id="label-body-x" class="font-mono text-[9px]">0px</span>
+                                </div>
+                                <input type="range" id="slider-body-x" class="win98-range" min="-180" max="180" value="0" oninput="onSliderInput('body', 'x', this.value)">
                             </div>
-                            <!-- 좌우 / 상하 이동 슬라이더 -->
-                            <div class="grid grid-cols-2 gap-2 pt-0.5">
-                                <div class="flex items-center gap-1 text-[11px]">
-                                    <span class="text-[10px] text-gray-700 w-7">좌우:</span>
-                                    <input type="range" id="cfg-head-x" min="-100" max="100" step="1" value="0" class="win98-range flex-1" oninput="handleSliderChange('head')">
-                                    <span id="lbl-head-x" class="win98-sunken px-0.5 text-[9px] font-mono w-8 text-center bg-white">0%</span>
+                            <div>
+                                <div class="flex justify-between mb-0.5">
+                                    <span>상하(Y):</span>
+                                    <span id="label-body-y" class="font-mono text-[9px]">0px</span>
                                 </div>
-                                <div class="flex items-center gap-1 text-[11px]">
-                                    <span class="text-[10px] text-gray-700 w-7">상하:</span>
-                                    <input type="range" id="cfg-head-y" min="-100" max="100" step="1" value="0" class="win98-range flex-1" oninput="handleSliderChange('head')">
-                                    <span id="lbl-head-y" class="win98-sunken px-0.5 text-[9px] font-mono w-8 text-center bg-white">0%</span>
-                                </div>
+                                <input type="range" id="slider-body-y" class="win98-range" min="-240" max="240" value="0" oninput="onSliderInput('body', 'y', this.value)">
                             </div>
                         </div>
                     </div>
                 </fieldset>
 
-                <!-- 3. 테마곡 오디오 플레이어 바 (선택 항목) -->
+                <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
+                    <legend class="px-1 text-[11px] font-bold text-[#000080]">두상(Portrait) 설정</legend>
+                    <div class="mb-2">
+                        <div class="flex items-center justify-between mb-0.5">
+                            <label class="text-[11px] font-bold">두상 이미지 URL:</label>
+                            <label class="text-[10px] text-blue-800 underline cursor-pointer" title="내 컴퓨터 사진 선택">
+                                로컬 파일 선택
+                                <input type="file" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'cfg-head-img')">
+                            </label>
+                        </div>
+                        <input type="text" id="cfg-head-img" class="w-full" placeholder="이미지 링크 URL" value="" oninput="handleInput()">
+                    </div>
+
+                    <div class="win98-sunken-gray p-2 border border-[#808080]">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[11px] font-bold text-[#000080]">두상 구도/배율 맞춤</span>
+                            <button type="button" class="win98-btn text-[9px] py-0 px-1.5" onclick="resetTransform('head')">↺ 초기화</button>
+                        </div>
+                        <div class="mb-1.5">
+                            <div class="flex items-center justify-between text-[10px] mb-0.5">
+                                <span>배율(Zoom):</span>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" class="win98-btn text-[9px] py-0 px-1" onclick="stepTransform('head', 'zoom', -5)">-</button>
+                                    <span id="label-head-zoom" class="font-mono bg-white border border-[#808080] px-1 text-[10px] min-w-[42px] text-center">100%</span>
+                                    <button type="button" class="win98-btn text-[9px] py-0 px-1" onclick="stepTransform('head', 'zoom', 5)">+</button>
+                                </div>
+                            </div>
+                            <input type="range" id="slider-head-zoom" class="win98-range" min="50" max="300" value="100" oninput="onSliderInput('head', 'zoom', this.value)">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-[10px]">
+                            <div>
+                                <div class="flex justify-between mb-0.5">
+                                    <span>좌우(X):</span>
+                                    <span id="label-head-x" class="font-mono text-[9px]">0px</span>
+                                </div>
+                                <input type="range" id="slider-head-x" class="win98-range" min="-80" max="80" value="0" oninput="onSliderInput('head', 'x', this.value)">
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-0.5">
+                                    <span>상하(Y):</span>
+                                    <span id="label-head-y" class="font-mono text-[9px]">0px</span>
+                                </div>
+                                <input type="range" id="slider-head-y" class="win98-range" min="-80" max="80" value="0" oninput="onSliderInput('head', 'y', this.value)">
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
                     <legend class="px-1 text-[11px] font-bold text-[#000080]">테마곡 미니 플레이어 바 (선택)</legend>
                     <div class="grid grid-cols-2 gap-2 mb-1.5">
                         <div>
                             <label class="block text-[11px] mb-0.5">곡 제목 (비우면 미표시):</label>
-                            <input type="text" id="cfg-song-title" class="w-full text-xs" placeholder="예시: Theme of Hunter" value="" oninput="handleInput()">
+                            <input type="text" id="cfg-song-title" class="w-full text-xs" placeholder="Theme Song" value="" oninput="handleInput()">
                         </div>
                         <div>
                             <label class="block text-[11px] mb-0.5">아티스트 / 부연:</label>
-                            <input type="text" id="cfg-song-artist" class="w-full text-xs" placeholder="예시: Sound Horizon" value="" oninput="handleInput()">
+                            <input type="text" id="cfg-song-artist" class="w-full text-xs" placeholder="Artist" value="" oninput="handleInput()">
                         </div>
                     </div>
                     <div>
                         <label class="block text-[11px] mb-0.5">음악 연결 링크 URL (유튜브 등):</label>
-                        <input type="text" id="cfg-song-url" class="w-full text-xs" placeholder="예시: https://youtu.be/..." value="" oninput="handleInput()">
+                        <input type="text" id="cfg-song-url" class="w-full text-xs" placeholder="https://www.youtube.com/watch?v=..." value="" oninput="handleInput()">
+                    </div>
+                    <div class="mt-1.5 bg-[#ffffec] border border-[#808080] p-1.5 text-[10px] leading-relaxed text-gray-700">
+                        로컬 파일(file://)로 이 페이지를 열면 유튜브가 리퍼러를 확인하지 못해 <b>오류 153</b>이 뜹니다. 블로그에 올린 뒤에는 정상 재생됩니다.
                     </div>
                 </fieldset>
 
-                <!-- 4. 기본 이름 및 소속 요약 -->
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
                     <legend class="px-1 text-[11px] font-bold text-[#000080]">캐릭터 이름 및 헤더 요약</legend>
                     <div class="mb-2">
                         <label class="block text-[11px] mb-0.5">캐릭터 이름 (메인):</label>
-                        <input type="text" id="cfg-char-name" class="w-full font-bold" placeholder="예시: 캐릭터 이름 (한글 / 영문)" value="" oninput="handleInput()">
+                        <input type="text" id="cfg-char-name" class="w-full font-bold" placeholder="캐릭터 이름 (한글 / 영문)" value="" oninput="handleInput()">
                     </div>
                     <div>
                         <label class="block text-[11px] mb-0.5">소속 / 상태 요약 (줄바꿈 가능):</label>
-                        <textarea id="cfg-char-sub" rows="2" class="w-full text-xs resize-none" placeholder="예시:
-소속: 활빈당 의적단
-상태: Active / 임무 수행 중" oninput="handleInput()"></textarea>
+                        <textarea id="cfg-char-sub" rows="2" class="w-full text-xs resize-none" placeholder="소속: 활빈당 의적단&#10;상태: Active / 임무 수행 중" oninput="handleInput()"></textarea>
                     </div>
                 </fieldset>
 
-                <!-- 5. 상징색 컬러 팔레트 설정 (선택 항목) -->
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
                     <div class="flex items-center justify-between mb-1">
                         <legend class="px-1 text-[11px] font-bold text-[#000080]">상징색 컬러 팔레트 (선택)</legend>
@@ -590,13 +564,11 @@
                     </div>
                 </fieldset>
 
-                <!-- 6. 대표 대사 / 한마디 (선택 항목) -->
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
                     <legend class="px-1 text-[11px] font-bold text-[#000080]">대표 대사 / 한마디 (선택)</legend>
-                    <input type="text" id="cfg-quote" class="w-full text-xs" placeholder="예시: &quot;더 이상의 불필요한 질문은 사양하겠습니다.&quot;" value="" oninput="handleInput()">
+                    <input type="text" id="cfg-quote" class="w-full text-xs" placeholder="대표 대사를 입력하세요" value="" oninput="handleInput()">
                 </fieldset>
 
-                <!-- 7. 캐릭터 상세 프로필 (동적 순서 변경 & 항목 삽입) -->
                 <fieldset class="border border-[#808080] p-2 bg-[#d4d0c8]">
                     <div class="flex items-center justify-between mb-1.5">
                         <legend class="px-1 text-[11px] font-bold text-[#000080]">캐릭터 상세 프로필</legend>
@@ -605,7 +577,7 @@
 
                     <div class="mb-2">
                         <label class="block text-[10px] text-gray-700 mb-0.5">상세 프로필 소제목:</label>
-                        <input type="text" id="cfg-spec-title" class="w-full text-xs" placeholder="예시: [ 기본 인적사항 ] 또는 [ CHARACTER PROFILE ]" value="[ CHARACTER PROFILE ]" oninput="handleInput()">
+                        <input type="text" id="cfg-spec-title" class="w-full text-xs" placeholder="[ CHARACTER PROFILE ]" value="[ CHARACTER PROFILE ]" oninput="handleInput()">
                     </div>
 
                     <div id="spec-rows-container" class="space-y-1.5 max-h-52 overflow-y-auto pr-1">
@@ -632,7 +604,7 @@
             <!-- 미리보기 타이틀바 -->
             <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
                 <div class="flex items-center gap-1.5">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0" aria-label="모니터 화면">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0" aria-label="모니터">
                         <rect x="1" y="1" width="14" height="10" fill="#c0c0c0" stroke="#000" stroke-width="1"/>
                         <line x1="2" y1="2" x2="14" y2="2" stroke="#ffffff"/>
                         <line x1="2" y1="2" x2="2" y2="10" stroke="#ffffff"/>
@@ -665,7 +637,6 @@
                 </div>
             </div>
 
-            <!-- 하단 생성된 HTML 코드 확인 창 -->
             <div class="h-40 bg-[#c0c0c0] border-t-2 border-[#fff] flex flex-col p-1.5">
                 <div class="flex items-center justify-between mb-1">
                     <div class="flex items-center gap-1 text-[11px] font-bold">
@@ -681,7 +652,6 @@
         </main>
     </div>
 
-    <!-- [하단 작업 표시줄 (Taskbar)] -->
     <footer class="h-8 bg-[#c0c0c0] border-t-2 border-white flex items-center px-1 text-xs gap-1 flex-shrink-0 z-50">
         <button class="win98-btn font-bold px-2 py-0.5 flex items-center gap-1">
             <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" width="16" alt="Windows">
@@ -691,7 +661,7 @@
         <div class="flex items-center gap-1 flex-1">
             <div class="win98-raised px-2 py-0.5 text-[11px] font-bold flex items-center gap-1 border-t-black border-l-black border-b-white border-r-white">
                 <img src="https://win98icons.alexmeub.com/icons/png/gears-0.png" width="14" alt="">
-                <span>OC_Profile_Builder v3.7</span>
+                <span>OC_Profile_Builder v4.3</span>
             </div>
         </div>
         <div class="win98-sunken-gray px-2 py-0.5 text-[11px] flex items-center gap-2">
@@ -705,17 +675,15 @@
         <span id="toast-msg" class="text-xs font-bold text-black">알림 메시지</span>
     </div>
 
-    <!-- 이미지 복사/저장 결과 모달 (클립보드 차단 시 100% 복사용) -->
     <div id="image-result-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:100001; align-items:center; justify-content:center;">
         <div class="win98-raised p-1 shadow-2xl" style="max-width:92%; width:640px; max-height:90vh; display:flex; flex-direction:column;">
             <div class="bg-gradient-to-r from-[#000080] to-[#1084d0] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
                 <span>PROFILE_IMAGE_EXPORT.EXE - 캡처 완료</span>
-                <button class="win-ctrl-btn" onclick="closeImageModal()">X</button>
+                <button class="win-ctrl-btn" onclick="closeImageModal()">✕</button>
             </div>
             <div class="p-3 bg-[#c0c0c0] flex flex-col items-center flex-1 overflow-y-auto">
                 <div class="w-full bg-[#ffffec] border border-[#808080] p-2 text-[11px] mb-2 text-gray-800 leading-relaxed">
-                    💡 <b>이미지 준비 완료!</b> 브라우저 권한에 따라 클립보드 복사 또는 파일 다운로드가 완료되었습니다.<br>
-                    아래 이미지를 <b>우클릭 > [이미지 복사]</b> 하셔도 디스코드나 메신저에 바로 붙여넣기(Ctrl+V) 하실 수 있습니다.
+                    💡 <b>이미지 준비 완료!</b> 아래 이미지를 <b>우클릭 > [이미지 복사]</b> 하셔도 바로 붙여넣기(Ctrl+V) 하실 수 있습니다.
                 </div>
                 <div class="max-h-[60vh] overflow-auto border-2 border-[#808080] bg-white p-2 mb-2 w-full flex justify-center">
                     <img id="modal-result-img" src="" alt="캡처 결과" style="max-width:100%; height:auto; display:block;">
@@ -728,23 +696,23 @@
         </div>
     </div>
 
-    <!-- 대용량 Base64 감지 경고 모달 -->
+    <!-- 로컬 이미지 감지 경고 모달 -->
     <div id="warning-modal">
         <div class="max-w-[400px] win98-raised shadow-2xl p-1" style="position:relative; width:92%;">
             <div class="bg-gradient-to-r from-[#800000] to-[#d01010] text-white px-2 py-1 flex items-center justify-between font-bold text-xs">
                 <span>경고 - 로컬 이미지 감지됨</span>
-                <button class="win-ctrl-btn" onclick="closeWarningModal()">X</button>
+                <button class="win-ctrl-btn" onclick="closeWarningModal()">✕</button>
             </div>
             <div class="p-3 bg-[#c0c0c0] text-xs text-black">
                 <div class="flex items-start gap-2 mb-3">
                     <img src="https://win98icons.alexmeub.com/icons/png/msg_warning-0.png" width="32" height="32" alt="경고">
                     <div class="leading-relaxed">
                         <b class="text-red-900 block mb-1 text-[13px]">로컬 이미지가 포함되어 있습니다.</b>
-                        컴퓨터에서 불러온 로컬 파일은 코드 길이가 매우 길어 게시물 등록 시 용량 오류가 발생할 수 있습니다.
+                        컴퓨터에서 불러온 이미지는 코드 길이가 너무 길어 글 등록 시 오류가 발생할 수 있습니다.
                     </div>
                 </div>
                 <div class="bg-white border border-[#808080] p-2 mb-3 text-[11px] leading-relaxed text-gray-800">
-                    직접 올린 파일 대신 <b>이미지 URL</b>을 입력하거나, 상단의 <b>[📋 이미지 복사]</b> 기능을 활용해주세요.
+                    이미지 URL을 넣거나 상단의 <b>[📋 이미지 복사]</b> 기능을 활용해주세요.
                 </div>
                 <div class="flex justify-end gap-2">
                     <button class="win98-btn text-xs" onclick="forceCopyCode()">그래도 복사</button>
@@ -755,7 +723,7 @@
     </div>
 
     <script>
-        const STORAGE_KEY = 'win98_oc_draft_v3';
+        const STORAGE_KEY = 'win98_oc_draft_v4';
         const OC_FONT_URL = 'https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/NeoDunggeunmo.woff';
 
         // 전신 및 두상 위치/배율 상태
@@ -764,36 +732,33 @@
             head: { zoom: 100, x: 0, y: 0 }
         };
 
-        // 홍길동 더미 샘플 데이터
         const SAMPLE_DATA = {
             title: "PROFILE_VIEWER.EXE - CHAR_DATA",
             fullbodyImg: "https://images.placeholders.dev/?width=320&height=640&text=FULLBODY&theme=classic",
             headImg: "https://images.placeholders.dev/?width=120&height=120&text=FACE&theme=classic",
             bodyBg: "transparent",
             bodyFit: "contain",
-            bodyZoom: 100,
-            bodyX: 0,
-            bodyY: 0,
-            headZoom: 100,
-            headX: 0,
-            headY: 0,
             charName: "홍길동 (Hong Gil-dong)",
             charSub: "소속: 활빈당 의적단\n상태: 동에 번쩍 서에 번쩍 / 활동 중",
             quote: "\"아버지를 아버지라 부르지 못하고, 형을 형이라 부르지 못하니…….\"",
             songTitle: "바람이 분다 (Wind of Legend)",
             songArtist: "Joseon Beats",
-            songUrl: "https://www.youtube.com",
+            songUrl: "https://www.youtube.com/watch?v=K4DyBUG242c",
             specTitle: "[ CHARACTER PROFILE ]",
-            colors: ["#000080", "#1084d0", "#ffffff", "#808080"],
+            colors: ["#100a0a", "#850000", "", ""],
             specs: [
                 { key: "나이", val: "24세" },
                 { key: "신장/체중", val: "178 cm / 68 kg" },
                 { key: "소속", val: "활빈당 두목" },
                 { key: "특기", val: "축지법, 둔갑술, 분신술" },
-                { key: "상징색", val: "#000080" },
+                { key: "상징색", val: "#000080 (조선 코발트 블루)" },
                 { key: "취미", val: "탐관오리 재물 털기, 붓글씨" }
             ],
-            memo: "※ 특이사항: 도술에 매우 능통하여 율도국을 세울 계획을 세우고 있음. 평소에는 신분을 숨기고 봇짐장수로 변장해 저잣거리를 관찰함."
+            memo: "※ 특이사항: 도술에 매우 능통하여 율도국을 세울 계획을 세우고 있음. 평소에는 신분을 숨기고 봇짐장수로 변장해 저잣거리를 관찰함.",
+            transforms: {
+                body: { zoom: 100, x: 0, y: 0 },
+                head: { zoom: 100, x: 0, y: 0 }
+            }
         };
 
         // 시계 갱신
@@ -806,10 +771,10 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // 토스트 알림창
         function showToast(msg) {
             const box = document.getElementById('toast-box');
             const txt = document.getElementById('toast-msg');
+            if (!box || !txt) return;
             txt.innerText = msg;
             box.style.display = 'flex';
             setTimeout(() => {
@@ -817,25 +782,162 @@
             }, 2400);
         }
 
-        // 스펙 행 추가 함수
+        function sanitizeLinkUrl(url) {
+            const raw = (url || '').trim();
+            if (!raw) return '';
+            if (/^(https?:)?\/\//i.test(raw)) return raw;
+            if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) return '';
+            return raw;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function updateTransformUiLabels(type) {
+            const st = transformState[type];
+            if (!st) return;
+
+            const lblZoom = document.getElementById(`label-${type}-zoom`);
+            const lblX = document.getElementById(`label-${type}-x`);
+            const lblY = document.getElementById(`label-${type}-y`);
+
+            if (lblZoom) lblZoom.innerText = `${Math.round(st.zoom)}%`;
+            if (lblX) lblX.innerText = `${Math.round(st.x)}px`;
+            if (lblY) lblY.innerText = `${Math.round(st.y)}px`;
+
+            const sZoom = document.getElementById(`slider-${type}-zoom`);
+            const sX = document.getElementById(`slider-${type}-x`);
+            const sY = document.getElementById(`slider-${type}-y`);
+
+            if (sZoom && document.activeElement !== sZoom) sZoom.value = st.zoom;
+            if (sX && document.activeElement !== sX) sX.value = st.x;
+            if (sY && document.activeElement !== sY) sY.value = st.y;
+        }
+
+        function updateLiveElementTransform(type) {
+            const st = transformState[type];
+            if (!st) return;
+
+            const selector = type === 'body' 
+                ? '#rendered-output .oc-body-col img' 
+                : '#rendered-output .oc-head-img img';
+            
+            const img = document.querySelector(selector);
+            if (img) {
+                img.style.transform = `translate(${st.x}px, ${st.y}px) scale(${st.zoom / 100})`;
+                img.style.transformOrigin = 'center center';
+            }
+        }
+
+        function onSliderInput(type, axis, val) {
+            if (!transformState[type]) return;
+            transformState[type][axis] = parseFloat(val) || 0;
+            updateTransformUiLabels(type);
+            updateLiveElementTransform(type);
+            handleInput();
+        }
+
+        function stepTransform(type, axis, delta) {
+            if (!transformState[type]) return;
+            let current = transformState[type][axis] || 0;
+            let next = current + delta;
+            if (axis === 'zoom') {
+                const min = 50;
+                const max = type === 'body' ? 250 : 300;
+                next = Math.max(min, Math.min(max, next));
+            }
+            transformState[type][axis] = next;
+            updateTransformUiLabels(type);
+            updateLiveElementTransform(type);
+            handleInput();
+        }
+
+        function resetTransform(type) {
+            if (!transformState[type]) return;
+            transformState[type].zoom = 100;
+            transformState[type].x = 0;
+            transformState[type].y = 0;
+            updateTransformUiLabels(type);
+            updateLiveElementTransform(type);
+            handleInput();
+            showToast(`${type === 'body' ? '전신' : '두상'} 구도를 초기화했습니다.`);
+        }
+
+        function attachDirectManipulation() {
+            ['body', 'head'].forEach(type => {
+                const selector = type === 'body' 
+                    ? '#rendered-output .oc-body-col' 
+                    : '#rendered-output .oc-head-img';
+
+                const container = document.querySelector(selector);
+                if (!container) return;
+
+                const img = container.querySelector('img');
+                if (img) img.classList.add('oc-interactive-img');
+
+                let isDragging = false;
+                let startX = 0, startY = 0;
+                let initialPosX = 0, initialPosY = 0;
+
+                const onPointerDown = (e) => {
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    initialPosX = transformState[type].x;
+                    initialPosY = transformState[type].y;
+                    window.addEventListener('pointermove', onPointerMove);
+                    window.addEventListener('pointerup', onPointerUp);
+                };
+
+                const onPointerMove = (e) => {
+                    if (!isDragging) return;
+                    const dx = e.clientX - startX;
+                    const dy = e.clientY - startY;
+                    transformState[type].x = Math.round(initialPosX + dx);
+                    transformState[type].y = Math.round(initialPosY + dy);
+                    updateTransformUiLabels(type);
+                    updateLiveElementTransform(type);
+                };
+
+                const onPointerUp = () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    window.removeEventListener('pointermove', onPointerMove);
+                    window.removeEventListener('pointerup', onPointerUp);
+                    handleInput();
+                };
+
+                container.onpointerdown = onPointerDown;
+
+                container.onwheel = (e) => {
+                    e.preventDefault();
+                    const delta = e.deltaY < 0 ? 5 : -5;
+                    stepTransform(type, 'zoom', delta);
+                };
+            });
+        }
+
         function addSpecRow(key = '', val = '', targetElement = null) {
             const container = document.getElementById('spec-rows-container');
             const row = document.createElement('div');
             row.className = "flex items-center gap-1 spec-row bg-white/40 p-0.5 border border-[#999]";
-            row.draggable = false;
-
             row.innerHTML = `
-                <span class="drag-handle text-gray-500 font-bold px-1 text-xs select-none" title="끌어서 순서 변경">⠿</span>
+                <span class="drag-handle text-gray-500 font-bold px-1 text-xs select-none cursor-grab" title="순서 변경">⠿</span>
                 <input type="text" class="w-20 text-xs font-bold spec-key flex-shrink-0" placeholder="항목명" value="${escapeHtml(key)}" oninput="handleInput()">
                 <span class="text-xs font-bold">:</span>
                 <input type="text" class="flex-1 text-xs spec-val min-w-0" placeholder="내용" value="${escapeHtml(val)}" oninput="handleInput()">
                 <button type="button" class="win98-btn text-[9px] px-1 py-0" title="위로 이동" onclick="moveSpecRow(this, -1)">▲</button>
                 <button type="button" class="win98-btn text-[9px] px-1 py-0" title="아래로 이동" onclick="moveSpecRow(this, 1)">▼</button>
-                <button type="button" class="win98-btn text-[9px] px-1 py-0 text-blue-800" title="바로 아래 새 항목 삽입" onclick="insertSpecBelow(this)">+아래</button>
-                <button type="button" class="win98-btn text-[10px] px-1 py-0 text-red-700 font-bold" title="삭제" onclick="removeSpecRow(this)">×</button>
+                <button type="button" class="win98-btn text-[9px] px-1 py-0 text-blue-800" title="새 항목 삽입" onclick="insertSpecBelow(this)">+아래</button>
+                <button type="button" class="win98-btn text-[10px] px-1 py-0 text-red-700 font-bold" title="삭제" onclick="removeSpecRow(this)">✕</button>
             `;
-
-            initRowDrag(row);
 
             if (targetElement && targetElement.parentNode === container) {
                 container.insertBefore(row, targetElement.nextSibling);
@@ -873,48 +975,6 @@
                 container.insertBefore(row, row.nextElementSibling);
             }
             handleInput();
-        }
-
-        let draggedRow = null;
-        function initRowDrag(row) {
-            const handle = row.querySelector('.drag-handle');
-            if (!handle) return;
-
-            handle.addEventListener('mousedown', () => {
-                row.draggable = true;
-            });
-            handle.addEventListener('mouseup', () => {
-                row.draggable = false;
-            });
-
-            row.addEventListener('dragstart', (e) => {
-                draggedRow = row;
-                row.classList.add('dragging');
-                e.dataTransfer.effectAllowed = 'move';
-            });
-
-            row.addEventListener('dragend', () => {
-                row.draggable = false;
-                row.classList.remove('dragging');
-                draggedRow = null;
-                handleInput();
-            });
-
-            row.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-                if (!draggedRow || draggedRow === row) return;
-
-                const container = document.getElementById('spec-rows-container');
-                const rect = row.getBoundingClientRect();
-                const midY = rect.top + rect.height / 2;
-
-                if (e.clientY < midY) {
-                    container.insertBefore(draggedRow, row);
-                } else {
-                    container.insertBefore(draggedRow, row.nextSibling);
-                }
-            });
         }
 
         function syncColorInput(index) {
@@ -956,7 +1016,7 @@
                 executeRender();
                 showToast("실시간 미리보기가 켜졌습니다.");
             } else {
-                showToast("실시간 렌더링을 껐습니다. [미리보기 반영]을 누르세요.");
+                showToast("실시간 렌더링을 껐습니다.");
             }
         }
 
@@ -965,141 +1025,14 @@
             showToast("미리보기를 반영했습니다!");
         }
 
-        function updateTransformUiLabels() {
-            const bodyZoom = transformState.body.zoom ?? 100;
-            const bodyX = transformState.body.x ?? 0;
-            const bodyY = transformState.body.y ?? 0;
-
-            const headZoom = transformState.head.zoom ?? 100;
-            const headX = transformState.head.x ?? 0;
-            const headY = transformState.head.y ?? 0;
-
-            // 전신 슬라이더 및 텍스트 동기화
-            const bZoomInp = document.getElementById('cfg-body-zoom');
-            const bXInp = document.getElementById('cfg-body-x');
-            const bYInp = document.getElementById('cfg-body-y');
-            const bZoomLbl = document.getElementById('lbl-body-zoom');
-            const bXLbl = document.getElementById('lbl-body-x');
-            const bYLbl = document.getElementById('lbl-body-y');
-
-            if (bZoomInp) bZoomInp.value = bodyZoom;
-            if (bXInp) bXInp.value = bodyX;
-            if (bYInp) bYInp.value = bodyY;
-            if (bZoomLbl) bZoomLbl.innerText = `${bodyZoom}%`;
-            if (bXLbl) bXLbl.innerText = `${bodyX}%`;
-            if (bYLbl) bYLbl.innerText = `${bodyY}%`;
-
-            // 두상 슬라이더 및 텍스트 동기화
-            const hZoomInp = document.getElementById('cfg-head-zoom');
-            const hXInp = document.getElementById('cfg-head-x');
-            const hYInp = document.getElementById('cfg-head-y');
-            const hZoomLbl = document.getElementById('lbl-head-zoom');
-            const hXLbl = document.getElementById('lbl-head-x');
-            const hYLbl = document.getElementById('lbl-head-y');
-
-            if (hZoomInp) hZoomInp.value = headZoom;
-            if (hXInp) hXInp.value = headX;
-            if (hYInp) hYInp.value = headY;
-            if (hZoomLbl) hZoomLbl.innerText = `${headZoom}%`;
-            if (hXLbl) hXLbl.innerText = `${headX}%`;
-            if (hYLbl) hYLbl.innerText = `${headY}%`;
-        }
-
-        /* [+-] 미세 조절 버튼 핸들러 */
-        function stepTransform(type, prop, delta) {
-            if (!transformState[type]) return;
-            let val = transformState[type][prop] + delta;
-            if (prop === 'zoom') {
-                const minZ = type === 'body' ? 30 : 50;
-                const maxZ = type === 'body' ? 300 : 400;
-                val = Math.max(minZ, Math.min(maxZ, val));
-            } else {
-                val = Math.max(-100, Math.min(100, val));
-            }
-            transformState[type][prop] = val;
-            updateLiveElementTransform(type);
-            updateTransformUiLabels();
-            debounceUpdateCode();
-        }
-
-        /* 슬라이더(스크롤)를 움직였을 때 실시간 반영 핸들러 */
-        function handleSliderChange(type) {
-            const zoomInp = document.getElementById(`cfg-${type}-zoom`);
-            const xInp = document.getElementById(`cfg-${type}-x`);
-            const yInp = document.getElementById(`cfg-${type}-y`);
-
-            if (!zoomInp || !xInp || !yInp) return;
-
-            transformState[type].zoom = Number(zoomInp.value);
-            transformState[type].x = Number(xInp.value);
-            transformState[type].y = Number(yInp.value);
-
-            const zoomLbl = document.getElementById(`lbl-${type}-zoom`);
-            const xLbl = document.getElementById(`lbl-${type}-x`);
-            const yLbl = document.getElementById(`lbl-${type}-y`);
-
-            if (zoomLbl) zoomLbl.innerText = `${transformState[type].zoom}%`;
-            if (xLbl) xLbl.innerText = `${transformState[type].x}%`;
-            if (yLbl) yLbl.innerText = `${transformState[type].y}%`;
-
-            updateLiveElementTransform(type);
-            debounceUpdateCode();
-        }
-
-        function updateLiveElementTransform(type) {
-            const container = type === 'body'
-                ? document.querySelector('#rendered-output .oc-body-col')
-                : document.querySelector('#rendered-output .oc-head-img');
-            if (!container) return;
-
-            const img = container.querySelector('img');
-            if (img) {
-                const z = transformState[type].zoom / 100;
-                const x = transformState[type].x;
-                const y = transformState[type].y;
-                if (z !== 1 || x !== 0 || y !== 0) {
-                    img.style.transform = `translate(${x}%, ${y}%) scale(${z})`;
-                    img.style.transformOrigin = 'center center';
-                } else {
-                    img.style.transform = '';
-                    img.style.transformOrigin = '';
-                }
-            }
-        }
-
-        function resetBodyTransform() {
-            transformState.body = { zoom: 100, x: 0, y: 0 };
-            updateLiveElementTransform('body');
-            updateTransformUiLabels();
-            updateRawCodeTextarea();
-            showToast("전신 이미지 위치/배율을 초기화했습니다.");
-        }
-
-        function resetHeadTransform() {
-            transformState.head = { zoom: 100, x: 0, y: 0 };
-            updateLiveElementTransform('head');
-            updateTransformUiLabels();
-            updateRawCodeTextarea();
-            showToast("두상 이미지 위치/배율을 초기화했습니다.");
-        }
-
-        /* 임시저장: 저장 공간이 부족하면 업로드 이미지를 뺀 채로 다시 저장하고 사용자에게 알림 */
-        let quotaWarned = false;
         function saveDraftToStorage() {
             const draftStatus = document.getElementById('draft-status');
-
             const draft = {
                 title: document.getElementById('cfg-title')?.value || '',
                 fullbodyImg: document.getElementById('cfg-fullbody-img')?.value || '',
                 headImg: document.getElementById('cfg-head-img')?.value || '',
                 bodyBg: document.getElementById('cfg-body-bg')?.value || 'transparent',
                 bodyFit: document.getElementById('cfg-body-fit')?.value || 'contain',
-                bodyZoom: Number(transformState.body.zoom ?? 100),
-                bodyX: Number(transformState.body.x ?? 0),
-                bodyY: Number(transformState.body.y ?? 0),
-                headZoom: Number(transformState.head.zoom ?? 100),
-                headX: Number(transformState.head.x ?? 0),
-                headY: Number(transformState.head.y ?? 0),
                 charName: document.getElementById('cfg-char-name')?.value || '',
                 charSub: document.getElementById('cfg-char-sub')?.value || '',
                 quote: document.getElementById('cfg-quote')?.value || '',
@@ -1114,47 +1047,31 @@
                     document.getElementById('cfg-color-3-hex')?.value || '',
                     document.getElementById('cfg-color-4-hex')?.value || ''
                 ],
-                specs: []
+                specs: [],
+                transforms: transformState
             };
 
             const specRows = document.querySelectorAll('#spec-rows-container .spec-row');
             specRows.forEach(row => {
-                const k = row.querySelector('.spec-key')?.value || '';
-                const v = row.querySelector('.spec-val')?.value || '';
-                draft.specs.push({ key: k, val: v });
+                draft.specs.push({
+                    key: row.querySelector('.spec-key')?.value || '',
+                    val: row.querySelector('.spec-val')?.value || ''
+                });
             });
-
-            const stamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
-                if (draftStatus) draftStatus.innerText = '임시저장됨: ' + stamp;
-                return;
+                if (draftStatus) draftStatus.innerText = '임시저장됨';
             } catch (e) {
-                // 용량 초과 시 이미지 제외 저장 시도
-            }
-
-            const slim = Object.assign({}, draft);
-            let strippedImage = false;
-            if (slim.fullbodyImg.startsWith('data:')) { slim.fullbodyImg = ''; strippedImage = true; }
-            if (slim.headImg.startsWith('data:')) { slim.headImg = ''; strippedImage = true; }
-
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
-                if (draftStatus) {
-                    draftStatus.innerText = strippedImage
-                        ? '임시저장됨 (업로드 이미지 제외): ' + stamp
-                        : '임시저장됨: ' + stamp;
-                }
-                if (strippedImage && !quotaWarned) {
-                    quotaWarned = true;
-                    showToast("업로드 이미지는 용량이 커서 임시저장에서 빠집니다. 이미지 URL 사용을 권장합니다.");
-                }
-            } catch (e2) {
-                if (draftStatus) draftStatus.innerText = '임시저장 실패 (저장 공간 부족)';
-                if (!quotaWarned) {
-                    quotaWarned = true;
-                    showToast("임시저장 공간이 부족합니다. 작업 내용을 코드로 복사해두세요.");
+                const slim = Object.assign({}, draft);
+                let stripped = false;
+                if (slim.fullbodyImg.startsWith('data:')) { slim.fullbodyImg = ''; stripped = true; }
+                if (slim.headImg.startsWith('data:')) { slim.headImg = ''; stripped = true; }
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
+                    if (draftStatus) draftStatus.innerText = stripped ? '임시저장됨 (업로드 이미지 제외)' : '임시저장됨';
+                } catch (e2) {
+                    if (draftStatus) draftStatus.innerText = '임시저장 실패 (저장 공간 부족)';
                 }
             }
         }
@@ -1165,7 +1082,6 @@
                 if (!raw) return false;
                 const draft = JSON.parse(raw);
                 if (!draft) return false;
-
                 fillFormWithData(draft);
                 return true;
             } catch (e) {
@@ -1181,7 +1097,7 @@
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
-                    const maxDim = 1200;
+                    const maxDim = 900;
                     let w = img.width, h = img.height;
                     if (w > maxDim || h > maxDim) {
                         if (w > h) {
@@ -1199,28 +1115,18 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, w, h);
 
-                    const optUrl = canvas.toDataURL('image/png', 0.9);
+                    const optUrl = canvas.toDataURL('image/png');
                     const target = document.getElementById(targetInputId);
                     if (target) {
                         target.value = optUrl;
                         handleInput();
                         executeRender();
-                        showToast("이미지를 최적화하여 불러왔습니다.");
+                        showToast("이미지를 불러왔습니다.");
                     }
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            return String(text)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
         }
 
         function generateOutputHTML() {
@@ -1229,7 +1135,7 @@
             const headImg = document.getElementById('cfg-head-img')?.value.trim() || 'https://images.placeholders.dev/?width=120&height=120&text=FACE&theme=classic';
             const charName = document.getElementById('cfg-char-name')?.value.trim() || '캐릭터 이름';
             
-            const charSubRaw = document.getElementById('cfg-char-sub')?.value.trim() || '소속: 활빈당\n상태: Active';
+            const charSubRaw = document.getElementById('cfg-char-sub')?.value.trim() || '소속: UNDERGROUND\n상태: Active';
             const charSubHtml = charSubRaw.split('\n').map(l => escapeHtml(l)).join('<br>');
             
             const memoRaw = document.getElementById('cfg-memo')?.value.trim() || '';
@@ -1239,41 +1145,47 @@
             const bgStyle = document.getElementById('cfg-body-bg')?.value || 'transparent';
             const fitMode = document.getElementById('cfg-body-fit')?.value || 'contain';
 
-            // 이미지 배율 및 위치 CSS
-            const bodyZoom = Number(transformState.body.zoom ?? 100);
-            const bodyX = Number(transformState.body.x ?? 0);
-            const bodyY = Number(transformState.body.y ?? 0);
+            const bT = transformState.body;
+            const hT = transformState.head;
+            const bodyTransformStyle = `transform: translate(${bT.x}px, ${bT.y}px) scale(${bT.zoom / 100}); transform-origin: center center;`;
+            const headTransformStyle = `transform: translate(${hT.x}px, ${hT.y}px) scale(${hT.zoom / 100}); transform-origin: center center;`;
 
-            const headZoom = Number(transformState.head.zoom ?? 100);
-            const headX = Number(transformState.head.x ?? 0);
-            const headY = Number(transformState.head.y ?? 0);
-
-            let bodyTransformCss = '';
-            if (bodyZoom !== 100 || bodyX !== 0 || bodyY !== 0) {
-                bodyTransformCss = `transform: translate(${bodyX}%, ${bodyY}%) scale(${bodyZoom / 100}); transform-origin: center center;`;
-            }
-
-            let headTransformCss = '';
-            if (headZoom !== 100 || headX !== 0 || headY !== 0) {
-                headTransformCss = `transform: translate(${headX}%, ${headY}%) scale(${headZoom / 100}); transform-origin: center center;`;
-            }
-
-            // 1) 테마곡 바
+            // 테마곡 바 및 플로팅 플레이어
             const songTitle = document.getElementById('cfg-song-title')?.value.trim() || '';
             const songArtist = document.getElementById('cfg-song-artist')?.value.trim() || '';
-            const songUrl = document.getElementById('cfg-song-url')?.value.trim() || '';
+            const songUrl = sanitizeLinkUrl(document.getElementById('cfg-song-url')?.value);
 
-            let themeSongHtml = '';
+            let themeSongBarHtml = '';
+            let floatingPlayerHtml = '';
+
             if (songTitle) {
                 const artistPart = songArtist ? ` <span class="oc-song-artist">/ ${escapeHtml(songArtist)}</span>` : '';
                 const songContent = songUrl 
                     ? `<a href="${escapeHtml(songUrl)}" target="_blank" rel="noopener noreferrer" class="oc-media-link" title="음악 링크 열기">♬ ${escapeHtml(songTitle)}${artistPart} ↗</a>`
                     : `<span>♬ ${escapeHtml(songTitle)}${artistPart}</span>`;
 
-                themeSongHtml = `                <div class="oc-media-player">
-                    <div class="oc-media-play-btn"><svg width="7" height="8" viewBox="0 0 7 8" xmlns="http://www.w3.org/2000/svg"><polygon points="1,1 6,4 1,7" fill="#000080"/></svg></div>
-                    <div class="oc-media-track">${songContent}</div>
+                themeSongBarHtml = `                <div class="oc-media-wrap" data-audio-url="${escapeHtml(songUrl)}">
+                    <div class="oc-media-player">
+                        <button type="button" class="oc-media-play-btn" onclick="toggleOcAudio(this)" title="재생 / 정지">
+                            <svg class="oc-icon-play" width="7" height="8" viewBox="0 0 7 8" xmlns="http://www.w3.org/2000/svg"><polygon points="1,1 6,4 1,7" fill="#000080"/></svg>
+                            <svg class="oc-icon-stop" style="display:none;" width="7" height="7" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="5" height="5" fill="#800000"/></svg>
+                        </button>
+                        <div class="oc-media-track">${songContent}</div>
+                    </div>
                 </div>\n`;
+
+                floatingPlayerHtml = `
+    <!-- 플로팅 플레이어 (화면 어디로든 드래그 가능) -->
+    <div class="oc-floating-player">
+        <div class="oc-drawer-titlebar" onpointerdown="dragOcPlayer(event, this)">
+            <span class="oc-drawer-title-text">📻 CD_PLAYER.EXE [재생 중♬]</span>
+            <div class="oc-drawer-ctrls">
+                <button type="button" class="oc-drawer-btn oc-min-toggle" onclick="minimizeOcAudio(this)" title="최소화 / 복원">_</button>
+                <button type="button" class="oc-drawer-btn" onclick="closeOcAudio(this)" title="정지 및 닫기">✕</button>
+            </div>
+        </div>
+        <div class="oc-drawer-body oc-audio-host"></div>
+    </div>\n`;
             }
 
             // 2) 상징색 팔레트
@@ -1293,77 +1205,64 @@
                         <span class="oc-color-hex">${c}</span>
                     </div>`).join('');
                 
-                paletteHtml = `                <div class="oc-palette-wrap">
-                    <span class="oc-palette-label">COLOR:</span>
-                    <div class="oc-chips-row">${chipsHtml}</div>
-                </div>\n`;
+                paletteHtml = `            <div class="oc-palette-wrap">
+                <span class="oc-palette-label">COLOR:</span>
+                <div class="oc-chips-row">${chipsHtml}</div>
+            </div>\n`;
             }
 
-            // 3) 대표 대사
+            // 대표 대사
             let quoteHtml = '';
             if (quoteText) {
-                let clean = quoteText.trim();
-                // 기존 따옴표 중복 제거
-                clean = clean.replace(/^[“"']+|[”"']+$/g, '').trim();
-                quoteHtml = `                <div class="oc-quote-box">
-                    <span class="oc-quote-mark">“</span><span class="oc-quote-text">${escapeHtml(clean)}</span><span class="oc-quote-mark">”</span>
-                </div>\n`;
+                let clean = quoteText.trim().replace(/^[“"']+|[”"']+$/g, '').trim();
+                quoteHtml = `            <div class="oc-quote-box">
+                <span class="oc-quote-mark">“</span><span class="oc-quote-text">${escapeHtml(clean)}</span><span class="oc-quote-mark">”</span>
+            </div>\n`;
             }
 
-            // 4) 스펙란 소제목
             const specTitle = document.getElementById('cfg-spec-title')?.value.trim() || '';
             const specTitleHtml = specTitle ? `<div class="oc-spec-heading">${escapeHtml(specTitle)}</div>\n` : '';
 
-            // 5) 스펙 목록
             const specRows = document.querySelectorAll('#spec-rows-container .spec-row');
             let specsHtml = '';
             specRows.forEach(row => {
                 const k = row.querySelector('.spec-key')?.value.trim() || '';
                 const v = row.querySelector('.spec-val')?.value.trim() || '';
                 if (k || v) {
-                    specsHtml += `                    <div class="oc-spec-row">
-                        <span class="oc-spec-k">${escapeHtml(k)}:</span>
-                        <span class="oc-spec-v">${escapeHtml(v)}</span>
-                    </div>\n`;
+                    specsHtml += `                <div class="oc-spec-row">
+                    <span class="oc-spec-k">${escapeHtml(k)}:</span>
+                    <span class="oc-spec-v">${escapeHtml(v)}</span>
+                </div>\n`;
                 }
             });
 
-            // 전신 배경 스타일 CSS
             let bodyBgCss = 'background: transparent;';
-            if (bgStyle === 'white') {
-                bodyBgCss = 'background: #ffffff;';
-            } else if (bgStyle === 'gray') {
-                bodyBgCss = 'background: #c0c0c0;';
-            } else if (bgStyle === 'checker') {
+            if (bgStyle === 'white') bodyBgCss = 'background: #ffffff;';
+            else if (bgStyle === 'gray') bodyBgCss = 'background: #c0c0c0;';
+            else if (bgStyle === 'checker') {
                 bodyBgCss = `background-color: #e5e5e5;
     background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%);
     background-size: 16px 16px;
     background-position: 0 0, 0 8px, 8px -8px, -8px 0px;`;
             }
 
-            let bodyImgCss = '';
+            let bodyImgCss = `max-width: 100% !important; max-height: 520px !important; width: auto !important; height: auto !important; object-fit: contain !important; display: block !important; ${bodyTransformStyle}`;
             let bodyColExtra = '';
-            if (fitMode === 'contain') {
-                bodyImgCss = `max-width: 100% !important;
-    max-height: 520px !important;
-    width: auto !important;
-    height: auto !important;
-    object-fit: contain !important;
-    display: block !important;`;
-            } else if (fitMode === 'scroll') {
-                bodyColExtra = `max-height: 520px; overflow-y: auto;`;
-                bodyImgCss = `max-width: 100% !important;
-    width: 100% !important;
-    height: auto !important;
-    display: block !important;`;
+            if (fitMode === 'scroll') {
+                bodyColExtra = `max-height: 520px; overflow-y: auto; align-items: flex-start;`;
+                bodyImgCss = `max-width: 100% !important; width: 100% !important; height: auto !important; display: block !important; ${bodyTransformStyle}`;
             } else if (fitMode === 'stretch') {
-                bodyImgCss = `max-width: 100% !important;
-    width: 100% !important;
-    height: auto !important;
-    display: block !important;`;
+                bodyImgCss = `max-width: 100% !important; width: 100% !important; height: auto !important; display: block !important; ${bodyTransformStyle}`;
             }
 
             return `<style>
+@font-face {
+    font-family: 'NeoDunggeunmo';
+    src: url('${OC_FONT_URL}') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
 .article_view .oc-profile-container img,
 .oc-profile-container img {
     border: none !important;
@@ -1379,6 +1278,7 @@
     list-style: none !important;
 }
 .oc-profile-container {
+    position: relative;
     background: #c0c0c0;
     border: 2px solid;
     border-color: #ffffff #808080 #808080 #ffffff;
@@ -1397,7 +1297,6 @@
     color: #ffffff;
     padding: 3px 6px;
     font-size: 11px;
-    font-weight: normal;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1435,10 +1334,6 @@
     margin-left: 2px;
     padding: 0;
 }
-.oc-win-ctrl svg {
-    display: block;
-    pointer-events: none;
-}
 .oc-profile-body {
     display: flex;
     flex-direction: row;
@@ -1450,7 +1345,7 @@
     flex: 0 0 290px;
     width: 290px;
     max-width: 290px;
-    min-width: 0;
+    min-width: 290px;
     box-sizing: border-box;
     border: 2px solid;
     border-color: #808080 #ffffff #ffffff #808080;
@@ -1461,13 +1356,13 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    position: relative;
     ${bodyBgCss}
     ${bodyColExtra}
 }
 .oc-body-col img {
     ${bodyImgCss}
     margin: 0 auto !important;
-    ${bodyTransformCss}
 }
 .oc-info-col {
     flex: 1 1 auto;
@@ -1476,6 +1371,12 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+}
+.oc-media-wrap {
+    position: relative;
+    width: 100%;
+    margin-bottom: 8px;
+    box-sizing: border-box;
 }
 .oc-media-player {
     width: 100%;
@@ -1488,20 +1389,109 @@
     font-size: 11px;
     box-sizing: border-box;
     min-height: 26px;
-    margin-bottom: 8px;
 }
-.oc-media-play-btn {
-    width: 16px;
-    height: 16px;
+/* 화면 기준 고정 위치라 글 영역 밖으로도 자유롭게 끌어낼 수 있다 */
+.oc-floating-player {
+    display: none;
+    position: fixed;
+    top: 90px;
+    left: 40px;
+    width: 300px;
+    max-width: 92vw;
+    z-index: 99998;
+    background: #c0c0c0;
+    border: 2px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    box-shadow: 3px 4px 12px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+}
+.oc-floating-player.is-minimized .oc-drawer-body {
+    height: 0px !important;
+    min-height: 0px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+.oc-drawer-titlebar {
+    background: linear-gradient(to right, #000080, #1084d0);
+    color: #ffffff;
+    padding: 2px 5px;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    min-height: 20px;
+    box-sizing: border-box;
+    cursor: move;
+    touch-action: none;
+}
+.oc-drawer-title-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 10px;
+    pointer-events: none;
+}
+.oc-drawer-ctrls {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+.oc-drawer-btn {
+    width: 15px;
+    height: 13px;
     background: #c0c0c0;
     border: 1px solid;
     border-color: #ffffff #555555 #555555 #ffffff;
+    color: #000000;
+    font-size: 9px;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+.oc-drawer-btn:active {
+    border-color: #555555 #ffffff #ffffff #555555;
+    padding: 1px 0 0 1px;
+}
+.oc-drawer-body {
+    width: 100%;
+    height: 168px;
+    background: #000000;
+    overflow: hidden;
+    position: relative;
+    transition: height 0.15s ease;
+}
+.oc-drawer-body iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    display: block !important;
+}
+.oc-media-play-btn {
+    width: 18px;
+    height: 18px;
+    background: #c0c0c0;
+    border: 2px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     padding: 0;
     margin-right: 6px;
+    cursor: pointer;
+}
+.oc-media-play-btn:active, .oc-media-play-btn.active {
+    border-color: #808080 #ffffff #ffffff #808080;
+    padding: 1px 0 0 1px;
 }
 .oc-media-track {
     flex: 1;
@@ -1542,13 +1532,14 @@
     background: #ffffff;
     overflow: hidden;
     margin-right: 10px;
+    position: relative;
 }
 .oc-head-img img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
     display: block !important;
-    ${headTransformCss}
+    ${headTransformStyle}
 }
 .oc-name-meta {
     flex: 1;
@@ -1615,41 +1606,6 @@
     line-height: 1;
     font-family: 'NeoDunggeunmo', monospace;
 }
-.oc-palette-label {
-    font-weight: bold;
-    color: #404040;
-    margin-right: 8px;
-    flex-shrink: 0;
-}
-.oc-chips-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-}
-.oc-color-chip {
-    display: inline-flex;
-    align-items: center;
-    background: #ffffff;
-    border: 1px solid #808080;
-    padding: 2px 5px;
-    margin-right: 6px;
-    box-sizing: border-box;
-    line-height: 1;
-}
-.oc-color-swatch {
-    width: 10px;
-    height: 10px;
-    border: 1px solid #000000;
-    display: inline-block;
-    margin-right: 5px;
-    flex-shrink: 0;
-}
-.oc-color-hex {
-    font-size: 10px;
-    color: #000000;
-    line-height: 1;
-    font-family: monospace, 'NeoDunggeunmo';
-}
 .oc-quote-box {
     width: 100%;
     background: #ffffec;
@@ -1710,15 +1666,13 @@
     box-sizing: border-box;
 }
 .oc-spec-k {
-    width: 80px;
     min-width: 80px;
-    max-width: 80px;
     flex-shrink: 0;
     font-weight: bold;
     color: #000000;
     margin-right: 8px;
     line-height: 1.45;
-    white-space: nowrap;
+    word-break: keep-all;
 }
 .oc-spec-v {
     flex: 1 1 auto;
@@ -1744,6 +1698,7 @@
         flex: none !important;
         width: 100% !important;
         max-width: 100% !important;
+        min-width: 0 !important;
         max-height: 480px !important;
         margin-right: 0 !important;
         margin-bottom: 8px !important;
@@ -1771,7 +1726,7 @@
         </div>
 
         <div class="oc-info-col">
-${themeSongHtml}            <div class="oc-head-box">
+${themeSongBarHtml}            <div class="oc-head-box">
                 <div class="oc-head-img">
                     <img src="${escapeHtml(headImg)}" alt="두상">
                 </div>
@@ -1788,7 +1743,141 @@ ${specsHtml}                </div>
             </div>
         </div>
     </div>
-</div>`;
+${floatingPlayerHtml}</div>
+` + `<` + `script>
+(function () {
+    if (window.__ocPlayerReady) return;
+    window.__ocPlayerReady = true;
+
+    function clampPlayer(player, x, y) {
+        var w = player.offsetWidth || 300;
+        var minVisible = 60;
+        var maxX = window.innerWidth - minVisible;
+        var minX = minVisible - w;
+        var maxY = window.innerHeight - 24;
+        return {
+            x: Math.min(Math.max(x, minX), maxX),
+            y: Math.min(Math.max(y, 0), maxY)
+        };
+    }
+
+    window.dragOcPlayer = function (e, titlebar) {
+        var player = titlebar.closest('.oc-floating-player');
+        if (!player) return;
+        if (e.target.closest('.oc-drawer-btn')) return;
+        e.preventDefault();
+
+        var rect = player.getBoundingClientRect();
+        var offX = e.clientX - rect.left;
+        var offY = e.clientY - rect.top;
+        player.style.right = 'auto';
+        player.style.bottom = 'auto';
+
+        function onMove(ev) {
+            var pos = clampPlayer(player, ev.clientX - offX, ev.clientY - offY);
+            player.style.left = pos.x + 'px';
+            player.style.top = pos.y + 'px';
+        }
+        function onUp() {
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+        }
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+    };
+
+    function extractYtId(url) {
+        var m = url.match(/[?&]v=([^&#\\s]+)/);
+        if (m) return m[1];
+        m = url.match(/youtu\\.be\\/([^?&#\\s]+)/);
+        if (m) return m[1];
+        m = url.match(/embed\\/([^?&#\\s]+)/);
+        if (m) return m[1];
+        m = url.match(/shorts\\/([^?&#\\s]+)/);
+        if (m) return m[1];
+        return null;
+    }
+
+    window.toggleOcAudio = function (btn) {
+        var wrap = btn.closest('.oc-media-wrap');
+        var container = btn.closest('.oc-profile-container');
+        if (!wrap || !container) return;
+
+        var player = container.querySelector('.oc-floating-player');
+        var host = container.querySelector('.oc-audio-host');
+        var playIcon = wrap.querySelector('.oc-icon-play');
+        var stopIcon = wrap.querySelector('.oc-icon-stop');
+        var minBtn = container.querySelector('.oc-min-toggle');
+
+        var url = wrap.getAttribute('data-audio-url') || '';
+        if (!url) return;
+
+        var isPlaying = wrap.getAttribute('data-playing') === 'true';
+        if (isPlaying) {
+            if (host) host.innerHTML = '';
+            if (player) {
+                player.style.display = 'none';
+                player.classList.remove('is-minimized');
+            }
+            wrap.setAttribute('data-playing', 'false');
+            if (playIcon) playIcon.style.display = 'block';
+            if (stopIcon) stopIcon.style.display = 'none';
+            if (minBtn) minBtn.innerText = '_';
+            btn.classList.remove('active');
+            return;
+        }
+
+        var ytId = extractYtId(url);
+
+        if (player) {
+            player.classList.remove('is-minimized');
+            player.style.display = 'block';
+            // 재생 버튼 바로 아래에서 시작하고, 화면 밖으로 나가지 않게 보정
+            var bRect = btn.getBoundingClientRect();
+            var pos = clampPlayer(player, bRect.left - 4, bRect.bottom + 8);
+            player.style.left = pos.x + 'px';
+            player.style.top = pos.y + 'px';
+            player.style.right = 'auto';
+        }
+        if (minBtn) minBtn.innerText = '_';
+
+        if (host) {
+            if (ytId) {
+                var tMatch = url.match(/[?&]t=(\\d+)/i);
+                var startParam = tMatch ? '&start=' + tMatch[1] : '';
+                host.innerHTML = '<iframe width="100%" height="168" src="https://www.youtube.com/embed/' + ytId + '?autoplay=1&playsinline=1&rel=0' + startParam + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="width:100%;height:168px;display:block;border:none;"></iframe>';
+            } else {
+                host.innerHTML = '<div style="padding:15px 10px; text-align:center; background:#c0c0c0;"><audio src="' + url + '" controls autoplay style="width:90%;"></audio></div>';
+            }
+        }
+        wrap.setAttribute('data-playing', 'true');
+        if (playIcon) playIcon.style.display = 'none';
+        if (stopIcon) stopIcon.style.display = 'block';
+        btn.classList.add('active');
+    };
+
+    window.minimizeOcAudio = function (minBtn) {
+        var player = minBtn.closest('.oc-floating-player');
+        if (!player) return;
+        if (player.classList.contains('is-minimized')) {
+            player.classList.remove('is-minimized');
+            minBtn.innerText = '_';
+            minBtn.setAttribute('title', '최소화');
+        } else {
+            player.classList.add('is-minimized');
+            minBtn.innerText = '□';
+            minBtn.setAttribute('title', '복원');
+        }
+    };
+
+    window.closeOcAudio = function (closeBtn) {
+        var container = closeBtn.closest('.oc-profile-container');
+        if (!container) return;
+        var playBtn = container.querySelector('.oc-media-play-btn');
+        if (playBtn) window.toggleOcAudio(playBtn);
+    };
+})();
+<` + `/script>`;
         }
 
         let previewDebounceTimer = null;
@@ -1802,21 +1891,6 @@ ${specsHtml}                </div>
             }, 70);
         }
 
-        function updateRawCodeTextarea() {
-            const code = generateOutputHTML();
-            const codeEl = document.getElementById('raw-code-output');
-            if (codeEl) codeEl.value = code;
-            saveDraftToStorage();
-        }
-
-        let wheelDebounceTimer = null;
-        function debounceUpdateCode() {
-            if (wheelDebounceTimer) clearTimeout(wheelDebounceTimer);
-            wheelDebounceTimer = setTimeout(() => {
-                updateRawCodeTextarea();
-            }, 120);
-        }
-
         function executeRender() {
             const htmlCode = generateOutputHTML();
             const previewEl = document.getElementById('rendered-output');
@@ -1825,123 +1899,148 @@ ${specsHtml}                </div>
             if (previewEl) previewEl.innerHTML = htmlCode;
             if (codeEl) codeEl.value = htmlCode;
 
+            attachDirectManipulation();
+
             const statusEl = document.getElementById('editor-status');
             if (statusEl) statusEl.innerText = '준비 완료. [미리보기 반영]을 누르세요';
-
-            attachInteractiveImageControls();
-            updateTransformUiLabels();
         }
 
-        /* [직접 조작 엔진] 미리보기 창의 전신 및 두상 사진에 드래그/휠 줌 리스너 연결 */
-        function attachInteractiveImageControls() {
-            const bodyCol = document.querySelector('#rendered-output .oc-body-col');
-            const headBox = document.querySelector('#rendered-output .oc-head-img');
-
-            if (bodyCol) setupInteractiveTarget(bodyCol, 'body');
-            if (headBox) setupInteractiveTarget(headBox, 'head');
+        function extractYouTubeId(url) {
+            if (!url) return null;
+            const str = url.trim();
+            let m = str.match(/[?&]v=([^&#\s]+)/);
+            if (m) return m[1];
+            m = str.match(/youtu\.be\/([^?&#\s]+)/);
+            if (m) return m[1];
+            m = str.match(/embed\/([^?&#\s]+)/);
+            if (m) return m[1];
+            m = str.match(/shorts\/([^?&#\s]+)/);
+            if (m) return m[1];
+            return null;
         }
 
-        function setupInteractiveTarget(container, type) {
-            const img = container.querySelector('img');
-            if (!img) return;
-
-            // 브라우저 기본 고스트 드래그 방지
-            img.draggable = false;
-            container.style.cursor = 'grab';
-            container.style.userSelect = 'none';
-            container.style.position = 'relative';
-
-            // 1. 마우스 휠 줌 (Zoom In / Out)
-            container.onwheel = function(e) {
-                e.preventDefault();
-                const zoomDelta = e.deltaY < 0 ? 5 : -5;
-                let newZoom = transformState[type].zoom + zoomDelta;
-                const minZ = type === 'body' ? 30 : 50;
-                const maxZ = type === 'body' ? 300 : 400;
-                newZoom = Math.max(minZ, Math.min(maxZ, newZoom));
-                transformState[type].zoom = newZoom;
-
-                updateLiveElementTransform(type);
-                updateTransformUiLabels();
-                debounceUpdateCode();
+        /* 플로팅 창 위치 계산: 화면 밖으로 완전히 사라지지 않게 최소 60px은 남긴다 */
+        function clampOcPlayer(player, x, y) {
+            const w = player.offsetWidth || 300;
+            const minVisible = 60;
+            return {
+                x: Math.min(Math.max(x, minVisible - w), window.innerWidth - minVisible),
+                y: Math.min(Math.max(y, 0), window.innerHeight - 24)
             };
-
-            // 2. 마우스 / 터치 직접 드래그 이동 (Pan X, Y)
-            let isDragging = false;
-            let startX = 0, startY = 0;
-            let initX = 0, initY = 0;
-
-            function onPointerDown(e) {
-                isDragging = true;
-                container.style.cursor = 'grabbing';
-
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                startX = clientX;
-                startY = clientY;
-                initX = transformState[type].x;
-                initY = transformState[type].y;
-
-                window.addEventListener('mousemove', onPointerMove, { passive: false });
-                window.addEventListener('mouseup', onPointerUp);
-                window.addEventListener('touchmove', onPointerMove, { passive: false });
-                window.addEventListener('touchend', onPointerUp);
-                e.preventDefault();
-            }
-
-            function onPointerMove(e) {
-                if (!isDragging) return;
-                e.preventDefault();
-
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                const dx = clientX - startX;
-                const dy = clientY - startY;
-
-                const rect = img.getBoundingClientRect();
-                const currentZoom = (transformState[type].zoom / 100) || 1;
-                const unscaledW = (rect.width / currentZoom) || 100;
-                const unscaledH = (rect.height / currentZoom) || 100;
-
-                const deltaPercentX = (dx / unscaledW) * 100;
-                const deltaPercentY = (dy / unscaledH) * 100;
-
-                let newX = Math.round(initX + deltaPercentX);
-                let newY = Math.round(initY + deltaPercentY);
-
-                newX = Math.max(-100, Math.min(100, newX));
-                newY = Math.max(-100, Math.min(100, newY));
-
-                transformState[type].x = newX;
-                transformState[type].y = newY;
-
-                updateLiveElementTransform(type);
-                updateTransformUiLabels();
-            }
-
-            function onPointerUp() {
-                if (!isDragging) return;
-                isDragging = false;
-                container.style.cursor = 'grab';
-
-                window.removeEventListener('mousemove', onPointerMove);
-                window.removeEventListener('mouseup', onPointerUp);
-                window.removeEventListener('touchmove', onPointerMove);
-                window.removeEventListener('touchend', onPointerUp);
-
-                updateRawCodeTextarea();
-            }
-
-            container.onmousedown = onPointerDown;
-            container.ontouchstart = onPointerDown;
         }
 
-        /* =========================================================
-           [차세대 네이티브 캡처 엔진] html-to-image
-           - 구형 렌더러(html2canvas)의 넙데데/글자 밀림/키릴 문자 높낮이 버그 원천 차단
-           - 브라우저가 화면을 그리는 진짜 그래픽 렌더러로 1:1 완벽 캡처
-           - 이미지 및 폰트 Base64 사전 인라인으로 Tainted Canvas 보안 오류 100% 방지
-           ========================================================= */
+        window.dragOcPlayer = function(e, titlebar) {
+            const player = titlebar.closest('.oc-floating-player');
+            if (!player) return;
+            if (e.target.closest('.oc-drawer-btn')) return;
+            e.preventDefault();
+
+            const rect = player.getBoundingClientRect();
+            const offX = e.clientX - rect.left;
+            const offY = e.clientY - rect.top;
+            player.style.right = 'auto';
+            player.style.bottom = 'auto';
+
+            const onMove = (ev) => {
+                const pos = clampOcPlayer(player, ev.clientX - offX, ev.clientY - offY);
+                player.style.left = pos.x + 'px';
+                player.style.top = pos.y + 'px';
+            };
+            const onUp = () => {
+                window.removeEventListener('pointermove', onMove);
+                window.removeEventListener('pointerup', onUp);
+            };
+            window.addEventListener('pointermove', onMove);
+            window.addEventListener('pointerup', onUp);
+        };
+
+        window.toggleOcAudio = function(btn) {
+            const wrap = btn.closest('.oc-media-wrap');
+            const container = btn.closest('.oc-profile-container');
+            if (!wrap || !container) return;
+
+            // 플로팅 플레이어는 .oc-media-wrap이 아니라 컨테이너 직속에 있다
+            const player = container.querySelector('.oc-floating-player');
+            const host = container.querySelector('.oc-audio-host');
+            const playIcon = wrap.querySelector('.oc-icon-play');
+            const stopIcon = wrap.querySelector('.oc-icon-stop');
+            const minBtn = container.querySelector('.oc-min-toggle');
+            const url = wrap.getAttribute('data-audio-url') || document.getElementById('cfg-song-url')?.value?.trim() || '';
+
+            if (!url) {
+                showToast('연결된 음악 링크가 없습니다.');
+                return;
+            }
+
+            const isPlaying = wrap.getAttribute('data-playing') === 'true';
+            if (isPlaying) {
+                if (host) host.innerHTML = '';
+                if (player) {
+                    player.style.display = 'none';
+                    player.classList.remove('is-minimized');
+                }
+                wrap.setAttribute('data-playing', 'false');
+                if (playIcon) playIcon.style.display = 'block';
+                if (stopIcon) stopIcon.style.display = 'none';
+                if (minBtn) minBtn.innerText = '_';
+                btn.classList.remove('active');
+                showToast('음악 재생을 중지했습니다.');
+                return;
+            }
+
+            const ytId = extractYouTubeId(url);
+
+            if (player) {
+                player.classList.remove('is-minimized');
+                player.style.display = 'block';
+                const bRect = btn.getBoundingClientRect();
+                const pos = clampOcPlayer(player, bRect.left - 4, bRect.bottom + 8);
+                player.style.left = pos.x + 'px';
+                player.style.top = pos.y + 'px';
+                player.style.right = 'auto';
+            }
+            if (minBtn) minBtn.innerText = '_';
+
+            if (host) {
+                if (ytId) {
+                    const tMatch = url.match(/[?&]t=(\d+)/i);
+                    const startParam = tMatch ? '&start=' + tMatch[1] : '';
+                    host.innerHTML = `<iframe width="100%" height="168" src="https://www.youtube.com/embed/${ytId}?autoplay=1&playsinline=1&rel=0${startParam}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="width:100%;height:168px;display:block;border:none;"></iframe>`;
+                } else {
+                    host.innerHTML = `<div style="padding:15px 10px; text-align:center; background:#c0c0c0;"><audio src="${escapeHtml(url)}" controls autoplay style="width:90%;"></audio></div>`;
+                }
+            }
+
+            wrap.setAttribute('data-playing', 'true');
+            if (playIcon) playIcon.style.display = 'none';
+            if (stopIcon) stopIcon.style.display = 'block';
+            btn.classList.add('active');
+            showToast('테마곡 재생 시작 ♬ (타이틀바를 끌어 옮길 수 있습니다)');
+        };
+
+        window.minimizeOcAudio = function(minBtn) {
+            const player = minBtn.closest('.oc-floating-player');
+            if (!player) return;
+
+            if (player.classList.contains('is-minimized')) {
+                player.classList.remove('is-minimized');
+                minBtn.innerText = '_';
+                minBtn.setAttribute('title', '최소화');
+                showToast('플레이어 창을 펼쳤습니다.');
+            } else {
+                player.classList.add('is-minimized');
+                minBtn.innerText = '□';
+                minBtn.setAttribute('title', '복원');
+                showToast('플레이어를 최소화했습니다. 음악은 계속 재생됩니다 ♬');
+            }
+        };
+
+        window.closeOcAudio = function(closeBtn) {
+            const container = closeBtn.closest('.oc-profile-container');
+            if (!container) return;
+            const playBtn = container.querySelector('.oc-media-play-btn');
+            if (playBtn) window.toggleOcAudio(playBtn);
+        };
 
         let cachedFontBase64 = null;
         async function getEmbeddedFontCss() {
@@ -1962,12 +2061,10 @@ ${specsHtml}                </div>
                 }`;
                 return cachedFontBase64;
             } catch (e) {
-                console.warn('Font embed failed:', e);
                 return '';
             }
         }
 
-        /* 외부 이미지 CORS 방지용 Base64 사전 인라인 변환 */
         async function inlineAllImagesAsBase64(container) {
             const imgs = Array.from(container.querySelectorAll('img'));
             const restoreList = [];
@@ -1998,9 +2095,7 @@ ${specsHtml}                </div>
                         restoreList.push({ img, originalSrc });
                         img.src = base64;
                     }
-                } catch (e) {
-                    console.warn('Failed to inline image:', originalSrc, e);
-                }
+                } catch (e) {}
             }
 
             return function restore() {
@@ -2027,39 +2122,29 @@ ${specsHtml}                </div>
                         pixelRatio: 2,
                         backgroundColor: null,
                         cacheBust: true,
-                        style: {
-                            margin: '0'
-                        },
+                        style: { margin: '0' },
                         filter: (node) => {
-                            if (node.classList && node.classList.contains('preview-interactive-tool')) return false;
+                            if (node.classList && node.classList.contains('oc-floating-player')) {
+                                return false;
+                            }
                             return true;
                         }
                     };
-                    if (fontCss) {
-                        options.fontEmbedCSS = fontCss;
-                    }
+                    if (fontCss) options.fontEmbedCSS = fontCss;
                     const blob = await window.htmlToImage.toBlob(liveTarget, options);
                     const dataUrl = await window.htmlToImage.toPng(liveTarget, options);
                     return { blob, dataUrl };
-                } else if (window.html2canvas) {
-                    const canvas = await html2canvas(liveTarget, { 
-                        scale: 2, 
-                        backgroundColor: null, 
-                        useCORS: true,
-                        ignoreElements: (el) => el.classList && el.classList.contains('preview-interactive-tool')
-                    });
+                } else {
+                    const canvas = await html2canvas(liveTarget, { scale: 2, backgroundColor: null, useCORS: true });
                     const dataUrl = canvas.toDataURL('image/png');
                     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
                     return { blob, dataUrl };
-                } else {
-                    throw new Error('캡처 엔진 부재');
                 }
             } finally {
                 restoreImages();
             }
         }
 
-        // 고화질 투명 PNG 이미지 저장
         async function downloadPreviewAsPng() {
             showToast("실제 화면 그대로 PNG 캡처 중...");
             try {
@@ -2071,12 +2156,10 @@ ${specsHtml}                </div>
                 link.click();
                 showToast("PNG 저장이 완료되었습니다!");
             } catch (err) {
-                console.error(err);
                 showToast("저장 중 오류가 발생했습니다.");
             }
         }
 
-        // 클립보드에 이미지 복사 (실패 시 100% 안전 모달 오픈)
         async function copyPreviewImageToClipboard() {
             showToast("화면 그대로 이미지 캡처 중...");
             try {
@@ -2097,14 +2180,12 @@ ${specsHtml}                </div>
                         await navigator.clipboard.write([item]);
                         showToast("화면 그대로 복사되었습니다! (Ctrl+V)");
                     } catch (clipErr) {
-                        console.warn('클립보드 API 차단됨, 모달 전환:', clipErr);
                         openImageModal();
                     }
                 } else {
                     openImageModal();
                 }
             } catch (err) {
-                console.error(err);
                 showToast("이미지 처리 중 오류가 발생했습니다.");
             }
         }
@@ -2112,7 +2193,7 @@ ${specsHtml}                </div>
         function openImageModal() {
             const modal = document.getElementById('image-result-modal');
             if (modal) modal.style.display = 'flex';
-            showToast("이미지가 생성되었습니다. 우클릭 복사 또는 저장하세요!");
+            showToast("이미지가 준비되었습니다. 우클릭 복사하세요!");
         }
 
         function closeImageModal() {
@@ -2120,7 +2201,6 @@ ${specsHtml}                </div>
             if (modal) modal.style.display = 'none';
         }
 
-        // 코드 복사 기능 (Clipboard API + execCommand 2중 지원)
         function copyGeneratedCode() {
             const bodyImg = document.getElementById('cfg-fullbody-img')?.value || '';
             const headImg = document.getElementById('cfg-head-img')?.value || '';
@@ -2148,7 +2228,6 @@ ${specsHtml}                </div>
 
             const codeText = textarea.value;
 
-            // 1순위: 현대적 클립보드 API
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(codeText).then(() => {
                     showToast('HTML 코드가 복사되었습니다!');
@@ -2165,18 +2244,14 @@ ${specsHtml}                </div>
                 textarea.setSelectionRange(0, 99999);
                 try {
                     const ok = document.execCommand('copy');
-                    if (ok) {
-                        showToast('HTML 코드가 복사되었습니다!');
-                    } else {
-                        showToast('복사 실패: 코드 영역을 직접 복사해주세요.');
-                    }
+                    if (ok) showToast('HTML 코드가 복사되었습니다!');
+                    else showToast('코드 영역을 직접 복사해주세요.');
                 } catch (err) {
                     showToast('복사 중 오류가 발생했습니다.');
                 }
             }
         }
 
-        // PC / 모바일 뷰 토글
         function setViewMode(mode) {
             const stage = document.getElementById('preview-stage');
             const btnPc = document.getElementById('btn-view-pc');
@@ -2195,25 +2270,12 @@ ${specsHtml}                </div>
             }
         }
 
-        // 폼 채우기 도우미
         function fillFormWithData(data) {
             document.getElementById('cfg-title').value = data.title || '';
             document.getElementById('cfg-fullbody-img').value = data.fullbodyImg || '';
             document.getElementById('cfg-head-img').value = data.headImg || '';
             document.getElementById('cfg-body-bg').value = data.bodyBg || 'transparent';
             document.getElementById('cfg-body-fit').value = data.bodyFit || 'contain';
-
-            // 배율 및 위치 상태 복원
-            transformState.body.zoom = Number(data.bodyZoom ?? 100);
-            transformState.body.x = Number(data.bodyX ?? 0);
-            transformState.body.y = Number(data.bodyY ?? 0);
-
-            transformState.head.zoom = Number(data.headZoom ?? 100);
-            transformState.head.x = Number(data.headX ?? 0);
-            transformState.head.y = Number(data.headY ?? 0);
-
-            updateTransformUiLabels();
-
             document.getElementById('cfg-char-name').value = data.charName || '';
             document.getElementById('cfg-char-sub').value = data.charSub || '';
             document.getElementById('cfg-quote').value = data.quote || '';
@@ -2223,7 +2285,13 @@ ${specsHtml}                </div>
             document.getElementById('cfg-spec-title').value = data.specTitle || '[ CHARACTER PROFILE ]';
             document.getElementById('cfg-memo').value = data.memo || '';
 
-            // 색상 동기화
+            if (data.transforms) {
+                if (data.transforms.body) Object.assign(transformState.body, data.transforms.body);
+                if (data.transforms.head) Object.assign(transformState.head, data.transforms.head);
+            }
+            updateTransformUiLabels('body');
+            updateTransformUiLabels('head');
+
             if (data.colors && Array.isArray(data.colors)) {
                 for (let i = 1; i <= 4; i++) {
                     const c = data.colors[i - 1] || '';
@@ -2234,7 +2302,6 @@ ${specsHtml}                </div>
                 }
             }
 
-            // 스펙 행 구성
             const container = document.getElementById('spec-rows-container');
             container.innerHTML = '';
             if (data.specs && Array.isArray(data.specs)) {
@@ -2249,7 +2316,7 @@ ${specsHtml}                </div>
         function loadSampleData() {
             fillFormWithData(SAMPLE_DATA);
             saveDraftToStorage();
-            showToast("홍길동 더미 샘플 데이터를 불러왔습니다.");
+            showToast("샘플 데이터를 불러왔습니다.");
         }
 
         function resetForm() {
@@ -2259,12 +2326,6 @@ ${specsHtml}                </div>
                 headImg: "",
                 bodyBg: "transparent",
                 bodyFit: "contain",
-                bodyZoom: 100,
-                bodyX: 0,
-                bodyY: 0,
-                headZoom: 100,
-                headX: 0,
-                headY: 0,
                 charName: "",
                 charSub: "",
                 quote: "",
@@ -2280,7 +2341,11 @@ ${specsHtml}                </div>
                     { key: "소속", val: "" },
                     { key: "특기", val: "" },
                     { key: "상징색", val: "" }
-                ]
+                ],
+                transforms: {
+                    body: { zoom: 100, x: 0, y: 0 },
+                    head: { zoom: 100, x: 0, y: 0 }
+                }
             };
             fillFormWithData(emptyData);
             saveDraftToStorage();
@@ -2292,7 +2357,6 @@ ${specsHtml}                </div>
             if (!restored) {
                 loadSampleData();
             }
-            // 폰트 미리 캐싱 (첫 캡처 지연 방지)
             getEmbeddedFontCss();
         };
     </script>
